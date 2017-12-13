@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel = "stylesheet" href = "../lumen.css">
+    <title>Pentagon Bullets</title>
+</head>
+<body style="padding-left: 50px; padding-top: 30px">
+    <h1 id="create-server">Pentagon Bullets</h1>
+    <h2 id="subtitle">Create Server</h2>
+
+    <fieldset style = "width: 300px">
+        <div class="form-group">
+            <label for="inputPort" class="col-lg-2 control-label">Port</label>
+            <div class="col-lg-10">
+                <input type="number" class="form-control" id="inputPort" placeholder="port">
+                <div class="alert alert-dismissible alert-danger" id="portError" style="visibility: hidden">
+                    Malformed port number.
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-lg-10 col-lg-offset-2">
+                <a href = "../mainscreen/mainscreen.html" type="reset" class="btn btn-default" id="back">Back</a>
+                <a type="submit" class="btn btn-primary" id="confirm">Create</a>
+            </div>
+        </div>
+    </fieldset>
+
+    <p style = "position: fixed; right: 0; bottom; 0" id = "isThereServer">No server on this computer</p>
+    <img id="githubProjectLink" src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png"
+         style="position: fixed; left: 0px; bottom: 0px; width: 64px; height: 64px; cursor: pointer;">
+
+    <script type="text/javascript">
+        const fs = require('fs')
+        const path = require('path')
+        if (fs.existsSync(path.join(__dirname, "../js-files/gamemenus-opt.js"))) {
+            const ScalaJS = require("../js-files/gamemenus-opt.js")
+        } else if (fs.existsSync(path.join(__dirname, "../js-files/gamemenus-fastopt.js"))) {
+            const ScalaJS = require("../js-files/gamemenus-fastopt.js")
+        } else {
+            console.error("compiled files not found")
+        }
+    </script>
+</body>
+</html>

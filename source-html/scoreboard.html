@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Score Board</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="./w3-copy.css">
+		<link rel="stylesheet" type="text/css" href="./w3-color-theme.css">
+		<style type="text/css">
+@font-face {
+font-family: 'squareTTF';
+src: url('FORCED_SQUARE.ttf');
+font-weight: normal;
+font-style: normal;
+}
+@font-face {
+font-family: 'quicksand';
+src: url('Quicksand_Bold.otf');
+font-weight: normal;
+font-style: normal;
+}
+*{font-family:quicksand;}
+.page-panel {
+	transition: opacity 0.4s;
+	opacity: 0;
+	position: absolute;
+	top: -5000px;
+	left: -5000px;
+	display: block;
+}
+.long-bar-clickable {
+	font-size: 24px;
+	cursor: pointer;
+	color:#000;
+	background-color:#f1f1f1;
+	border: 1px solid #bbb;
+	border-top-width: 0px;
+	margin: 0px;
+	position: relative;
+}
+.long-bar-clickable span {
+	font-family: "Segoe UI",Arial,sans-serif;
+    font-weight: 400;
+}
+.long-bar-clickable:hover {
+	background-color: #f44336;
+	color: #fff;
+}
+.floating-rank {
+	display: inline-block;
+	width: 7%;
+	min-width: 35px;
+	text-align: left;
+}
+.player-name {
+	display: inline-block;
+	width: 87%;
+	text-align: left;
+}
+.stat-content {
+	width: 75%!important;
+	border: 1px solid #bbb;
+	border-top-width: 0px;
+	background-color: #f1f1f1;
+	text-align: left;
+}
+.stat-content > * {
+	margin: 8px;
+}
+#players-scoreboard section:nth-child(1) .long-bar-clickable {
+	border-top-width: 1px;
+}
+html,body{height:100%;}
+		</style>
+		<script type="text/javascript" src="UserInterfaceLibrary.js"></script>
+	</head>
+<body>
+
+
+		<div class="w3-display-topright" style="margin:8px">
+			<p style="padding:0;margin:0"><button class="w3-button w3-light-gray w3-border w3-hover-blue-gray exitGame">Rage Quit</button></p>
+		</div>
+ 
+<header class="w3-container" style="padding-bottom:32px;">
+	<h1 style="font-family: squareTTF; font-size:64px" class="w3-center" id="mainTitle">Score Board</h1>
+	<hr>
+</header>
+
+<div class="w3-row" style="padding-bottom:32px"><!-- Panneau de droite -->
+	<section class="w3-content" style="width:300px">
+		<input class="w3-input" type="text" id="playerName" value="FastShotJS" placeholder="Enter Player Name" maxlength="15" disabled>
+	</section>
+</div>
+
+<main class="w3-container w3-center">
+	<div class="w3-row-padding" style="margin-bottom: 16px;">
+		<section class="menu-panel w3-content" id="game_stat_container">
+			<h1 class="long-bar-clickable w3-blue-gray" style="border-top-width: 1px;">General</h1>
+			<div class="w3-content sliding stat-content"></div>
+		</section>
+	</div>
+		<hr>
+	<div class="w3-row-padding" style="margin-top: 16px; margin-bottom: 16px" id="players-scoreboard"></div>
+		<hr>
+	<div class="w3-center w3-padding-16">
+		<input class="w3-button w3-green" type="button" value="Back to Menu" id="BackMenuButton">
+	</div>
+</main>
+
+<div class="w3-modal" id="alertBox"><!-- Afficher: alertBox.style.display = 'block' -->
+	<div class="w3-modal-content w3-light-grey w3-center w3-border w3-border-black w3-round-xlarge">
+		<h1 class="w3-padding-small"></h1>
+		<p class="w3-padding w3-large"></p>
+		<div class="w3-padding w3-row">
+			<div class="w3-twothird">&#160;</div>
+			<div class="w3-third w3-row">
+				<div class="w3-half w3-padding ">&#160;</div>
+				<div class="w3-half w3-padding "><button class="w3-button w3-blue-gray">Ok</button></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="w3-modal" id="confirmBox">
+	<div class="w3-modal-content w3-light-gray w3-center w3-border w3-border-black w3-round-xlarge">
+		<h1 class="w3-padding-small"></h1>
+		<p class="w3-padding w3-large"></p>
+		<div class="w3-row">
+			<div class="w3-twothird">&#160;</div>
+			<div class="w3-third w3-row">
+				<div class="w3-half w3-padding "><button class="w3-button w3-blue-gray">Yes</button></div>
+				<div class="w3-half w3-padding "><button class="w3-button w3-blue-gray">No</button></div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+// Initilize modal boxes
+UI.alertBox = document.getElementById('alertBox')
+UI.confirmBox = document.getElementById('confirmBox')
+
+// Initialization of the pages
+
+UI.pages = {}
+UI.pages.gameStat = new UI.Page( document.getElementById('game_stat_container') )
+UI.pages.gameStat.quitButton = document.getElementsByClassName('exitGame')[0]
+UI.playerName = document.getElementById("playerName")
+
+UI.pages.playersStat = new UI.Page( document.getElementById('players-scoreboard') )
+UI.pages.playersStat.quitButton = document.getElementById('BackMenuButton')
+
+// Example Code
+
+<!--UI.statManager.appendGame( new UI.Game( [-->
+	<!--new UI.statManager.Property( 'Duration', '1 minute' )-->
+<!--] ) )-->
+
+<!--UI.statManager.appendPlayer( new UI.Player( 1, 'FastShotJS', [-->
+	<!--new UI.statManager.Property( 'Ability', 'Teleportation' )-->
+<!--] ) )-->
+<!--UI.statManager.appendPlayer( new UI.Player( 2, 'Antoine', [-->
+	<!--new UI.statManager.Property( 'Ability', 'Big Bullet' ),-->
+	<!--new UI.statManager.Property( 'Killed By', 'Fatality' )-->
+<!--] ) )-->
+<!--UI.statManager.appendPlayer( new UI.Player( 3, 'Nicolas', [-->
+	<!--new UI.statManager.Property( 'Ability', 'Gun Turret' ),-->
+	<!--new UI.statManager.Property( 'Killed By', 'Antoine' )-->
+<!--] ) )-->
+
+
+
+</script>
+
+<!-- Antoine, tu écris à partir d'ici -->
+<script type="text/javascript">
+//##
+</script>
+
+</body>
+</html>

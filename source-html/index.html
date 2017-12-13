@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Pentagon Bullets</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="./w3-copy.css">
+		<link rel="stylesheet" type="text/css" href="./w3-color-theme.css">
+		<style type="text/css">
+@font-face {
+font-family: 'squareTTF';
+src: url('FORCED_SQUARE.ttf');
+font-weight: normal;
+font-style: normal;
+}
+@font-face {
+font-family: 'quicksand';
+src: url('Quicksand_Bold.otf');
+font-weight: normal;
+font-style: normal;
+}
+*{font-family:quicksand;}
+.page-panel {
+	transition: opacity 0.4s;
+	opacity: 0;
+	position: absolute;
+	top: -5000px;
+	left: -5000px;
+	display: block;
+}
+.menu-button {
+	color:#fff;
+	background-color:#f44336;
+}
+html,body{height:100%;}
+		</style>
+		<script type="text/javascript" src="UserInterfaceLibrary.js"></script>
+	</head>
+<body>
+
+
+		<div class="w3-display-topright" style="margin:8px">
+			<p style="padding:0;margin:0"><button class="w3-button w3-light-gray w3-border w3-hover-blue-gray exitGame">Quit Game</button></p>
+		</div>
+ 
+<header class="w3-container" style="padding-bottom:32px;">
+	<h1 style="font-family: squareTTF; font-size:94px" class="w3-center" id="mainTitle">Pentagon Bullets</h1>
+	<hr>
+</header>
+
+<main class="w3-container w3-center">
+	<div class="w3-row" style="padding-bottom:32px"><!-- Panneau de droite -->
+		<section class="w3-content" style="width: 300px">
+			<input class="w3-input" type="text" id="playerName" value="" placeholder="Enter Player Name" maxlength="15">
+		</section>
+	</div>
+	<div class="w3-row-padding page-panel" id="outPartDiv">
+		<section class="menu-panel w3-third">
+			<p><button class="w3-button menu-button">Join Game</button></p>
+			<form class="w3-content w3-white sliding">
+				<div class="w3-row w3-padding-8">
+					<label class="w3-half w3-input w3-border-0">Game name</label>
+					<input class="w3-half w3-input" type="text" value="test" name="name">
+				</div>
+				<div class="w3-row w3-padding-8">
+					<label class="w3-half w3-input w3-border-0">Port</label>
+					<input class="w3-half w3-input" type="text" value="22222" name="port">
+				</div>
+				<div class="w3-row w3-padding-8">
+					<label class="w3-half w3-input w3-border-0">IP Address</label>
+					<input class="w3-half w3-input" type="text" value="localhost" name="address">
+				</div>
+				<div class="w3-center w3-padding-8">
+					<input class="w3-button w3-green" type="submit" value="Join&#160;!">
+				</div>
+			</form>
+		</section>
+		<section class="w3-container menu-panel w3-third">
+			<p><button class="w3-button menu-button">Host Game</button></p>
+			<form class="w3-content w3-white sliding">
+				<div class="w3-row w3-padding">
+					<label class="w3-half w3-input w3-border-0">Game name</label>
+					<input class="w3-half w3-input" type="text" value="test" name="name">
+				</div>
+				<div class="w3-row w3-padding">
+					<label class="w3-half w3-input w3-border-0">Port</label>
+					<input class="w3-half w3-input" type="text" value="22222" name="port">
+				</div>
+				<div class="w3-row w3-padding">
+					<label class="w3-half w3-input w3-border-0">IP Address</label>
+					<input class="w3-half w3-input" type="text" value="localhost" name="address">
+				</div>
+				<div class="w3-row w3-padding">
+					<label class="w3-half w3-input w3-border-0">Mode</label>
+					<select class="w3-half w3-select w3-border" name="mode"></select>
+				</div>
+				<div class="w3-center w3-padding-16">
+					<input class="w3-button w3-green" type="submit" value="Host&#160;!">
+				</div>
+			</form>
+		</section>
+		<section class="w3-container menu-panel w3-third">
+			<p><button class="w3-button menu-button">Create Server</button></p>
+			<form class="w3-content w3-white sliding">
+				<div class="w3-row w3-padding">
+					<label class="w3-half w3-input w3-border-0">On Port</label>
+					<input class="w3-half w3-input" type="text" value="22222" name="port">
+				</div>
+				<div class="w3-center w3-padding-16">
+					<input class="w3-button w3-green" type="submit" value="Create&#160;!">
+				</div>
+			</form>
+		</section>
+	</div>
+	<!-- Host Panel -->
+	<div class="w3-row page-panel" id="hostPanel">
+		<section>
+			<h1>Name of Part</h1>
+			<div style="overflow:auto; max-height:224px; width:600px;margin-left:auto;margin-right:auto"><table class="w3-padding-16 w3-table-all w3-content">
+				<thead>
+					<tr>
+						<th>Player Name</th>
+						<th>Team</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table></div>
+				<form class="w3-content w3-padding-16" name="hostPanelForm">
+					<div class="w3-row w3-padding">
+						<label class="w3-half w3-input w3-border-0">Main Ability</label>
+						<div class="w3-half">
+							<select class="w3-select w3-border" name="ability">
+								<option selected disabled value="">Choose</option>
+							</select>
+						</div>
+					</div>
+					<div class="w3-row w3-padding">
+						<label class="w3-half w3-input w3-border-0">Team</label>
+						<div class="w3-half">
+							<select class="w3-select w3-border" name="team">
+							</select>
+						</div>
+					</div>
+					<div class="w3-row">
+						<div class="w3-half">
+							<input type="button" class="w3-button w3-border quitButton" value="Quit Part">
+						</div>
+						<div class="radio-ready-state w3-half">
+							<label>
+								<input type="checkbox" name="ready">
+								<span class="w3-hover-gray">Ready!<img src="./check-w.png" width="16px" height="16px" alt="*"></span>
+							</label>
+						</div>
+					</div>
+					<div class="w3-padding-16">
+						<input type="submit" class="w3-button w3-red" value="Launch&#160;Game!">
+					</div>
+				</form>
+		</section>
+	</div>
+	<!-- Join Panel -->
+	<div class="w3-row page-panel" id="joinPanel">
+		<section>
+			<h1>Name of Part</h1>
+			<div style="overflow:auto; max-height:224px; width:600px;margin-left:auto;margin-right:auto"><table class="w3-padding-16 w3-table-all w3-content">
+				<thead>
+					<tr>
+						<th>Player Name</th>
+						<th>Team Name</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table></div>
+				<form class="w3-content w3-padding-16" name="joinPanelForm">
+					<div class="w3-row w3-padding">
+						<label class="w3-half w3-input w3-border-0">Main Ability</label>
+						<div class="w3-half">
+							<select class="w3-select w3-border" name="ability">
+								<option selected disabled value="">Choose</option>
+							</select>
+						</div>
+					</div>
+					<div class="w3-row w3-padding">
+						<label class="w3-half w3-input w3-border-0">Team</label>
+						<div class="w3-half">
+							<select class="w3-select w3-border" name="team">
+							</select>
+						</div>
+					</div>
+					<div class="w3-row">
+						<div class="w3-half">
+							<input type="button" class="w3-button w3-border quitButton" value="Quit Part">
+						</div>
+						<div class="radio-ready-state w3-half">
+							<label>
+								<input type="checkbox" name="ready">
+								<span class="w3-hover-gray">Ready!<img src="./check-w.png" width="16px" height="16px" alt="*"></span>
+							</label>
+						</div>
+					</div>
+				</form>
+		</section>
+	</div>
+</main>
+
+<svg height="25%" width="25%" class="w3-display-bottomright" style="z-index:-3!important;" viewbox="-125 -125 250 250">
+<g transform="rotate(-110)">
+	<polygon points="100,0, 31,95, -81,59, -81,-59, 31,-95"
+		style="fill:#f44336;stroke:#000;stroke-width:2;fill-rule:nonzero;" />
+	<circle cx="100" cy="0" r="10" stroke="#000" stroke-width="2" fill="white" />
+</g>
+</svg>
+
+<div class="w3-modal" id="alertBox"><!-- Afficher: alertBox.style.display = 'block' -->
+	<div class="w3-modal-content w3-light-grey w3-center w3-border w3-border-black w3-round-xlarge">
+		<h1 class="w3-padding-small"></h1>
+		<p class="w3-padding w3-large"></p>
+		<div class="w3-padding w3-row">
+			<div class="w3-twothird">&#160;</div>
+			<div class="w3-third w3-row">
+				<div class="w3-half w3-padding ">&#160;</div>
+				<div class="w3-half w3-padding "><button class="w3-button w3-blue-gray">Ok</button></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="w3-modal" id="confirmBox">
+	<div class="w3-modal-content w3-light-gray w3-center w3-border w3-border-black w3-round-xlarge">
+		<h1 class="w3-padding-small"></h1>
+		<p class="w3-padding w3-large"></p>
+		<div class="w3-row">
+			<div class="w3-twothird">&#160;</div>
+			<div class="w3-third w3-row">
+				<div class="w3-half w3-padding "><button class="w3-button w3-blue-gray">Yes</button></div>
+				<div class="w3-half w3-padding "><button class="w3-button w3-blue-gray">No</button></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+		<!--<script src="../libraries/pixi.min.js"></script>-->
+		<!--<canvas id="canvas"></canvas>-->
+
+<script type="text/javascript">
+// Initilize modal boxes
+UI.alertBox = document.getElementById('alertBox')
+UI.confirmBox = document.getElementById('confirmBox')
+
+// Create Menu Panels
+var menuPanels = document.getElementsByClassName('menu-panel')
+UI.menuPanels = {}
+UI.menuPanels.join = new UI.MenuPanel( menuPanels[0], menuPanels[0].getElementsByClassName('sliding')[0] )
+UI.menuPanels.host = new UI.MenuPanel( menuPanels[1], menuPanels[1].getElementsByClassName('sliding')[0] )
+UI.menuPanels.createServer = new UI.MenuPanel( menuPanels[2], menuPanels[2].getElementsByClassName('sliding')[0] )
+
+// Initialize forms for Menu Panels
+UI.menuPanels.join.gameName = UI.menuPanels.join.formElement.name
+UI.menuPanels.join.address = UI.menuPanels.join.formElement.address
+UI.menuPanels.join.port = UI.menuPanels.join.formElement.port
+
+UI.menuPanels.host.gameName = UI.menuPanels.host.formElement.name
+UI.menuPanels.host.address = UI.menuPanels.host.formElement.address
+UI.menuPanels.host.port = UI.menuPanels.host.formElement.port
+UI.menuPanels.host.mode = UI.menuPanels.host.formElement.mode
+
+UI.menuPanels.createServer.port = UI.menuPanels.createServer.formElement.port
+
+// Create Pages
+UI.pages = {}
+UI.pages.mainMenu = new UI.Page( document.getElementById('outPartDiv') )
+UI.memoryStack.mainPage = UI.pages.mainMenu
+UI.pages.join = new UI.Page( document.getElementById('joinPanel') )
+UI.pages.host = new UI.Page( document.getElementById('hostPanel') )
+
+UI.pages.mainMenu.quitButton = document.getElementsByClassName('exitGame')[0]
+
+UI.pages.join.tablePlayers = UI.pages.join.containerElement.getElementsByTagName('table')[0]
+UI.pages.join.gameName = UI.pages.join.containerElement.getElementsByTagName('h1')[0]
+UI.pages.join.form = UI.pages.join.containerElement.getElementsByTagName('form')[0]
+UI.pages.join.ability = UI.pages.join.form.ability
+UI.pages.join.team = UI.pages.join.form.team
+UI.pages.join.ready = UI.pages.join.form.ready
+UI.pages.join.quitButton = UI.pages.join.form.getElementsByClassName('quitButton')[0]
+		
+UI.pages.host.tablePlayers = UI.pages.host.containerElement.getElementsByTagName('table')[0]
+UI.pages.host.gameName = UI.pages.host.containerElement.getElementsByTagName('h1')[0]
+UI.pages.host.form = UI.pages.host.containerElement.getElementsByTagName('form')[0]
+UI.pages.host.ability = UI.pages.host.form.ability
+UI.pages.host.team = UI.pages.host.form.team
+UI.pages.host.ready = UI.pages.host.form.ready
+UI.pages.host.quitButton = UI.pages.host.form.getElementsByClassName('quitButton')[0]
+
+// Player Name
+UI.playerName = document.getElementById('playerName')
+		
+// Initialize title zone
+
+UI.memoryStack.titleZone = document.getElementById('mainTitle')
+document.getElementById('mainTitle').style.transition = 'max-height 0.7s'
+document.getElementById('mainTitle').style.overflowY = 'hidden'
+UI.memoryStack.titleInitialHeight = document.getElementById('mainTitle').offsetHeight
+document.getElementById('mainTitle').style.maxHeight = UI.memoryStack.titleInitialHeight+'px'
+		
+// Set Style On Pages
+UI.memoryStack.openedPage = UI.pages.mainMenu
+UI.pages.mainMenu.open()
+</script>
+
+<script type="text/javascript">
+//##
+</script>
+
+</body>
+</html>
