@@ -30,9 +30,9 @@ class Countdown(point: Point, width: Int, height: Int) extends Frame {
   }
 
   private def setText(): Unit = {
-    val text = math.round(remainingTime / 1000).toInt + "s"
+    val text = math.ceil(remainingTime / 1000).toInt + "s"
     if (text != bitmapText.text) {
-      bitmapText.setText(math.round(remainingTime / 1000).toInt + "s")
+      bitmapText.setText(text)
     }
   }
 

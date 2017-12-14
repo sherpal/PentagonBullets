@@ -66,6 +66,10 @@ class PlayerClient(playerName: String,
       case DeleteActions(_, oldestTime, actionIds) =>
         gameHandler.deleteActions(oldestTime, actionIds)
 
+      case GameStartsIn(_, time) =>
+        new Countdown(Center, 10, 10)
+          .startClock(time)
+
       case GameStarts(_) =>
         gameStart()
 
@@ -166,9 +170,6 @@ class PlayerClient(playerName: String,
     PreGameRunner.removePentagon()
     Engine.changeGameState(gameHandler.Runner)
     Engine.startGameLoop()
-
-    new Countdown(Center, 10, 10)
-      .startClock(3500)
 
   }
 

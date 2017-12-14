@@ -6,6 +6,7 @@ import entities._
 import gamestate.ActionSource.PlayerSource
 import gamestate.actions.{NewBullet, UpdatePlayerPos}
 import physics.{Polygon, Shape}
+import time.Time
 
 /**
  * A GameStates owns all the information needed to continue a Game.
@@ -308,7 +309,7 @@ class GameState(val time: Long, val startTime: Option[Long],
 object GameState {
 
   def originalState: GameState = new GameState(
-    0, None,
+    Time.getTime - 1000, None,
     Shape.regularPolygon(4, 100), // putting a random shape
     Map[Long, Player](),
     Map[Long, Player](),

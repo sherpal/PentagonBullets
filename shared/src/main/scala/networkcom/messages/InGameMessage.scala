@@ -11,6 +11,7 @@ final case class PlayerConnecting(gameName: String, playerName: String, password
 final case class StillWaitingForPlayers(gameName: String, n: Int) extends InGameMessage
 final case class GameStarts(gameName: String) extends InGameMessage
 final case class ClosingGame(gameName: String, msg: String) extends InGameMessage
+final case class GameStartsIn(gameName: String, time: Long) extends InGameMessage
 
 final case class GuessClockTime(gameName: String, time: Long) extends InGameMessage
 final case class AnswerGuessClockTime(gameName: String, guessed: Long, actual: Long) extends InGameMessage

@@ -10,6 +10,7 @@ import gamestate.{GameAction, GameState}
 import gamestate.actions._
 import gamestate.actions.{NewPlayer => NewPlayerAction}
 import networkcom.PlayerGameSettingsInfo
+import networkcom.messages.GameStartsIn
 import physics.ConvexPolygon
 import time.Time
 
@@ -252,6 +253,7 @@ class CaptureFlagGamePlaying(val gameName: String,
       )
 
       broadcastActions()
+      broadcastReliable(GameStartsIn(gameName, 3000))
 
       setTimeout(3000) {
         performAction()

@@ -45,6 +45,7 @@ object Message {
     .addConcreteType[PlayerConnecting]
     .addConcreteType[StillWaitingForPlayers]
     .addConcreteType[GameStarts]
+    .addConcreteType[GameStartsIn]
     .addConcreteType[GuessClockTime]
     .addConcreteType[AnswerGuessClockTime]
 

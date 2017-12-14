@@ -107,7 +107,7 @@ trait GamePlaying {
   /**
    * Sends a reliable message to all game members.
    */
-  private def broadcastReliable(message: InGameMessage): Unit = {
+  protected def broadcastReliable(message: InGameMessage): Unit = {
     playersWithPeers.values.foreach(server.sendReliable(message, _))
   }
 
