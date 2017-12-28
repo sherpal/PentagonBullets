@@ -21,7 +21,7 @@ class CreateHealingZone(val time: Long, val useId: Long, val casterId: Long, val
 
   def isLegal(gameState: GameState): Boolean = gameState.isPlayerAlive(casterId)
 
-  def createActions: List[GameAction] = List(
+  def createActions(gameState: GameState): List[GameAction] = List(
     NewHealingZone(
       GameAction.newId(), time, Entity.newId(), casterId,
       HealingZone.lifeSupply, targetPos.re, targetPos.im, AbilitySource

@@ -13,7 +13,7 @@ import gamestate.GameState.{PlayingState, PreBegin}
 import gamestate.GameAction
 import gamestate.actions._
 import globalvariables.{CaptureTheFlagModeEOGData, DataStorage}
-import graphics.EntityDrawer
+import graphics.{EntityDrawer, GameAnimation}
 import graphics.pixitexturemakers.TeamFlagTextureMaker
 import gui.{BottomLeft, Center, Frame}
 import io.ControlType.{KeyboardType, MouseType}
@@ -68,6 +68,8 @@ class CaptureTheFlagGameHandler(protected val playerName: String,
               Complex(0, 0)
           }
       }
+
+      GameAnimation.animate(gameState, gameTime, EntityDrawer.camera)
 
       val timeToUpdate = new java.util.Date().getTime
       EntityDrawer.drawState(cameraPos, gameState, gameTime, playerColors, teamColors, bulletColors)

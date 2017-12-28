@@ -156,10 +156,18 @@ class Circle(val radius: Double) extends Curved {
   }
 
   def intersectSegment(translation: Complex, rotation: Double, z1: Complex, z2: Complex): Boolean = {
-    val unitVec = (z2 - z1) / (z2 - z1).arg
-    val projection = z1 + (unitVec.re * (translation - z1).re + unitVec.im * (translation - z1).im) * unitVec
-    val orthogonalProjection = translation - projection
-    orthogonalProjection.modulus2 < radius * radius
+    val dir = z2 - z1
+    val dirMod = dir.modulus
+    val unitVec = dir / dirMod
+
+    val scalarProduct = (translation - z1) scalarProduct unitVec
+
+    0 <= scalarProduct && scalarProduct <= dirMod && {
+      val projection = z1 + unitVec * scalarProduct
+      val orthogonalProjection = translation - projection
+      orthogonalProjection.modulus2 < radius * radius
+    }
+
   }
 
 }

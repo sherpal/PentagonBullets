@@ -7,11 +7,8 @@ import org.scalajs.dom.{CanvasRenderingContext2D, html}
 import pixigraphics.PIXITexture
 import webglgraphics.Vec4
 
-import scala.collection.mutable
 
-object BarrierTextureMaker {
-
-  private val textures: mutable.Map[(Double, Double, Double), PIXITexture] = mutable.Map()
+object BarrierTextureMaker extends TextureMaker {
 
 
   def apply(color: (Double, Double, Double)): PIXITexture = textures.get(color) match {

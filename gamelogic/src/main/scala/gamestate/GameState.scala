@@ -33,6 +33,7 @@ class GameState(val time: Long, val startTime: Option[Long],
                 val smashBullets: Map[Long, SmashBullet],
                 val mists: Map[Long, Mist],
                 val actionChangers: Map[Long, ActionChanger],
+                val laserLaunchers: Map[Long, LaserLauncher],
                 val flags: Map[Int, TeamFlag] // flags are mapped from their team number
                ) {
 
@@ -109,181 +110,200 @@ class GameState(val time: Long, val startTime: Option[Long],
   def withPlayer(id: Long, time: Long, player: Player): GameState = new GameState(
     time, startTime, gameBounds,
     players + (id -> player), deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def withDeadPlayer(id: Long, time: Long, player: Player): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers + (id -> player), bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def withBullet(id: Long, time: Long, bullet: Bullet): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets + (id -> bullet), obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def withObstacle(id: Long, time: Long, obstacle: Obstacle): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles + (id -> obstacle), healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def withHealUnit(id: Long, time: Long, healUnit: HealUnit): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits + (id -> healUnit), gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def withGunTurret(id: Long, time: Long, gunTurret: GunTurret): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets + (id -> gunTurret), damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def withDamageZone(id: Long, time: Long, damageZone: DamageZone): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones + (id -> damageZone), healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def withHealingZone(id: Long, time: Long, healingZone: HealingZone): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones + (id -> healingZone),
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def withAbilityGiver(id: Long, time: Long, abilityGiver: AbilityGiver): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers + (id -> abilityGiver), bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers + (id -> abilityGiver), bulletAmplifiers, barriers, smashBullets, mists, actionChangers,
+    laserLaunchers, flags
   )
 
   def withBulletAmplifier(id: Long, time: Long, bulletAmplifier: BulletAmplifier): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers + (id -> bulletAmplifier), barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers + (id -> bulletAmplifier), barriers, smashBullets, mists, actionChangers,
+    laserLaunchers, flags
   )
 
   def withBarrier(id: Long, time: Long, barrier: Barrier): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers + (id -> barrier), smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers + (id -> barrier), smashBullets, mists, actionChangers,
+    laserLaunchers, flags
   )
 
   def withSmashBullet(id: Long, time: Long, smashBullet: SmashBullet): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets + (id -> smashBullet), mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets + (id -> smashBullet), mists, actionChangers,
+    laserLaunchers, flags
   )
 
   def withMist(id: Long, time: Long, mist: Mist): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists + (id -> mist), actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists + (id -> mist), actionChangers, laserLaunchers, flags
   )
 
   def withActionChanger(id: Long, time: Long, actionChanger: ActionChanger): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers + (id -> actionChanger), flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers + (id -> actionChanger),
+    laserLaunchers, flags
+  )
+
+  def withLaserLauncher(id: Long, time: Long, laserLauncher: LaserLauncher): GameState = new GameState(
+    time, startTime, gameBounds,
+    players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers,
+    laserLaunchers + (id -> laserLauncher), flags
   )
 
   def withFlag(time: Long, flag: TeamFlag): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags + (flag.teamNbr -> flag)
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers,
+    flags + (flag.teamNbr -> flag)
   )
 
   def removePlayer(id: Long, time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players - id, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def removeDeadPlayer(id: Long, time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers - id, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def removeBullet(id: Long, time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets - id, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def removeHealUnit(id: Long, time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits - id, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def removeGunTurret(id: Long, time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets - id, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def removeDamageZone(id: Long, time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones - id, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def removeHealingZone(id: Long, time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones - id,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def removeAbilityGiver(id: Long, time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers - id, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers - id, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def removeBulletAmplifier(id: Long, time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers - id, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers - id, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def removeBarrier(id: Long, time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers - id, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers - id, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def removeSmashBullet(id: Long, time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets - id, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets - id, mists, actionChangers, laserLaunchers, flags
   )
 
   def removeActionChanger(id: Long, time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers - id, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers - id, laserLaunchers, flags
+  )
+
+  def removeLaserLauncher(id: Long, time: Long): GameState = new GameState(
+    time, startTime, gameBounds,
+    players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers - id, flags
   )
 
   def start(time: Long, bounds: Polygon): GameState = new GameState(
     time, Some(time), bounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def ends(time: Long): GameState = new GameState(
     time, Some(0: Long), gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
   def timeUpdate(time: Long): GameState = new GameState(
     time, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
-    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, flags
+    abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
 
@@ -325,6 +345,7 @@ object GameState {
     Map[Long, SmashBullet](),
     Map[Long, Mist](),
     Map[Long, ActionChanger](),
+    Map[Long, LaserLauncher](),
     Map[Int, TeamFlag]()
   )
 

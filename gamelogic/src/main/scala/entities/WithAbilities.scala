@@ -15,8 +15,6 @@ trait WithAbilities extends Entity {
   val relevantUsedAbilities: Map[Long, Ability]
 
   def mayCast(abilityId: Int, currentTime: Long): Boolean = hasAbility(abilityId) &&
-    relevantUsedAbilities.values.filter(_.id == abilityId)
-      .forall(ability => ability.cooldown / allowedAbilities.count(_ == abilityId) < currentTime - ability.time)
-  // we divide by the number of times the player has the ability.
+    relevantUsedAbilities.values.filter(_.id == abilityId).forall(_.isUp(this, currentTime))
 
 }

@@ -14,7 +14,7 @@ class ActivateShield(val time: Long, val useId: Long, val playerId: Long) extend
 
   val casterId: Long = playerId
 
-  def createActions: List[GameAction] = List(
+  def createActions(gameState: GameState): List[GameAction] = List(
     NewActionChanger(GameAction.newId(), time, new Shield(Entity.newId(), time, playerId), AbilitySource)
   )
 

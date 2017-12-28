@@ -20,7 +20,7 @@ class CreateBulletAmplifier(val time: Long, val useId: Long,
     newTime, newUseId, casterId, targetPos, rotation
   )
 
-  def createActions: List[GameAction] = List(
+  def createActions(gameState: GameState): List[GameAction] = List(
     NewBulletAmplifier(GameAction.newId(), time, Entity.newId(), casterId, rotation, targetPos, AbilitySource)
   )
 

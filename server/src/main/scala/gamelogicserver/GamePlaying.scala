@@ -769,12 +769,13 @@ trait GamePlaying {
   def receiveAbility(ability: Ability): Unit = {
     val now = Time.getTime
     if (ability.time > now - 1000) {
-      if (gameState.state == PlayingState && actionCollector.gameStateUpTo(ability.time).isLegalAbilityUse(ability)) {
+      val currentGameState = actionCollector.gameStateUpTo(ability.time)
+      if (gameState.state == PlayingState && currentGameState.isLegalAbilityUse(ability)) {
         val abilityTime = if (now > ability.time || ability.isInstanceOf[Teleportation]) ability.time else now
         val newAbility = ability.copyWithUseId(Ability.newId(), abilityTime)
         val abilityActions =
           UseAbilityAction(actionId(), abilityTime, newAbility, newAbility.useId, PlayerSource) +:
-            newAbility.createActions
+            newAbility.createActions(currentGameState)
         queueActions(abilityActions)
       }
     }

@@ -8,7 +8,7 @@ In Pentagon Bullets, you are a Pentagon in a 2D world, and you have the ability 
 
 ## Releases
 
-A Release will be available very soon!
+A [Release](https://github.com/sherpal/PentagonBullets/releases) is available for Window and Linux
 
 ## The rules
 
@@ -26,14 +26,14 @@ Aside from the Shield, each Pentagon can choose one of the following special abi
 
 - Big Bullet: shoots a bullet that is 3 times bigger, 2 times faster and deals 3 times as much as a usual bullet. Cooldown: 10s.
 - Penta Shot: shoots 5 bullets ranging from angle -pi/16 to pi/16 toward the mouse position. These 5 bullets go 5/4 times faster than the usual bullets. Cooldown: 10s.
-- Teleportation: the players is instantly transported to the mouse position. Cooldown: 20s.
+- Teleportation: the player is instantly transported to the mouse position. Cooldown: 20s.
 - Healing Zone: places at the mouse position a circular zone that heals any team member that stands in it by 5 health every 0.5s. The zone stays for 60s, or when having healed for 40 health, whichever comes first. Cooldown: 30s.
 - Bullet Amplifier: places at the mouse position a rectangular area for 10s. Each time a bullet from your team passes through it, its size, as well as the damage it deals, is doubled. Cooldown: 15s.
 - Smash Bullet: shoots a huge bullet that grows over time. When this bullet hits an opponent, their loses half of their remaining life, rounded down (it is therefore impossible to die from the Smash Bullet). The reach of the smash bullet is twice as smaller than the one of a usual bullet, but it can go through walls. Cooldown: 15s.
 - Gun Turret: places at the Pentagon position a turret that shoots at the closest opponent (within 7/10th of a bullet reach) every 0.2s. A turret has 100 health, and is destroyed when its health goes to 0. It otherwise stays forever. Cooldown: 30s.
-- Barrier: places at the mouse position a square region that lasts for 5s. This region acts for your opponents as a wall, stopping all bullets and keeping your opponent from passing through it. Cooldown: 20s.
+- Barrier: places at the mouse position a square region that lasts for 5s. This region acts for your opponents as a wall, stopping all bullets and keeping your opponents from passing through it. Cooldown: 20s.
 - Bullet Glue: slows down all enemy bullets by dividing their current speed by 2. Additionally, all bullets shot by your opponents during the 5 next seconds have also their speed divided by 2. Does not affect the Smash Bullet. Cooldown: 20s.
-
+- Laser: this ability happens in two steps. The first step, the player places where their stands a Laser Launcher that will stay until the next activation of the ability. When the ability is cast again, it fires a laser between the Laser Launcher and the player, dealing 30 damages to every enemy (Pentagons and Turrets) between the two. There must be at least 2s between the two steps. Cooldown: 8s. (/!\ This ability is still under testing and will be balanced in the future.)
 
 The abilities have long been tested and should be fairly balanced. Feel free to give feedback if you think that an ability is too weak or strong. 
 

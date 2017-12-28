@@ -1,20 +1,20 @@
 package graphics.pixitexturemakers
 
+import entities.GunTurret
 import gameengine.Engine
 import pixigraphics.{PIXIGraphics, PIXITexture}
 import webglgraphics.Vec3
 
-import scala.collection.mutable
 
+object GunTurretTextureMaker extends TextureMaker {
 
-object GunTurretTextureMaker {
-
-  private val textures: mutable.Map[(Double, Double, Double), PIXITexture] = mutable.Map()
+  def apply(color: (Double, Double, Double)): PIXITexture = apply(color, GunTurret.defaultRadius)
 
   def apply(color: (Double, Double, Double), radius: Double): PIXITexture = textures.get(color) match {
     case Some(tex) =>
       tex
     case None =>
+      // 2 times radius to be sure that the graphics will not cut the image
       val (x, y) = (2 * radius, 2 * radius)
       val graphics = new PIXIGraphics()
         .beginFill(Vec3(color._1, color._2, color._3).toInt)

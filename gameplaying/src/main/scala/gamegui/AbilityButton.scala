@@ -1,6 +1,6 @@
 package gamegui
 
-import abilities.Ability
+import abilities.{Ability, MultiStepAbility}
 import gameinfo.GameEvents
 import gamestate.actions.UseAbilityAction
 import gamestate.GameState
@@ -63,14 +63,24 @@ class AbilityButton(val abilityId: Int, val playerId: Long, nextTo: Option[Frame
 
   statusBar.setScript(ScriptKind.OnValueChanged)((value: Double, _: Double) => {
     if (value <= 0) {
-      bg.setVertexColor(0.3, 1, 0.3)
+      bg.setVertexColor(0, 1, 0)
     }
   })
 
   registerEvent(GameEvents.OnUseAbilityAction)((action: UseAbilityAction, state: GameState) => {
     if (action.ability.id == abilityId && action.ability.casterId == playerId) {
       bg.setVertexColor(1, 1, 1)
-      val effectiveCooldown = action.ability.cooldown / state.players(playerId).allowedAbilities.count(_ == abilityId)
+      val effectiveCooldown = state.players.get(playerId) match {
+        case Some(player) =>
+          (action.ability match {
+            case multiStep: MultiStepAbility =>
+              multiStep.innerCooldown(multiStep.stepNumber)
+            case _ =>
+              action.ability.cooldown
+          }) / player.allowedAbilities.count(_ == abilityId)
+        case None =>
+          10
+      }
       statusBar.setMinMaxValues(0, effectiveCooldown)
       statusBar.setValue(effectiveCooldown)
     }
@@ -92,7 +102,8 @@ object AbilityButton {
     Ability.launchSmashBulletId -> "../../assets/abilities/smash_bullet.png",
     Ability.craftGunTurretId -> "../../assets/abilities/gun_turret.png",
     Ability.createBarrierId -> "../../assets/abilities/barrier.png",
-    Ability.putBulletGlue -> "../../assets/abilities/bullet_glue.png"
+    Ability.putBulletGlue -> "../../assets/abilities/bullet_glue.png",
+    Ability.laserId -> "../../assets/abilities/laser.png"
   )
 
 }

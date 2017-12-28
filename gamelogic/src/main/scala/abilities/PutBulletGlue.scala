@@ -16,7 +16,7 @@ final class PutBulletGlue(val time: Long, val useId: Long, val casterId: Long, v
 
   def isLegal(gameState: GameState): Boolean = gameState.isPlayerAlive(casterId)
 
-  def createActions: List[GameAction] = List(
+  def createActions(gameState: GameState): List[GameAction] = List(
     NewActionChanger(GameAction.newId(), time, new BulletGlue(Entity.newId(), time, casterId, teamId), AbilitySource)
   )
 

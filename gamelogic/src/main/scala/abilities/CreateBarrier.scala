@@ -30,7 +30,7 @@ class CreateBarrier(val time: Long, val useId: Long, val casterId: Long, val tea
     }
   }
 
-  def createActions: List[GameAction] = List(
+  def createActions(gameState: GameState): List[GameAction] = List(
     NewBarrier(GameAction.newId(), time, Entity.newId(), casterId, teamId, targetPos, rotation, AbilitySource)
   )
 

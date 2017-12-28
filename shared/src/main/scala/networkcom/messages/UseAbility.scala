@@ -26,6 +26,16 @@ final case class UseCreateBarrier(gameName: String, time: Long, useId: Long, cas
 final case class UsePutBulletGlue(gameName: String, time: Long, useId: Long, casterId: Long, teamId: Int)
 extends UseAbility
 
+final case class UseLaser(
+                           gameName: String,
+                           time: Long,
+                           useId: Long,
+                           casterId: Long,
+                           teamId: Int,
+                           stepNbr: Int,
+                           pos: Point
+                         ) extends UseAbility
+
 
 final case class InGameChatMessage(gameName: String, s: String, time: Long, sender: String)
   extends InGameMessage with networkcom.ChatMessageType

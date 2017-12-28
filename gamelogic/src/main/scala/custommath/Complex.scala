@@ -31,6 +31,8 @@ case class Complex(re: Double, im: Double) {
 
   def crossProduct(that: Complex): Double = this.re * that.im - this.im * that.re
 
+  def scalarProduct(that: Complex): Double = this.re * that.re + this.im * that.im
+
   def multiply(seq: Seq[Complex]): Seq[Complex] = for (z <- seq) yield this * z
 
   def modulus: Double = sqrt(re * re + im * im)

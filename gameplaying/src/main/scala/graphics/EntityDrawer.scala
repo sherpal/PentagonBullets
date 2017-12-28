@@ -1,13 +1,15 @@
 package graphics
 
+import abilities.LaserAbility
 import complex.Complex
 import entities._
 import gameengine.Engine
 import gamegui.{AbilityButton, HealthBar}
 import gameinfo.GameEvents
 import gamestate.GameState
-import gamestate.actions.{ChangeBulletRadius, SmashBulletGrows}
-import graphics.pixitexturemakers.{BarrierTextureMaker, GunTurretTextureMaker, TeamFlagTextureMaker}
+import gamestate.actions.{ChangeBulletRadius, FireLaser, SmashBulletGrows, UseAbilityAction}
+import graphics.gameanimations.Laser
+import graphics.pixitexturemakers.{BarrierTextureMaker, GunTurretTextureMaker, LaserLauncherTextureMaker, TeamFlagTextureMaker}
 import gui.Frame
 import physics.{BoundingBox, Polygon}
 import pixigraphics._
@@ -27,6 +29,11 @@ object EntityDrawer {
   private implicit def complexTranslation2(z: complex.Complex): custommath.Complex =
     custommath.Complex(z.re, z.im)
 
+  private var playerColors: Map[Long, Int] = Map()
+
+  def setPlayerColors(colors: Map[Long, (Double, Double, Double)]): Unit = {
+    playerColors = colors.mapValues(elem => Vec3(elem._1, elem._2, elem._3).toInt)
+  }
 
   val abilityImagesTextures: Map[Int, PIXITexture] = AbilityButton.images.map({
     case (id, fileName) =>
@@ -49,10 +56,13 @@ object EntityDrawer {
   val playerStage: PIXIContainer = new PIXIContainer()
   val bulletStage: PIXIContainer = new PIXIContainer()
   val gunTurretStage: PIXIContainer = new PIXIContainer()
+  val laserLauncherStage: PIXIContainer = new PIXIContainer()
   val teamFlagStage: PIXIContainer = new PIXIContainer()
 
+  val laserLauncherAnimationStage: PIXIContainer = new PIXIContainer()
+
   List(
-    mistStage, healingZoneStage,
+    mistStage, laserLauncherAnimationStage, healingZoneStage, laserLauncherStage,
     damageZoneStage, bulletAmplifierStage, barrierStage, healingUnitStage,
     abilityGiverStage, playerStage, gunTurretStage,
     bulletStage, obstacleStage, teamFlagStage, HealthBar.lifeBarContainer
@@ -404,6 +414,31 @@ object EntityDrawer {
     })
   }
 
+  val laserLauncherSprites: mutable.Map[Long, Sprite] = mutable.Map()
+
+  def drawLaserLauncherSprites(state: GameState, colors: Map[Long, (Double, Double, Double)]): Unit = {
+    laserLauncherSprites.filterNot(elem => state.laserLaunchers.isDefinedAt(elem._1)).foreach(elem => {
+      laserLauncherStage.removeChild(elem._2)
+      laserLauncherSprites -= elem._1
+    })
+
+    state.laserLaunchers.foreach({ case (laserLauncherId, laserLauncher) =>
+        val elem = laserLauncherSprites.get(laserLauncherId) match {
+          case Some(e) =>
+            e
+          case None =>
+            val laserLauncherSprite = new Sprite(LaserLauncherTextureMaker(colors(laserLauncher.ownerId)))
+            laserLauncherSprite.anchor.set(0.5, 0.5)
+            laserLauncherSprites += (laserLauncherId -> laserLauncherSprite)
+            laserLauncherStage.addChild(laserLauncherSprite)
+            laserLauncherSprite
+        }
+        camera.viewportManager(elem, laserLauncher.pos, laserLauncher.shape.boundingBox)
+    })
+
+
+  }
+
   /**
    * drawBulletsPIXI is in charge of all the BulletLike entities, since they all draw the same way.
    */
@@ -613,7 +648,9 @@ object EntityDrawer {
       case None =>
     }
   })
-
+  watchingFrame.registerEvent(GameEvents.OnFireLaser)((action: FireLaser, _: GameState) => {
+    new Laser(action.pos1, action.pos2, playerColors(action.ownerId), laserLauncherAnimationStage)
+  })
 
 
 
@@ -640,6 +677,7 @@ object EntityDrawer {
     drawPlayersPIXI(state, time, colors, teamColors)
     drawBulletsPIXI(state, time, bulletColors)
     drawGunTurrets(state, bulletColors)
+    drawLaserLauncherSprites(state, colors)
     drawDamageZonesPIXI(state.damageZones)
     drawAbilityGivers(state.abilityGivers)
     drawHealUnitsPIXI(state.healUnits)

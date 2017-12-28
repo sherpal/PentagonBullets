@@ -18,7 +18,7 @@ class TripleBullet(val time: Long, val useId: Long, val casterId: Long, val team
     newTime, newUseId, casterId, teamId, startingPos, rotation
   )
 
-  def createActions: List[GameAction] = (0 until TripleBullet.bulletNbr)
+  def createActions(gameState: GameState): List[GameAction] = (0 until TripleBullet.bulletNbr)
     .map(_ * math.Pi / 8 / (TripleBullet.bulletNbr - 1) + - math.Pi / 16)
     .map(alpha => NewBullet(
       GameAction.newId(), Entity.newId(), casterId, teamId, startingPos, Bullet.defaultRadius, rotation + alpha,

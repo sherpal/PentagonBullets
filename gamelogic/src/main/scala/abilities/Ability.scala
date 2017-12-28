@@ -1,5 +1,6 @@
 package abilities
 
+import entities.WithAbilities
 import gamestate.{GameAction, GameState}
 
 /**
@@ -19,6 +20,9 @@ trait Ability {
   // the cooldown is the minimum amount of time between two ability usages.
   val cooldown: Long
 
+  def isUp(caster: WithAbilities, now: Long, allowedError: Long = 0): Boolean =
+    now - time + allowedError >= cooldown / caster.allowedAbilities.count(_ == id)
+
   // the castingTime is the time necessary to use the ability. Defaults to 0, which mean instant ability.
   val castingTime: Long = 0
 
@@ -27,8 +31,8 @@ trait Ability {
   // the time at which the Ability was cast.
   val time: Long
 
-  // when an ability is used, it creates a List of GameAction that will apply to the game state
-  def createActions: List[GameAction]
+  // when an ability is used, it creates a List of GameActions that will act on the game state
+  def createActions(gameState: GameState): List[GameAction]
 
   def copyWithUseId(newUseId: Long, newTime: Long): Ability
 
@@ -60,18 +64,19 @@ object Ability {
   val craftGunTurretId: Int = 8
   val createBarrierId: Int = 9
   val putBulletGlue: Int = 10
+  val laserId: Int = 11
 
   val abilityNames: Map[Int, String] = Map(
     activateShieldId -> "Shield", bigBulletId -> "Big Bullet",
     tripleBulletId -> "Penta Shot", teleportationId -> "Teleportation",
     createHealingZoneId -> "Healing Zone", createBulletAmplifierId -> "Bullet Amplifier",
     launchSmashBulletId -> "Smash Bullet", craftGunTurretId -> "Gun Turret",
-    createBarrierId -> "Barrier", putBulletGlue -> "Bullet Glue"
+    createBarrierId -> "Barrier", putBulletGlue -> "Bullet Glue", laserId -> "Laser"
   )
 
   val playerChoices: List[Int] = List(
     bigBulletId, tripleBulletId, teleportationId, createHealingZoneId, createBulletAmplifierId,
-    launchSmashBulletId, craftGunTurretId, createBarrierId, putBulletGlue
+    launchSmashBulletId, craftGunTurretId, createBarrierId, putBulletGlue, laserId
   )
 
 }

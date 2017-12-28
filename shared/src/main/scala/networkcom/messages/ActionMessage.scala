@@ -409,6 +409,28 @@ final case class PutBulletGlueMessage(
                                      teamId: Int
                                      ) extends ActionMessage
 
+final case class LaserAbilityMessage(
+                                      actionId: Long,
+                                      gameName: String,
+                                      actionSource: String,
+                                      time: Long,
+                                      useId: Long,
+                                      casterId: Long,
+                                      teamId: Int,
+                                      stepNumber: Int,
+                                      pos: Point
+                                    ) extends ActionMessage
+
+final case class FireLaserMessage(
+                                  actionId: Long,
+                                  gameName: String,
+                                  actionSource: String,
+                                  time: Long,
+                                  ownerId: Long,
+                                  pos1: Point,
+                                  pos2: Point
+                                 ) extends ActionMessage
+
 final case class ChangeBulletRadiusMessage(
                                             actionId: Long,
                                             gameName: String,
@@ -526,6 +548,25 @@ final case class RemoveRelevantAbilityMessage(
                                                casterId: Long,
                                                useId: Long
                                              ) extends ActionMessage
+
+
+final case class NewLaserLauncherMessage(
+                                          actionId: Long,
+                                          gameName: String,
+                                          actionSource: String,
+                                          time: Long,
+                                          laserLauncherId: Long,
+                                          pos: Point,
+                                          ownerId: Long
+                                        ) extends ActionMessage
+
+final case class DestroyLaserLauncherMessage(
+                                              actionId: Long,
+                                              gameName: String,
+                                              actionSource: String,
+                                              time: Long,
+                                              laserLauncherId: Long
+                                            ) extends ActionMessage
 
 
 /** Capture the Flag */

@@ -28,7 +28,7 @@ class Teleportation(val time: Long, val useId: Long, val casterId: Long, val sta
        gameState.gameBounds.collides(Complex(0, 0), 0, entity.shape, endPos, entity.rotation)
    }
 
-  def createActions: List[GameAction] = {
+  def createActions(gameState: GameState): List[GameAction] = {
     List(
       TranslatePlayer(GameAction.newId(), time, casterId, endPos.re, endPos.im, AbilitySource)
     )

@@ -16,6 +16,9 @@ object GameEvents {
   val OnDestroyGunTurret: ScriptKind { type Handler = (DestroyGunTurret, GameState) => Unit } =
     ScriptKind.makeEvent[(DestroyGunTurret, GameState) => Unit]
 
+  val OnFireLaser: ScriptKind { type Handler = (FireLaser, GameState) => Unit } =
+    ScriptKind.makeEvent[(FireLaser, GameState) => Unit]
+
   val OnGameBegins: ScriptKind { type Handler = (GameBegins, GameState) => Unit } =
     ScriptKind.makeEvent[(GameBegins, GameState) => Unit]
 
@@ -30,6 +33,9 @@ object GameEvents {
 
   val OnNewGunTurret: ScriptKind { type Handler = (NewGunTurret, GameState) => Unit } =
     ScriptKind.makeEvent[(NewGunTurret, GameState) => Unit]
+
+  val OnNewLaserLauncher: ScriptKind { type Handler = (NewLaserLauncher, GameState) => Unit } =
+    ScriptKind.makeEvent[(NewLaserLauncher, GameState) => Unit]
 
   val OnNewPlayer: ScriptKind { type Handler = (NewPlayer, GameState) => Unit } =
     ScriptKind.makeEvent[(NewPlayer, GameState) => Unit]
@@ -70,10 +76,12 @@ object GameEvents {
   def registerAllEvents(frame: Frame, handler: (GameAction, GameState) => Unit): Unit = {
     frame.registerEvent(OnChangeBulletRadius)(handler)
     frame.registerEvent(OnDestroyGunTurret)(handler)
+    frame.registerEvent(OnFireLaser)(handler)
     frame.registerEvent(OnGameBegins)(handler)
     frame.registerEvent(OnGunTurretTakesDamage)(handler)
     frame.registerEvent(OnHealingZoneHeals)(handler)
     frame.registerEvent(OnNewGunTurret)(handler)
+    frame.registerEvent(OnNewLaserLauncher)(handler)
     frame.registerEvent(OnPlayerBringsBackFlag)(handler)
     frame.registerEvent(OnPlayerDead)(handler)
     frame.registerEvent(OnPlayerHitByBullet)(handler)
@@ -105,6 +113,8 @@ object GameEvents {
     case action: NewGunTurret => ScriptObject.firesEvent(OnNewGunTurret)(action, gameState)
     case action: DestroyGunTurret => ScriptObject.firesEvent(OnDestroyGunTurret)(action, gameState)
     case action: SmashBulletGrows => ScriptObject.firesEvent(OnSmashBulletGrows)(action, gameState)
+    case action: NewLaserLauncher => ScriptObject.firesEvent(OnNewLaserLauncher)(action, gameState)
+    case action: FireLaser => ScriptObject.firesEvent(OnFireLaser)(action, gameState)
     case action: PlayerBringsFlagBack => ScriptObject.firesEvent(OnPlayerBringsBackFlag)(action, gameState)
     case action: GameBegins => ScriptObject.firesEvent(OnGameBegins)(action, gameState)
     case action: PlayerDead => ScriptObject.firesEvent(OnPlayerDead)(action, gameState)

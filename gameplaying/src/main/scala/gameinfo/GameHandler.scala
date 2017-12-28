@@ -60,6 +60,8 @@ trait GameHandler {
   val playerColors: Map[Long, (Double, Double, Double)] =
     playerIds.zip(GameHandler.definedColors.map(_.toRGB)).toMap
 
+  EntityDrawer.setPlayerColors(playerColors)
+
   val teamColors: Map[Int, (Double, Double, Double)] =
     teams.map(elem => elem._1 -> playerColors(elem._2.playerIds.head))
 
@@ -163,9 +165,9 @@ trait GameHandler {
     if (allowedAbilities.lengthCompare(id) > 0) {
       // now the player has the ability, we can use it
       val abilityId = allowedAbilities(id)
-      if (player.relevantUsedAbilities.values.filter(_.id == abilityId).forall(ability =>
-        ability.cooldown / player.allowedAbilities.count(_ == abilityId) - 1000 < Time.getTime - ability.time
-      )) { // the ability will be up in 1 second, we allow the client to send messages.
+
+      if (player.relevantUsedAbilities.values.filter(_.id == abilityId).forall(_.isUp(player, Time.getTime, 1000))) {
+        // the ability will be up in 1 second, we allow the client to send messages.
         abilityId match {
           case Ability.activateShieldId =>
             client.sendNormal(UseActivateShield(client.gameName, Time.getTime, 0, playerId))
@@ -195,7 +197,7 @@ trait GameHandler {
               if (player.relevantUsedAbilities.values.filter(_.id == abilityId).forall(ability =>
                 ability.time + ability.cooldown / player.allowedAbilities.count(_ == abilityId) < Time.getTime
               )) {
-                unConfirmedActions = ability.createActions
+                unConfirmedActions = ability.createActions(currentGameState)
               }
             }
           case Ability.createHealingZoneId =>
@@ -245,6 +247,14 @@ trait GameHandler {
             }
           case Ability.putBulletGlue =>
             client.sendNormal(UsePutBulletGlue(client.gameName, Time.getTime, 0, playerId, teamsByPlayerId(playerId)))
+          case Ability.laserId =>
+            val stepNumber = if (currentGameState.laserLaunchers.values.exists(_.ownerId == playerId)) 1 else 0
+
+            val now = Time.getTime
+            client.sendNormal(UseLaser(
+              client.gameName, now, 0, playerId, teamsByPlayerId(playerId), stepNumber,
+              player.currentPosition(now - player.time)
+            ))
         }
       }
     }

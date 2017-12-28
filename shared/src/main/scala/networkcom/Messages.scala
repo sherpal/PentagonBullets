@@ -105,6 +105,7 @@ object Message {
     .addConcreteType[CraftGunTurretMessage]
     .addConcreteType[CreateBarrierMessage]
     .addConcreteType[PutBulletGlueMessage]
+    .addConcreteType[LaserAbilityMessage]
     .addConcreteType[ChangeBulletRadiusMessage]
     .addConcreteType[UpdateMistMessage]
     .addConcreteType[HealingZoneHealMessage]
@@ -114,11 +115,15 @@ object Message {
     .addConcreteType[NewBulletAmplifierMessage]
     .addConcreteType[DestroyBulletAmplifierMessage]
     .addConcreteType[BulletAmplifierAmplifiedMessage]
+    .addConcreteType[FireLaserMessage]
 
     .addConcreteType[NewBarrierMessage]
     .addConcreteType[DestroyBarrierMessage]
 
     .addConcreteType[RemoveRelevantAbilityMessage]
+
+    .addConcreteType[DestroyLaserLauncherMessage]
+    .addConcreteType[NewLaserLauncherMessage]
 
     .addConcreteType[NewTeamFlagMessage]
     .addConcreteType[PlayerTakesFlagMessage]
@@ -138,6 +143,7 @@ object Message {
     .addConcreteType[UseCraftGunTurret]
     .addConcreteType[UseCreateBarrier]
     .addConcreteType[UsePutBulletGlue]
+    .addConcreteType[UseLaser]
 
     .addConcreteType[ClosingGame]
 

@@ -4,11 +4,7 @@ import gameengine.Engine
 import pixigraphics.{PIXITexture, Sprite}
 import webglgraphics.Vec3
 
-import scala.collection.mutable
-
-object TeamFlagTextureMaker {
-
-  private val textures: mutable.Map[(Double, Double, Double), PIXITexture] = mutable.Map()
+object TeamFlagTextureMaker extends TextureMaker {
 
   val flagTexture: PIXITexture = PIXITexture.fromImage("../../assets/entities/team_flag.png")
 

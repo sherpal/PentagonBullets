@@ -12,7 +12,7 @@ class LaunchSmashBullet(val time: Long, val useId: Long, val casterId: Long, val
   def copyWithUseId(newUseId: Long, newTime: Long): Ability =
     new LaunchSmashBullet(newTime, newUseId, casterId, startingPos, rotation)
 
-  def createActions: List[GameAction] = List(
+  def createActions(gameState: GameState): List[GameAction] = List(
     NewSmashBullet(
       GameAction.newId(), time, Entity.newId(), casterId, startingPos, rotation, SmashBullet.defaultRadius,
       SmashBullet.speed, AbilitySource

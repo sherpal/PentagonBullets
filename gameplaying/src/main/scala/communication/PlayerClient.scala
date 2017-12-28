@@ -9,6 +9,7 @@ import gamemode.{CaptureTheFlagMode, GameMode, StandardMode}
 import gamestate.GameAction
 import gamestate.GameState.GameEnded
 import graphics.EntityDrawer
+import graphics.gameanimations.LaserGunSight
 import gui.Center
 import org.scalajs.dom
 import org.scalajs.dom.html
@@ -67,7 +68,7 @@ class PlayerClient(playerName: String,
         gameHandler.deleteActions(oldestTime, actionIds)
 
       case GameStartsIn(_, time) =>
-        new Countdown(Center, 10, 10)
+        new Countdown(Center, 10, 32)
           .startClock(time)
 
       case GameStarts(_) =>
@@ -170,6 +171,11 @@ class PlayerClient(playerName: String,
     PreGameRunner.removePentagon()
     Engine.changeGameState(gameHandler.Runner)
     Engine.startGameLoop()
+
+    new LaserGunSight(
+      playersInfo.find(_.playerName == playerName).get.id,
+      EntityDrawer.laserLauncherAnimationStage
+    )
 
   }
 

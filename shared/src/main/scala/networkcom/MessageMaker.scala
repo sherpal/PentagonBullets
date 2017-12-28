@@ -168,6 +168,11 @@ object MessageMaker {
           PutBulletGlueMessage(
             actionId, gameName, actionSource, time, useId, ability.casterId, ability.teamId
           )
+        case ability: LaserAbility =>
+          LaserAbilityMessage(
+            actionId, gameName, actionSource, time, useId, ability.casterId, ability.teamId, ability.stepNumber,
+            ability.pos
+          )
         case _ =>
           println("You forgot to add an ability match in toMessage function.")
           throw new ForgotToAddCaseMatchException
@@ -219,6 +224,15 @@ object MessageMaker {
 
     case NewHealingZone(actionId, time, zoneId, ownerId, lifeSupply, xPos, yPos, actionSource) =>
       NewHealingZoneMessage(actionId, gameName, actionSource, time, zoneId, ownerId, lifeSupply, xPos, yPos)
+
+    case NewLaserLauncher(actionId, time, laserLauncherId, pos, ownerId, actionSource) =>
+      NewLaserLauncherMessage(actionId, gameName, actionSource, time, laserLauncherId, pos, ownerId)
+
+    case DestroyLaserLauncher(actionId, time, laserLauncherId, actionSource) =>
+      DestroyLaserLauncherMessage(actionId, gameName, actionSource, time, laserLauncherId)
+
+    case FireLaser(actionId, time, ownerId, pos1, pos2, actionSource) =>
+      FireLaserMessage(actionId, gameName, actionSource, time, ownerId, pos1, pos2)
 
     case RemoveRelevantAbility(actionId, time, entityId, useId, actionSource) =>
       RemoveRelevantAbilityMessage(actionId, gameName, actionSource, time, entityId, useId)
@@ -378,6 +392,11 @@ object MessageMaker {
         actionId, time, new PutBulletGlue(time, useId, casterId, teamId), useId, actionSource
       )
 
+    case LaserAbilityMessage(actionId, _, actionSource, time, useId, casterId, teamId, stepNumber, pos) =>
+      UseAbilityAction(
+        actionId, time, new LaserAbility(time, useId, casterId, teamId, stepNumber, pos.toComplex), useId, actionSource
+      )
+
     case ChangeBulletRadiusMessage(actionId, _, actionSource, time, bulletId, newRadius) =>
       ChangeBulletRadius(actionId, time, bulletId, newRadius, actionSource)
 
@@ -392,6 +411,15 @@ object MessageMaker {
 
     case NewHealingZoneMessage(actionId, _, actionSource, time, zoneId, ownerId, lifeSupply, xPos, yPos) =>
       NewHealingZone(actionId, time, zoneId, ownerId, lifeSupply, xPos, yPos, actionSource)
+
+    case NewLaserLauncherMessage(actionId, _, actionSource, time, laserLauncherId, pos, ownerId) =>
+      NewLaserLauncher(actionId, time, laserLauncherId, pos.toComplex, ownerId, actionSource)
+
+    case DestroyLaserLauncherMessage(actionId, _, actionSource, time, laserLauncherId) =>
+      DestroyLaserLauncher(actionId, time, laserLauncherId, actionSource)
+
+    case FireLaserMessage(actionId, _, actionSource, time, ownerId, pos1, pos2) =>
+      FireLaser(actionId, time, ownerId, pos1.toComplex, pos2.toComplex, actionSource)
 
     case DestroyHealingZoneMessage(actionId, _, actionSource, time, zoneId) =>
       DestroyHealingZone(actionId, time, zoneId, actionSource)
@@ -505,6 +533,10 @@ object MessageMaker {
       UsePutBulletGlue(
         gameName, ability.time, ability.useId, ability.casterId, ability.teamId
       )
+    case ability: LaserAbility =>
+      UseLaser(
+        gameName, ability.time, ability.useId, ability.casterId, ability.teamId, ability.stepNumber, ability.pos
+      )
     case _ =>
       println(s"You forgot to add ability (${ability.id}) to the case match of abilityToMessage.")
       throw new ForgotToAddCaseMatchException
@@ -531,6 +563,8 @@ object MessageMaker {
       new CreateBarrier(time, useId, casterId, teamId, targetPos.toComplex, rotation)
     case UsePutBulletGlue(_, time, useId, casterId, teamId) =>
       new PutBulletGlue(time, useId, casterId, teamId)
+    case UseLaser(_, time, useId, casterId, teamId, stepNbr, pos) =>
+      new LaserAbility(time, useId, casterId, teamId, stepNbr, pos.toComplex)
   }
 
 

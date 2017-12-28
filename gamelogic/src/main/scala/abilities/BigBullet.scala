@@ -15,7 +15,7 @@ class BigBullet(val time: Long, val useId: Long, val casterId: Long, val teamId:
   def copyWithUseId(newUseId: Long, newTime: Long): Ability =
     new BigBullet(newTime, newUseId, casterId, teamId, startingPos, rotation)
 
-  def createActions: List[GameAction] = List(
+  def createActions(gameState: GameState): List[GameAction] = List(
     NewBullet(
       GameAction.newId(),
       Entity.newId(), casterId, teamId, startingPos, 3 * Bullet.defaultRadius, rotation, Bullet.speed * 2, time, 0,

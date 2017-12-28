@@ -12,7 +12,7 @@ class CraftGunTurret(val time: Long, val useId: Long, val casterId: Long, val te
   def copyWithUseId(newUseId: Long, newTime: Long): CraftGunTurret =
     new CraftGunTurret(newTime, newUseId, casterId, teamId, pos)
 
-  def createActions: List[GameAction] = List(
+  def createActions(gameState: GameState): List[GameAction] = List(
     NewGunTurret(
       GameAction.newId(), time, Entity.newId(), casterId, teamId, pos, GunTurret.defaultRadius, AbilitySource
     )
