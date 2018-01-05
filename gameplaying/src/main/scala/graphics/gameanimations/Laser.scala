@@ -5,27 +5,32 @@ import gamestate.GameState
 import graphics.{Camera, GameAnimation}
 import pixigraphics.{PIXIContainer, PIXIGraphics}
 
-class Laser(z1: Complex, z2: Complex, color: Int, stage: PIXIContainer) extends GameAnimation {
+import scala.scalajs.js.JSConverters._
+
+class Laser(vertices: Vector[Complex], color: Int, stage: PIXIContainer) extends GameAnimation {
+
+  println("un laser")
 
   private val graphics: PIXIGraphics = new PIXIGraphics()
 
   stage.addChild(graphics)
 
-  val duration: Option[Long] = Some(500)
+  val duration: Option[Long] = Some(600)
 
   def stopRunningCallback(): Unit = {
     stage.removeChild(graphics)
   }
 
+  private val cycleVertices: Vector[Complex] = vertices.last +: vertices
+
   protected def animate(gameState: GameState, now: Long, camera: Camera): Unit = {
-    val localZ1 = camera.worldToLocal(z1)
-    val localZ2 = camera.worldToLocal(z2)
+    val localCoords = cycleVertices
+      .map(camera.worldToLocal).flatMap(elem => Vector(elem._1, elem._2)).toJSArray
+
     graphics
       .clear()
       .beginFill(color)
-      .lineStyle(5, color)
-      .moveTo(localZ1._1, localZ1._2)
-      .lineTo(localZ2._1, localZ2._2)
+      .drawPolygon(localCoords)
       .endFill()
   }
 

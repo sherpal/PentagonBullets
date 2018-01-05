@@ -9,7 +9,7 @@ import gamestate.ActionSource.PlayerSource
 import gamestate.GameState.PlayingState
 import gamestate.actions.UpdatePlayerPos
 import globalvariables.{DataStorage, StandardModeEOGData}
-import graphics.{EntityDrawer, GameAnimation}
+import graphics.EntityDrawer
 import gui.Frame
 import io.ControlType.{KeyboardType, MouseType}
 import networkcom.PlayerGameSettingsInfo
@@ -46,8 +46,6 @@ class StandardModeGameHandler(protected val playerName: String,
         case None =>
           Complex(0,0)
       }
-
-      GameAnimation.animate(gameState, gameTime, EntityDrawer.camera)
 
       val timeToUpdate = new java.util.Date().getTime
       EntityDrawer.drawState(cameraPos, gameState, gameTime, playerColors, teamColors, bulletColors)

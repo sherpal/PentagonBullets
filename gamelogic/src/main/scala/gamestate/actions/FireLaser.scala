@@ -7,8 +7,7 @@ final case class FireLaser(
                             actionId: Long,
                             time: Long,
                             ownerId: Long,
-                            pos1: Complex,
-                            pos2: Complex,
+                            laserVertices: Vector[Complex],
                             actionSource: ActionSource
                           ) extends GameAction {
 

@@ -56,7 +56,7 @@ abstract class Server extends UDPNode {
     socket.close()
   })
 
-  socket.on("message", (msg: Buffer, rInfo:RInfo) => {
+  socket.on("message", (msg: Buffer, rInfo: RInfo) => {
     val peer = Peer(rInfo.address, rInfo.port)
 
     clientConnections.get(peer) match {
@@ -117,7 +117,6 @@ abstract class Server extends UDPNode {
   }
 
   private def onMessage(peer: Peer, msg: Message): Unit = {
-//    println(msg)
     msg match {
       case Connect() => clientConnect(peer)
       case Disconnect() => clientDisconnect(peer)
@@ -142,7 +141,7 @@ abstract class Server extends UDPNode {
     if (debug) println("Client disconnected")
   }
 
-  def clients: Set[Peer] = (for ((peer, _) <- clientConnections) yield peer).toSet
+  def clients: Set[Peer] = clientConnections.keys.toSet
 
   def disconnect(): Unit = {
     broadcastNormal(Disconnected())

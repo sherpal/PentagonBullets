@@ -33,6 +33,10 @@ class PlayerClient(playerName: String,
                    playersInfo: List[PlayerGameSettingsInfo],
                    val gameMode: GameMode) extends Client {
 
+  Engine.changeGameState(PreGameRunner)
+  Engine.startGameLoop()
+
+
   PlayerClient._playerClient = this
 
   lazy val gameHandler: GameHandler = gameMode match {
@@ -114,7 +118,7 @@ class PlayerClient(playerName: String,
 
   private val loader: PIXILoader = new PIXILoader
 
-  // load some random stuff, otherwise the load callback is never called.
+  // load the font.
   loader
     .add("../../assets/font/quicksand_0.png")
     .add("../../assets/font/quicksand_1.png")
@@ -124,7 +128,7 @@ class PlayerClient(playerName: String,
 
   loader.load((_: PIXILoader, _: js.Dictionary[PIXIResource]) => {
     resourceLoaderReady = true
-    gameHandler
+
     readyToConnect()
   })
 
@@ -137,6 +141,9 @@ class PlayerClient(playerName: String,
         Time.setDeltaTime(delta)
         activatePing()
         deltaTimeReady = true
+
+        gameHandler
+
         readyToConnect()
       })
     } else if (gameHandler.currentGameState.state != GameEnded) {
@@ -174,7 +181,8 @@ class PlayerClient(playerName: String,
 
     new LaserGunSight(
       playersInfo.find(_.playerName == playerName).get.id,
-      EntityDrawer.laserLauncherAnimationStage
+      EntityDrawer.laserLauncherAnimationStage,
+      gameHandler.playerColors(playersInfo.find(_.playerName == playerName).get.id)
     )
 
   }

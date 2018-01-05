@@ -248,12 +248,14 @@ trait GameHandler {
           case Ability.putBulletGlue =>
             client.sendNormal(UsePutBulletGlue(client.gameName, Time.getTime, 0, playerId, teamsByPlayerId(playerId)))
           case Ability.laserId =>
+            val (mouseX, mouseY) = Engine.mousePosition
+            val targetPos = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
+
             val stepNumber = if (currentGameState.laserLaunchers.values.exists(_.ownerId == playerId)) 1 else 0
 
             val now = Time.getTime
             client.sendNormal(UseLaser(
-              client.gameName, now, 0, playerId, teamsByPlayerId(playerId), stepNumber,
-              player.currentPosition(now - player.time)
+              client.gameName, now, 0, playerId, teamsByPlayerId(playerId), stepNumber, targetPos
             ))
         }
       }
@@ -553,8 +555,6 @@ trait GameHandler {
   })
 
 
-  Engine.changeGameState(PreGameRunner)
-  Engine.startGameLoop()
 
 
   val Runner: GameRunner

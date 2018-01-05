@@ -3,11 +3,14 @@ package graphics.gameanimations
 import gamestate.GameState
 import graphics.{Camera, GameAnimation}
 import pixigraphics.{PIXIContainer, PIXIGraphics}
+import webglgraphics.Vec3
 
-class LaserGunSight(playerId: Long, stage: PIXIContainer) extends GameAnimation {
+class LaserGunSight(playerId: Long, stage: PIXIContainer, color: (Double, Double, Double)) extends GameAnimation {
+
+  private val intColor: Int = Vec3(color._1, color._2, color._3).toInt
 
   private val graphics: PIXIGraphics = new PIXIGraphics()
-    .beginFill(0xFF0000)
+    .beginFill(intColor)
     .drawCircle(100,100,50)
     .endFill()
 
@@ -31,8 +34,8 @@ class LaserGunSight(playerId: Long, stage: PIXIContainer) extends GameAnimation 
 
         graphics
           .clear()
-          .beginFill(0xFF0000)
-          .lineStyle(2, 0xFF0000)
+          .beginFill(intColor)
+          .lineStyle(2, intColor)
           .moveTo(localPlayerPos._1, localPlayerPos._2)
           .lineTo(localLauncherPos._1, localLauncherPos._2)
           .endFill()

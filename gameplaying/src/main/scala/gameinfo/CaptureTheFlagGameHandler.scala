@@ -69,8 +69,6 @@ class CaptureTheFlagGameHandler(protected val playerName: String,
           }
       }
 
-      GameAnimation.animate(gameState, gameTime, EntityDrawer.camera)
-
       val timeToUpdate = new java.util.Date().getTime
       EntityDrawer.drawState(cameraPos, gameState, gameTime, playerColors, teamColors, bulletColors)
       computationTimesUpdateDraw.enqueue((new java.util.Date().getTime - timeToUpdate).toInt)

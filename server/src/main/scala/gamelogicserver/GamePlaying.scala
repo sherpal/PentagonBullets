@@ -586,10 +586,17 @@ trait GamePlaying {
 
   protected def manageDeadPlayers(time: Long): Unit = {
     queueActions(gameState.players.values.filter(_.lifeTotal <= 0).flatMap(player =>
-      List(
-        PlayerDead(actionId(), time, player.id, player.name, ServerSource),
-        NewAbilityGiver(actionId(), time, Entity.newId(), player.pos, player.allowedAbilities(1), ServerSource)
-      )
+      gameState.laserLaunchers.values.find(_.ownerId == player.id) match {
+        case None => List(
+          PlayerDead(actionId(), time, player.id, player.name, ServerSource),
+          NewAbilityGiver(actionId(), time, Entity.newId(), player.pos, player.allowedAbilities(1), ServerSource)
+        )
+        case Some(laserLauncher) => List(
+          PlayerDead(actionId(), time, player.id, player.name, ServerSource),
+          NewAbilityGiver(actionId(), time, Entity.newId(), player.pos, player.allowedAbilities(1), ServerSource),
+          DestroyLaserLauncher(GameAction.newId(), time, laserLauncher.id, ServerSource)
+        )
+      }
     ))
 
   }

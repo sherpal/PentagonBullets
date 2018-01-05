@@ -427,8 +427,7 @@ final case class FireLaserMessage(
                                   actionSource: String,
                                   time: Long,
                                   ownerId: Long,
-                                  pos1: Point,
-                                  pos2: Point
+                                  laserVertices: Vector[Point]
                                  ) extends ActionMessage
 
 final case class ChangeBulletRadiusMessage(

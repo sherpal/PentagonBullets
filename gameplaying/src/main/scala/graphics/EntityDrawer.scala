@@ -1,13 +1,12 @@
 package graphics
 
-import abilities.LaserAbility
 import complex.Complex
 import entities._
 import gameengine.Engine
 import gamegui.{AbilityButton, HealthBar}
 import gameinfo.GameEvents
 import gamestate.GameState
-import gamestate.actions.{ChangeBulletRadius, FireLaser, SmashBulletGrows, UseAbilityAction}
+import gamestate.actions.{ChangeBulletRadius, FireLaser, SmashBulletGrows}
 import graphics.gameanimations.Laser
 import graphics.pixitexturemakers.{BarrierTextureMaker, GunTurretTextureMaker, LaserLauncherTextureMaker, TeamFlagTextureMaker}
 import gui.Frame
@@ -62,10 +61,10 @@ object EntityDrawer {
   val laserLauncherAnimationStage: PIXIContainer = new PIXIContainer()
 
   List(
-    mistStage, laserLauncherAnimationStage, healingZoneStage, laserLauncherStage,
+    mistStage, laserLauncherAnimationStage, healingZoneStage,
     damageZoneStage, bulletAmplifierStage, barrierStage, healingUnitStage,
     abilityGiverStage, playerStage, gunTurretStage,
-    bulletStage, obstacleStage, teamFlagStage, HealthBar.lifeBarContainer
+    bulletStage, obstacleStage, laserLauncherStage, teamFlagStage, HealthBar.lifeBarContainer
   ).foreach(container => stage.addChild(container))
 
   val camera: Camera = new Camera(Engine.graphics.canvas)
@@ -649,7 +648,7 @@ object EntityDrawer {
     }
   })
   watchingFrame.registerEvent(GameEvents.OnFireLaser)((action: FireLaser, _: GameState) => {
-    new Laser(action.pos1, action.pos2, playerColors(action.ownerId), laserLauncherAnimationStage)
+    new Laser(action.laserVertices, playerColors(action.ownerId), laserLauncherAnimationStage)
   })
 
 
@@ -686,6 +685,8 @@ object EntityDrawer {
     drawTeamFlags(state, teamColors)
 
     HealthBar.updateBars()
+
+    GameAnimation.animate(state, time, EntityDrawer.camera)
 
   }
 

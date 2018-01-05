@@ -94,7 +94,7 @@ class Connection(peer: Peer, socket: Socket, callback: Message => Unit) {
 
   private def receivedPong(sendingTime: Long, midwayTime: Long): Unit = {
     latencyHistory.enqueue((new Date().getTime - sendingTime).toInt / 2)
-    if (latencyHistory.size > 10) latencyHistory.dequeue
+    if (latencyHistory.lengthCompare(10) > 0) latencyHistory.dequeue
     if (computingLinkTime)
       receivedPongWhileComputingLinkTime(sendingTime, midwayTime)
   }

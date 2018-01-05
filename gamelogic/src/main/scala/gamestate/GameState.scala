@@ -329,7 +329,7 @@ class GameState(val time: Long, val startTime: Option[Long],
 object GameState {
 
   def originalState: GameState = new GameState(
-    Time.getTime - 1000, None,
+    Time.getTime - 5000, None,
     Shape.regularPolygon(4, 100), // putting a random shape
     Map[Long, Player](),
     Map[Long, Player](),

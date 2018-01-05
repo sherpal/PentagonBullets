@@ -231,8 +231,8 @@ object MessageMaker {
     case DestroyLaserLauncher(actionId, time, laserLauncherId, actionSource) =>
       DestroyLaserLauncherMessage(actionId, gameName, actionSource, time, laserLauncherId)
 
-    case FireLaser(actionId, time, ownerId, pos1, pos2, actionSource) =>
-      FireLaserMessage(actionId, gameName, actionSource, time, ownerId, pos1, pos2)
+    case FireLaser(actionId, time, ownerId, laserVertices, actionSource) =>
+      FireLaserMessage(actionId, gameName, actionSource, time, ownerId, laserVertices)
 
     case RemoveRelevantAbility(actionId, time, entityId, useId, actionSource) =>
       RemoveRelevantAbilityMessage(actionId, gameName, actionSource, time, entityId, useId)
@@ -418,8 +418,8 @@ object MessageMaker {
     case DestroyLaserLauncherMessage(actionId, _, actionSource, time, laserLauncherId) =>
       DestroyLaserLauncher(actionId, time, laserLauncherId, actionSource)
 
-    case FireLaserMessage(actionId, _, actionSource, time, ownerId, pos1, pos2) =>
-      FireLaser(actionId, time, ownerId, pos1.toComplex, pos2.toComplex, actionSource)
+    case FireLaserMessage(actionId, _, actionSource, time, ownerId, laserVertices) =>
+      FireLaser(actionId, time, ownerId, laserVertices.map(_.toComplex), actionSource)
 
     case DestroyHealingZoneMessage(actionId, _, actionSource, time, zoneId) =>
       DestroyHealingZone(actionId, time, zoneId, actionSource)
