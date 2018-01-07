@@ -40,36 +40,57 @@ abstract class Server extends UDPNode {
 
   private val clientConnections: mutable.Map[Peer, Connection] = mutable.Map()
 
-  private val socket: Socket = DgramModule.createSocket(t)
+  private val socket: UDPSocket = PlatformDependent.createSocket()
 
-
-  socket.on("listening", () => {
-    val address = socket.address()
-    println(s"server listening ${address.address}:${address.port}")
-  })
-
-  socket.on("close", () => println("server disconnected"))
-
-  socket.on("error", (err: ErrorEvent) => {
-    println("server error:")
-    println(s"${err.stack}")
-    socket.close()
-  })
-
-  socket.on("message", (msg: Buffer, rInfo: RInfo) => {
-    val peer = Peer(rInfo.address, rInfo.port)
-
+  socket.setMessageCallback((array: Array[Byte], peer: Peer) => {
     clientConnections.get(peer) match {
-      case Some(connection) => connection.onMessage(msg)
+      case Some(connection) =>
+        connection.onMessage(array)
       case None =>
         val connection = new Connection(peer, socket, msg => onMessage(peer, msg))
         clientConnections += ((peer, connection))
-        connection.onMessage(msg)
+        connection.onMessage(array)
     }
   })
 
+  socket.setCloseCallback(() => println("server disconnected"))
+
+  socket.setListeningCallback(() => {
+    val peer = socket.peer
+    println(s"server listening ${peer.address}:${peer.port}")
+  })
+
+  //private val socket: Socket = DgramModule.createSocket(t)
+
+
+//  socket.on("listening", () => {
+//    val address = socket.address()
+//    println(s"server listening ${address.address}:${address.port}")
+//  })
+
+  //socket.on("close", () => println("server disconnected"))
+
+//  socket.on("error", (err: ErrorEvent) => {
+//    println("server error:")
+//    println(s"${err.stack}")
+//    socket.close()
+//  })
+
+//  socket.on("message", (msg: Buffer, rInfo: RInfo) => {
+//    val peer = Peer(rInfo.address, rInfo.port)
+//
+//    clientConnections.get(peer) match {
+//      case Some(connection) =>
+//        connection.onMessage(msg)
+//      case None =>
+//        val connection = new Connection(peer, socket, msg => onMessage(peer, msg))
+//        clientConnections += ((peer, connection))
+//        connection.onMessage(msg)
+//    }
+//  })
+
   def activate(): Unit = {
-    if (address == "*") socket.bind(port) else socket.bind(port, address)
+    if (address == "*") socket.bind(port) else socket.bind(port, Some(address))
 
     // checking every 10s which connected client is still alive
     setInterval(10000)(checkingClientStatus())

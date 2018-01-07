@@ -1,18 +1,16 @@
 package networkcom
 
+import java.nio.ByteBuffer
 import java.util.Date
 
 import boopickle.CompositePickler
 import boopickle.Default._
-import sharednodejsapis._
 
 import scala.collection.mutable
 import scala.scalajs.js.timers._
-import scala.scalajs.js.typedarray.TypedArrayBuffer
-import scala.scalajs.js.typedarray.TypedArrayBufferOps._
 
 
-class Connection(peer: Peer, socket: Socket, callback: Message => Unit) {
+class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
   import Connection._
 
   private val latencyHistory: mutable.Queue[Int] = mutable.Queue[Int]()
@@ -61,11 +59,11 @@ class Connection(peer: Peer, socket: Socket, callback: Message => Unit) {
     }
   }
 
-  def onMessage(buffer: Buffer): Unit = {
+  def onMessage(array: Array[Byte]): Unit = {
     connectedCheck = true
 
     val msg = Unpickle[InternalMessage](InternalMessage.internalMessagePickler)
-      .fromBytes(TypedArrayBuffer.wrap(buffer.buffer))
+      .fromBytes(ByteBuffer.wrap(array))
 
 
     msg match {
@@ -172,8 +170,9 @@ class Connection(peer: Peer, socket: Socket, callback: Message => Unit) {
   private def sendInternal(msg: InternalMessage): Unit = {
     implicit val pickler: CompositePickler[InternalMessage] = InternalMessage.internalMessagePickler
     val bb = Pickle.intoBytes(msg)
-    val buffer = Buffer.from(bb.arrayBuffer())
-    socket.send(buffer, peer.port, peer.address)
+    val array = new Array[Byte](bb.remaining())
+    bb.get(array)
+    socket.send(array, peer.port, peer.address)
   }
 
   def sendNormal(msg: Message): Unit =

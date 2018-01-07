@@ -2,6 +2,7 @@ package networkcom
 
 import boopickle.Default._
 import boopickle.CompositePickler
+import java.nio.ByteBuffer
 
 import networkcom.messages._
 
@@ -9,6 +10,18 @@ abstract class Message
 
 
 object Message {
+
+  def decode(buffer: Array[Byte]): Message =
+    Unpickle[Message](messagePickler).fromBytes(ByteBuffer.wrap(buffer))
+
+  def encode(message: Message): Array[Byte] = {
+    val byteBuffer = Pickle.intoBytes(message)
+    val array = new Array[Byte](byteBuffer.remaining())
+    byteBuffer.get(array)
+    array
+  }
+
+
   implicit val messagePickler: CompositePickler[Message] = compositePickler[Message]
     .addConcreteType[Connect]
     .addConcreteType[Connected]

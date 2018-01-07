@@ -210,6 +210,32 @@ fullOptCompileCopy := {
 }
 
 
+lazy val `facades` = project.in(file("./facades"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(commonSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom" % "0.9.3"
+    )
+  )
+
+
+lazy val `messages` = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)
+  .in(file("./messages"))
+  .settings(commonSettings)
+  .jsConfigure(_.enablePlugins(JSDependenciesPlugin))
+  .settings(
+    name := "messages",
+    libraryDependencies ++= Seq(
+      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT"
+    )
+  )
+
+lazy val messagesJS = messages.js.settings(name := "messagesJS")
+  .dependsOn(facades)
+
+lazy val messagesJVM = messages.jvm.settings(name := "messagesJVM")
+
 lazy val `shared` = project.in(file("shared"))
   .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings)
@@ -221,7 +247,8 @@ lazy val `shared` = project.in(file("shared"))
     ),
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
-  .dependsOn(gameLogic)
+  .dependsOn(gameLogicJS)
+  .dependsOn(facades)
   .dependsOn(ui)
 
 lazy val `tooltip` = project.in(file("tooltip"))
@@ -328,7 +355,7 @@ lazy val `server` = project.in(file("server"))
   .dependsOn(`shared`)
 
 
-lazy val `gameLogic` = project.in(file("gamelogic"))
+lazy val `gameLogic` = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure).in(file("./gamelogic"))
   .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings)
   .settings(
@@ -338,6 +365,11 @@ lazy val `gameLogic` = project.in(file("gamelogic"))
       "be.adoeraene" %%% "pixi-scalajs-gui" % "0.1.0-SNAPSHOT"
     )
   )
+.dependsOn(messages)
+
+lazy val gameLogicJS = gameLogic.js.settings(name := "sharedJS")
+lazy val gameLogicJVM = gameLogic.jvm.settings(name := "sharedJVM")
+
 
 lazy val `ui` = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)

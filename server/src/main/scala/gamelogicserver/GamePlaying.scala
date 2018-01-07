@@ -4,6 +4,7 @@ import abilities.{Ability, Teleportation}
 import custommath.Complex
 import entities._
 import entitiescollections.PlayerTeam
+import gamemessages.MessageMaker
 import gamemode.GameMode
 import gameserver.GameServer
 import gamestate.ActionSource.{PlayerSource, ServerSource}

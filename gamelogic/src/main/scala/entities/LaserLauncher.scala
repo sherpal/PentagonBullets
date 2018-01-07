@@ -1,7 +1,7 @@
 package entities
 
 import custommath.Complex
-import physics.{Circle, ConvexPolygon, Polygon}
+import physics.{ConvexPolygon, Polygon}
 
 final class LaserLauncher(
                            val id: Long,

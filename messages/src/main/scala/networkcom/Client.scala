@@ -1,6 +1,5 @@
 package networkcom
 
-import sharednodejsapis._
 
 /**
  * A Client is a more evolved Node.js Socket that connects to a [[Server]] in order to communicate.
@@ -30,7 +29,9 @@ abstract class Client extends UDPNode {
   private var connected = false
   def isConnected: Boolean = connected
 
-  private val socket: Socket = DgramModule.createSocket(t)
+  private val socket: UDPSocket = PlatformDependent.createSocket()
+
+  //private val socket: Socket = DgramModule.createSocket(t)
 
   private val connection: Connection = new Connection(Peer(address, port), socket, onMessage)
 
@@ -46,16 +47,22 @@ abstract class Client extends UDPNode {
     connection.computeLinkTime(sampleTime, sampleNumber, endCallback)
   }
 
-  socket.on("error", (err: ErrorEvent) => {
-    println("server error:")
-    println(s"${err.stack}")
-    socket.close()
-    changeConnectedStatus(false)
-  })
 
-  socket.on("close", () => changeConnectedStatus(false))
 
-  socket.on("message", (msg: Buffer, _: RInfo) => connection.onMessage(msg))
+//  socket.on("error", (err: ErrorEvent) => {
+//    println("server error:")
+//    println(s"${err.stack}")
+//    socket.close()
+//    changeConnectedStatus(false)
+//  })
+
+  socket.setCloseCallback(() => changeConnectedStatus(false))
+
+  //socket.on("close", () => changeConnectedStatus(false))
+
+  socket.setMessageCallback((array: Array[Byte], _: Peer) => connection.onMessage(array))
+
+  //socket.on("message", (msg: Buffer, _: RInfo) => connection.onMessage(msg))
 
   private def onMessage(msg: Message): Unit = {
     msg match {

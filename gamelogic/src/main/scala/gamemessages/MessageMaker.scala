@@ -1,17 +1,16 @@
-package networkcom
+package gamemessages
 
 import abilities._
 import custommath.Complex
 import entities.{BulletGlue, Player, Shield}
 import exceptions.{ActionChangerMissing, ForgotToAddCaseMatchException}
 import gamestate._
-import gamestate.actions._
-import gamestate.actions.{NewPlayer => NewPlayerAction}
+import gamestate.actions.{NewPlayer => NewPlayerAction, _}
+import networkcom.Message
+import networkcom.messages._
 import physics.Polygon
 
 import scala.language.implicitConversions
-import networkcom.messages._
-import org.scalajs.dom
 
 
 
@@ -117,7 +116,7 @@ object MessageMaker {
         case changer: BulletGlue =>
           NewBulletGlueMessage(actionId, gameName, actionSource, time, changer.id, changer.playerId, changer.teamId)
         case _ =>
-          dom.console.warn(s"Changer ${changer.getClass} is not set in match of NewActionChanger in toMessage.")
+          println(s"Changer ${changer.getClass} is not set in match of NewActionChanger in toMessage.")
           throw new ActionChangerMissing(changer.getClass.toString)
       }
 
@@ -271,7 +270,7 @@ object MessageMaker {
     case action: GameEndedAction => GameEndedMessage(action.actionId, gameName, action.actionSource, action.time)
 
     case _ =>
-      dom.console.warn(action.getClass.toString)
+      println(action.getClass.toString)
       throw new NotImplementedError(s"this action is not yet implemented ${action.getClass}")
   }
 

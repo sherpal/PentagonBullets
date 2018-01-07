@@ -5,6 +5,7 @@ import networkcom.messages._
 import gameengine.Engine
 import gamegui.Countdown
 import gameinfo.{CaptureTheFlagGameHandler, GameHandler, PreGameRunner, StandardModeGameHandler}
+import gamemessages.MessageMaker
 import gamemode.{CaptureTheFlagMode, GameMode, StandardMode}
 import gamestate.GameAction
 import gamestate.GameState.GameEnded
@@ -33,6 +34,8 @@ class PlayerClient(playerName: String,
                    playersInfo: List[PlayerGameSettingsInfo],
                    val gameMode: GameMode) extends Client {
 
+
+  // red spinning pentagon
   Engine.changeGameState(PreGameRunner)
   Engine.startGameLoop()
 

@@ -1,10 +1,9 @@
-package networkcom.messages
+package gamemessages
 
 import physics._
+import networkcom.messages.{CircleMessage, Point, PolygonMessage, ShapeMessage}
 
-/** Shape translator. */
-sealed trait ShapeMessage extends networkcom.Message
-object ShapeMessage {
+object ShapeMessageTranslator {
   def shapeToMessage(shape: Shape): ShapeMessage = shape match {
     case shape: Circle => CircleMessage(shape.radius)
     case shape: ConvexPolygon => PolygonMessage(shape.vertices.map(z => Point(z.re, z.im)), convex = true)
@@ -18,5 +17,3 @@ object ShapeMessage {
     case PolygonMessage(verticesPoints, isConvex) => Polygon(verticesPoints.map(_.toComplex), isConvex)
   }
 }
-final case class CircleMessage(radius: Double) extends ShapeMessage
-final case class PolygonMessage(vertices: Vector[Point], convex: Boolean) extends ShapeMessage

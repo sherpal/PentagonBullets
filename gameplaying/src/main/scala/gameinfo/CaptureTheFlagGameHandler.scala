@@ -13,7 +13,7 @@ import gamestate.GameState.{PlayingState, PreBegin}
 import gamestate.GameAction
 import gamestate.actions._
 import globalvariables.{CaptureTheFlagModeEOGData, DataStorage}
-import graphics.{EntityDrawer, GameAnimation}
+import graphics.EntityDrawer
 import graphics.pixitexturemakers.TeamFlagTextureMaker
 import gui.{BottomLeft, Center, Frame}
 import io.ControlType.{KeyboardType, MouseType}

@@ -9,8 +9,6 @@ import scala.scalajs.js.JSConverters._
 
 class Laser(vertices: Vector[Complex], color: Int, stage: PIXIContainer) extends GameAnimation {
 
-  println("un laser")
-
   private val graphics: PIXIGraphics = new PIXIGraphics()
 
   stage.addChild(graphics)
@@ -33,7 +31,6 @@ class Laser(vertices: Vector[Complex], color: Int, stage: PIXIContainer) extends
       .drawPolygon(localCoords)
       .endFill()
   }
-
 
   run()
 

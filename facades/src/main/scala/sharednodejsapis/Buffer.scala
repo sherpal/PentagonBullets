@@ -16,4 +16,6 @@ abstract class Buffer extends js.typedarray.Uint8Array(0) {
 object Buffer extends js.Object {
   def from(s: String, encoding: String = "utf8"): Buffer = js.native
   def from(msg: ArrayBuffer): Buffer = js.native
+
+  def from(array: js.Array[Byte]): Buffer = js.native
 }
