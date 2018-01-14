@@ -28,6 +28,8 @@ object DataStorage {
       .addConcreteType[PlayerData]
       .addConcreteType[PlayerDataList]
       .addConcreteType[EndOfGameData]
+      .addConcreteType[LifeTimeStamp]
+      .addConcreteType[Color]
       .addConcreteType[StandardModeEOGData]
       .addConcreteType[CaptureTheFlagModeEOGData]
 
@@ -93,20 +95,32 @@ final case class PlayerDataList(data: List[PlayerData]) extends Data
 sealed trait EndOfGameData extends Data
 final case class StandardModeEOGData(playersFromLastToFirstDeath: List[String]) extends EndOfGameData
 final case class CaptureTheFlagModeEOGData(scores: Map[Int, Int]) extends EndOfGameData
-final case class PlayerStat(playerName: String,
-                            teamId: Int,
-                            ability: String,
-                            sentBulletsTimes: List[Long],
-                            sentBullets: List[Long],
-                            bulletHits: Int,
-                            bulletHitsTimes: List[Long],
-                            damageTaken: Double,
-                            bulletHitPlayerNbr: Int,
-                            takenHealUnits: Int,
-                            totalMovement: Double,
-                            deathTime: Option[Long]) extends EndOfGameData
+
+final case class LifeTimeStamp(time: Long, life: Double) extends EndOfGameData
+
+final case class Color(red: Double, green: Double, blue: Double) extends EndOfGameData
+
+final case class PlayerStat(
+                             id: Long,
+                             playerName: String,
+                             color: Color,
+                             teamId: Int,
+                             ability: String,
+                             sentBulletsTimes: List[Long],
+                             sentBullets: List[Long],
+                             bulletHits: Int,
+                             bulletHitsTimes: List[Long],
+                             damageTaken: Double,
+                             bulletHitPlayerNbr: Int,
+                             takenHealUnits: Int,
+                             totalMovement: Double,
+                             deathTime: Option[Long],
+                             lifeOverTime: List[LifeTimeStamp]
+                           ) extends EndOfGameData
+
 final case class PlayerStats(
                               playerName: String,
                               gameDuration: Long,
                               startTime: Long,
-                              stats: List[PlayerStat]) extends EndOfGameData
+                              stats: List[PlayerStat]
+                            ) extends EndOfGameData

@@ -1,6 +1,8 @@
 package renderer
 
 import communication.PlayerClient
+import custommath.Complex
+import entities.Player
 import exceptions.StorageDecodingError
 import globalvariables._
 import globalvariables.VariableStorage.retrieveValue
@@ -8,11 +10,15 @@ import networkcom.PlayerGameSettingsInfo
 import org.scalajs.dom
 import org.scalajs.dom.html
 import org.scalajs.dom.raw.MouseEvent
+import plots.{Plot, PlotElement}
+import plots.plotelements.Line
 import scoreboardui.UIPages
 import sharednodejsapis.BrowserWindow
 import ui._
+import webglgraphics.Vec3
 
 import scala.scalajs.js
+import scala.scalajs.js.timers.setTimeout
 
 
 
@@ -92,77 +98,141 @@ object GamePlaying {
               ))
 
               stats.zipWithIndex.foreach({ case (playerStat, idx) =>
-                  UIStatManager.appendPlayer(new UIPlayer(
-                    idx + 1, playerStat.playerName, js.Array[UIStatProperty](
-                      new UIStatProperty("Ability", playerStat.ability),
-                      playerStat.deathTime match {
-                        case Some(deathTime) =>
-                          new UIStatProperty("Alive during", s"${(deathTime - startTime) / 1000.0}s")
-                        case None =>
-                          new UIStatProperty("Alive", "")
-                      },
-                      {
-                        val bulletNbr = playerStat.sentBullets.length
-                        val lifeTime = playerStat.deathTime match {
-                          case Some(deathTime) => deathTime - startTime
-                          case None => gameDuration
-                        }
-                        new UIStatProperty(
-                          "Fired Bullet Nbr",
-                          s"$bulletNbr (${math.round(bulletNbr / (lifeTime / 1000.0) * 100) / 100.0} bullets/s)"
-                        )
-                      },
-                      new UIStatProperty("Bullets hit players", playerStat.bulletHitPlayerNbr.toString),
+                UIStatManager.appendPlayer(new UIPlayer(
+                  idx + 1, playerStat.playerName, js.Array[UIStatProperty](
+                    new UIStatProperty("Ability", playerStat.ability),
+                    playerStat.deathTime match {
+                      case Some(deathTime) =>
+                        new UIStatProperty("Alive during", s"${(deathTime - startTime) / 1000.0}s")
+                      case None =>
+                        new UIStatProperty("Alive", "")
+                    },
+                    {
+                      val bulletNbr = playerStat.sentBullets.length
+                      val lifeTime = playerStat.deathTime match {
+                        case Some(deathTime) => deathTime - startTime
+                        case None => gameDuration
+                      }
                       new UIStatProperty(
-                        "Efficiency",
-                        s"${math.round(
-                          playerStat.bulletHitPlayerNbr / playerStat.sentBullets.length.toDouble * 100.0 * 100.0) /
-                          100.0}%"),
+                        "Fired Bullet Nbr",
+                        s"$bulletNbr (${math.round(bulletNbr / (lifeTime / 1000.0) * 100) / 100.0} bullets/s)"
+                      )
+                    },
+                    new UIStatProperty("Bullets hit players", playerStat.bulletHitPlayerNbr.toString),
+                    new UIStatProperty(
+                      "Efficiency",
+                      s"${math.round(
+                        playerStat.bulletHitPlayerNbr / playerStat.sentBullets.length.toDouble * 100.0 * 100.0) /
+                        100.0}%"),
+                    new UIStatProperty(
+                      "First blood after",
+                      if (playerStat.bulletHitsTimes.isEmpty) "Never"
+                      else s"${(playerStat.bulletHitsTimes.min - startTime) / 1000.0} s"
+                    ),
+                    new UIStatProperty("Taken Damage", playerStat.damageTaken.toString),
+                    new UIStatProperty("Taken Heal Units", playerStat.takenHealUnits.toString),
+                    {
+                      val burstWindow: Int = 5
+                      val sentBulletTimesSorted = playerStat.sentBulletsTimes.sorted
+                      val bestBurst = sentBulletTimesSorted.foldLeft((0, List[Long]()))({
+                        case ((record, queuedTimes), time) =>
+                          val newTimes = time +: queuedTimes.filter(time - _ <= burstWindow * 1000)
+                          (math.max(record, newTimes.length), newTimes)
+                      })._1
                       new UIStatProperty(
-                        "First blood after",
-                        if (playerStat.bulletHitsTimes.isEmpty) "Never"
-                        else s"${(playerStat.bulletHitsTimes.min - startTime) / 1000.0} s"
-                      ),
-                      new UIStatProperty("Taken Damage", playerStat.damageTaken.toString),
-                      new UIStatProperty("Taken Heal Units", playerStat.takenHealUnits.toString),
-                      {
-                        val burstWindow: Int = 5
-                        val sentBulletTimesSorted = playerStat.sentBulletsTimes.sorted
-                        val bestBurst = sentBulletTimesSorted.foldLeft((0, List[Long]()))({
-                          case ((record, queuedTimes), time) =>
-                            val newTimes = time +: queuedTimes.filter(time - _ <= burstWindow * 1000)
-                            (math.max(record, newTimes.length), newTimes)
-                        })._1
-                        new UIStatProperty(
-                          s"Best burst in ${burstWindow}s",
-                          s"$bestBurst bullets (${bestBurst.toDouble / burstWindow} bullets/s)"
-                        )
-                      },
-                      new UIStatProperty("Total movement", playerStat.totalMovement.toInt.toString)
-                    )
-                  ))
+                        s"Best burst in ${burstWindow}s",
+                        s"$bestBurst bullets (${bestBurst.toDouble / burstWindow} bullets/s)"
+                      )
+                    },
+                    new UIStatProperty("Total movement", playerStat.totalMovement.toInt.toString)
+                  )
+                ))
               })
+
+              final case class LifeOverTime(playerName: String, color: Vec3, lives: List[(Double, Double)])
+
+              final class LifePlot(
+                                    width: Int, height: Int,
+                                    livesInfo: Map[PlotElement, LifeOverTime]
+                                  ) extends Plot {
+                override def onMouseMoveCanvasCoords(x: Double, y: Double): Unit = {
+
+                  val child = closestChildToCanvasCoords(x, y)
+                  livesInfo.get(child) match {
+                    case Some(info) =>
+                      val closestPoint = child.closestPointToCanvasCoords(Complex(x, y), this)
+                      val closestPointPlotCoords = canvasToPlotCoordinates(closestPoint.re, closestPoint.im)
+
+                      val timeLifeInfo = info.lives.minBy(elem => math.abs(elem._1 - closestPointPlotCoords._1))
+
+                      val seconds = timeLifeInfo._1 / 1000
+
+                      clear()
+                      drawAxes()
+                      drawChildren()
+
+                      if ((Complex(x, y) - closestPoint).modulus2 < 60) {
+                        drawPoint(closestPoint.re, closestPoint.im, 5, info.color)
+                        write(
+                          s"${info.playerName}",
+                          5, height - 40
+                        )
+                        write(
+                          s"Time: ${seconds}s, Health: ${timeLifeInfo._2}",
+                          5, height - 20
+                        )
+                      }
+
+                    case None =>
+                  }
+                }
+
+                setSize(width, height)
+
+                setYAxis(-5, Player.maxLife + 5)
+                setXAxis(0, livesInfo.values.map(_.lives.head._1).max)
+                livesInfo.keys.foreach(addChild)
+
+                dom.document.body.appendChild(canvasElement)
+                canvasElement.style.border = "1px solid black"
+                setBackgroundColor(1,1,1)
+                clear()
+
+                setTimeout(500) {
+                  setBackgroundColor(1,1,1)
+                  clear()
+                  drawAxes()
+                  drawChildren()
+                }
+
+
+              }
+
+              val livesOverTime = stats.map(stat => LifeOverTime(
+                stat.playerName,
+                Vec3(stat.color.red, stat.color.green, stat.color.blue),
+                stat.lifeOverTime.map(tLS => ((tLS.time - startTime).toDouble, tLS.life))
+              ))
+                .filter(_.lives.nonEmpty)
+
+              if (livesOverTime.nonEmpty) {
+
+                val livesInfo: Map[PlotElement, LifeOverTime] =
+                  livesOverTime.map(lifeOverTime => {
+                    val (xs, ys) = lifeOverTime.lives.toVector.unzip
+                    val line = new Line(xs, ys, lifeOverTime.color)
+                    line -> lifeOverTime
+                  })
+                  .toMap
+
+                new LifePlot(1000, 300, livesInfo)
+              }
+
 
               UIPages.playersStat.quitButton.onclick = (_: MouseEvent) => {
                 dom.window.location.href = "../../gamemenus/mainscreen/index.html"
               }
 
-
-
-//              val players: List[String] = playersFromLastToFirstDeath
-//              val rows = players.zipWithIndex.map({case (name, position) =>
-//                val tr = dom.document.createElement("tr").asInstanceOf[html.TableRow]
-//                val positionTd = dom.document.createElement("td").asInstanceOf[html.TableCol]
-//                positionTd.innerHTML = (position + 1).toString
-//                val nameTd = dom.document.createElement("td").asInstanceOf[html.TableCol]
-//                nameTd.innerHTML = name
-//                tr.appendChild(positionTd)
-//                tr.appendChild(nameTd)
-//                tBody.appendChild(tr)
-//
-//                tr
-//              })
-//              rows.head.className = "success"
             case CaptureTheFlagModeEOGData(scores) =>
               val tBody = dom.document.getElementById("scoreBoard").asInstanceOf[html.TableDataCell]
               val rows = scores.toList.sortBy(_._2).reverse.map({case (teamNbr, points) =>

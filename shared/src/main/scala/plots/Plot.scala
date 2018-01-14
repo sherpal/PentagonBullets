@@ -1,0 +1,227 @@
+package plots
+
+import custommath.Complex
+import org.scalajs.dom
+import org.scalajs.dom.{CanvasRenderingContext2D, html}
+import webglgraphics.{Vec3, Vec4}
+
+import scala.collection.mutable
+
+class Plot protected {
+
+  private val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
+  private val ctx: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+
+  def canvasElement: html.Canvas = canvas
+
+  def setSize(width: Int, height: Int): Unit = {
+    canvas.width = width
+    canvas.height = height
+  }
+
+  def width: Int = canvas.width
+  def height: Int = canvas.height
+
+  def clear(): Plot = {
+    ctx.clearRect(0, 0, width, height)
+    ctx.fillStyle = backgroundColor.toCSSColor
+    ctx.fillRect(0, 0, width, height)
+
+    this
+  }
+
+  private var backgroundColor: Vec4 = Vec4(0.7, 0.7, 0.7, 1)
+
+  def setBackgroundColor(red: Double, green: Double, blue: Double, alpha: Double = 1.0): Plot = {
+    backgroundColor = Vec4(red, green, blue, alpha)
+
+    this
+  }
+
+  private var minXAxis: Double = -2
+  private var maxXAxis: Double = 2
+
+  private var minYAxis: Double = -2
+  private var maxYAxis: Double = 2
+
+  def setXAxis(min: Double, max: Double): Plot = {
+    minXAxis = min
+    maxXAxis = max
+
+    this
+  }
+
+  def setYAxis(min: Double, max: Double): Plot = {
+    minYAxis = min
+    maxYAxis = max
+
+    this
+  }
+
+  private def canvasXUnit: Double = width / (maxXAxis - minXAxis)
+
+  private def canvasYUnit: Double = height / (maxYAxis - minYAxis)
+
+  def plotToCanvasCoordinates(x: Double, y: Double): (Double, Double) = {
+    (
+      (x - minXAxis) * canvasXUnit,
+      height - (y - minYAxis) * canvasYUnit
+    )
+  }
+
+  def canvasToPlotCoordinates(x: Double, y: Double): (Double, Double) = {
+    (
+      minXAxis + x / width * (maxXAxis - minXAxis),
+      maxYAxis - y / height * (maxYAxis - minYAxis)
+    )
+  }
+
+  def drawAxes(): Plot = {
+    if (minYAxis * maxYAxis <= 0) { // 0 \in [minYAxis, maxYAxis]
+      drawLine(Vector(minXAxis, maxXAxis), Vector(0, 0), Vec3(0.5, 0.5, 0.5))
+    }
+
+    if (minXAxis * maxXAxis <= 0) { // 0 \in [minxAxis, maxXAxis]
+      drawLine(Vector(0, 0), Vector(minYAxis, maxYAxis), Vec3(0.5, 0.5, 0.5))
+    }
+
+    this
+  }
+
+  def write(
+             text: String, x: Double, y: Double,
+             color: Vec4 = Vec4(0,0,0,1),
+             maxWidth: Option[Double] = None,
+             fontName: String = "quicksand",
+             fontSize: Int = 20
+           ): Plot = {
+    ctx.strokeStyle = color.toCSSColor
+    ctx.font = s"${fontSize}px $fontName"
+
+    if (maxWidth.isDefined) {
+      ctx.strokeText(text, x, y, maxWidth.get)
+    } else {
+      ctx.strokeText(text, x, y)
+    }
+
+    this
+  }
+
+  def drawLine(xs: Vector[Double], ys: Vector[Double], color: Vec3 = Vec3(0,0,0)): Plot = {
+
+    ctx.strokeStyle = color.toVec4.toCSSColor
+
+    ctx.beginPath()
+
+    val plotCoords = xs.zip(ys).map({ case (x, y) => plotToCanvasCoordinates(x, y)})
+
+    ctx.moveTo(plotCoords(0)._1, plotCoords(0)._2)
+
+    plotCoords
+      .tail
+      .foreach({ case (x, y) => ctx.lineTo(x, y) })
+
+    ctx.stroke()
+
+    this
+  }
+
+  private val unitCircleLength: Double = 2 * math.Pi
+
+  def drawPoint(x: Double, y: Double, radius: Double, color: Vec4 = Vec4(0, 0, 0, 1)): Plot = {
+
+    ctx.fillStyle = color.toCSSColor
+
+    ctx.beginPath()
+
+    ctx.arc(x, y, radius, 0, unitCircleLength)
+
+    ctx.closePath()
+
+    ctx.fill()
+
+    this
+  }
+
+
+  protected val children: mutable.Set[PlotElement] = mutable.Set()
+
+  def addChild(child: PlotElement): Plot = {
+    children += child
+
+    this
+  }
+
+  def drawChildren(): Plot = {
+    children.foreach(_.draw(this))
+
+    this
+  }
+
+  def onMouseMove(x: Double, y: Double): Unit = {
+    children.foreach(_.onMouseMove(x, y))
+  }
+
+  def closestChildToCanvasCoords(x: Double, y: Double): PlotElement =
+    children
+      .minBy(_.distanceToPosCanvasCoords(x, y, this))
+
+  def onMouseMoveCanvasCoords(x: Double, y: Double): Unit = {
+    val z = closestChildToCanvasCoords(x, y)
+      .closestPointToCanvasCoords(Complex(x, y), this)
+
+    clear()
+    drawAxes()
+    drawChildren()
+    drawPoint(z.re, z.im, 5)
+  }
+
+  canvas.addEventListener[dom.MouseEvent]("mousemove", (event: dom.MouseEvent) => {
+    val boundingRect = canvas.getBoundingClientRect()
+    val canvasX = event.clientX - boundingRect.left
+    val canvasY = event.clientY - boundingRect.top
+    val (x, y) = canvasToPlotCoordinates(canvasX, canvasY)
+
+    onMouseMoveCanvasCoords(canvasX, canvasY)
+    onMouseMove(x, y)
+  })
+
+  def closestChildTo(x: Double, y: Double): PlotElement = children.minBy(_.distanceToPos(x, y))
+
+
+}
+
+
+object Plot {
+
+  def apply(
+             width: Int = 300, height: Int = 300
+           ): Plot = {
+    val plot = new Plot
+
+    plot.setSize(width, height)
+
+    plot
+  }
+
+  def linSpace(min: Double, max: Double, nbrOfPoints: Int = 100): Vector[Double] =
+    (0 until nbrOfPoints).map(min + _ * (max - min) / (nbrOfPoints - 1)).toVector
+
+//  private val xs = linSpace(-2, 2)
+//  private val ys = xs.map(j => j * j - 2)
+//
+//  private val p = Plot()
+//    .clear()
+//
+//  p
+//    .drawAxes()
+//    .addChild(new Line(xs, ys))
+//    .drawChildren()
+//    .addChild(new Segment(Complex(-0.5,0), Complex(0.5,0)))
+//    .drawChildren()
+//
+
+
+//  dom.document.body.appendChild(p.canvasElement)
+
+}

@@ -4,13 +4,11 @@ import gamemenusui.{UIMenuPanels, UIPages}
 import gamemode.GameMode
 import org.scalajs.dom
 import org.scalajs.dom.html
-import pixigraphics._
+import plots.Plot
 import renderermainprocesscom.{CloseTooltip, MoveTooltip, OpenTooltip}
 import sharednodejsapis.{BrowserWindow, IPCRenderer}
 import ui.UI
 import uielements.ControlSettings
-
-import scala.scalajs.js
 
 
 /**
@@ -21,6 +19,7 @@ object GameMenus {
 
     ControlSettings // pre loading bindings so that it is on when showed
 
+    Plot
 
     UIPages.mainMenu.quitButton.addEventListener[dom.MouseEvent]("click", (_: dom.MouseEvent) => {
       UI.showConfirmBox(
