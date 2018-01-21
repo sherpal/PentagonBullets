@@ -5,7 +5,9 @@ import org.scalajs.dom
 import org.scalajs.dom.{CanvasRenderingContext2D, html}
 import webglgraphics.{Vec3, Vec4}
 
-import scala.collection.mutable
+
+import scala.scalajs.js
+import scala.scalajs.js.JSConverters._
 
 class Plot protected {
 
@@ -51,6 +53,8 @@ class Plot protected {
     this
   }
 
+  def xAxis: (Double, Double) = (minXAxis, maxXAxis)
+
   def setYAxis(min: Double, max: Double): Plot = {
     minYAxis = min
     maxYAxis = max
@@ -58,9 +62,11 @@ class Plot protected {
     this
   }
 
-  private def canvasXUnit: Double = width / (maxXAxis - minXAxis)
+  def yAxis: (Double, Double) = (minYAxis, maxYAxis)
 
-  private def canvasYUnit: Double = height / (maxYAxis - minYAxis)
+  def canvasXUnit: Double = width / (maxXAxis - minXAxis)
+
+  def canvasYUnit: Double = height / (maxYAxis - minYAxis)
 
   def plotToCanvasCoordinates(x: Double, y: Double): (Double, Double) = {
     (
@@ -95,23 +101,31 @@ class Plot protected {
              fontName: String = "quicksand",
              fontSize: Int = 20
            ): Plot = {
-    ctx.strokeStyle = color.toCSSColor
+    ctx.fillStyle = color.toCSSColor
     ctx.font = s"${fontSize}px $fontName"
 
     if (maxWidth.isDefined) {
-      ctx.strokeText(text, x, y, maxWidth.get)
+      ctx.fillText(text, x, y, maxWidth.get)
     } else {
-      ctx.strokeText(text, x, y)
+      ctx.fillText(text, x, y)
     }
 
     this
   }
 
-  def drawLine(xs: Vector[Double], ys: Vector[Double], color: Vec3 = Vec3(0,0,0)): Plot = {
+  def drawLine(
+                xs: Vector[Double], ys: Vector[Double],
+                color: Vec4 = Vec3(0,0,0),
+                dashed: Option[Seq[Double]] = None
+              ): Plot = {
 
-    ctx.strokeStyle = color.toVec4.toCSSColor
+    ctx.strokeStyle = color.toCSSColor
 
     ctx.beginPath()
+
+    if (dashed.isDefined) {
+      ctx.setLineDash(dashed.get.toJSArray)
+    }
 
     val plotCoords = xs.zip(ys).map({ case (x, y) => plotToCanvasCoordinates(x, y)})
 
@@ -122,6 +136,10 @@ class Plot protected {
       .foreach({ case (x, y) => ctx.lineTo(x, y) })
 
     ctx.stroke()
+
+    if (dashed.isDefined) {
+      ctx.setLineDash(js.Array[Double]())
+    }
 
     this
   }
@@ -143,11 +161,18 @@ class Plot protected {
     this
   }
 
+  def fillRect(x: Double, y: Double, width: Double, height: Double, color: Vec4): Plot = {
+    ctx.fillStyle = color.toCSSColor
+    ctx.fillRect(x, y, width, height)
 
-  protected val children: mutable.Set[PlotElement] = mutable.Set()
+    this
+  }
+
+
+  protected var children: List[PlotElement] = Nil
 
   def addChild(child: PlotElement): Plot = {
-    children += child
+    children = (child +: children).sortBy(_.zIndex)
 
     this
   }
@@ -162,18 +187,29 @@ class Plot protected {
     children.foreach(_.onMouseMove(x, y))
   }
 
-  def closestChildToCanvasCoords(x: Double, y: Double): PlotElement =
-    children
-      .minBy(_.distanceToPosCanvasCoords(x, y, this))
+  def closestChildToCanvasCoords(
+                                  x: Double, y: Double,
+                                  childrenFilter: (PlotElement) => Boolean = (_) => true
+                                ): Option[PlotElement] =
+    if (!children.exists(childrenFilter)) None
+    else Some(
+      children
+        .filter(childrenFilter)
+        .minBy(_.distanceToPosCanvasCoords(x, y, this))
+    )
 
   def onMouseMoveCanvasCoords(x: Double, y: Double): Unit = {
-    val z = closestChildToCanvasCoords(x, y)
-      .closestPointToCanvasCoords(Complex(x, y), this)
+    closestChildToCanvasCoords(x, y) match {
+      case Some(child) =>
+        val z = child.closestPointToCanvasCoords(Complex(x, y), this)
 
-    clear()
-    drawAxes()
-    drawChildren()
-    drawPoint(z.re, z.im, 5)
+        clear()
+        drawAxes()
+        drawChildren()
+        drawPoint(z.re, z.im, 5)
+      case _ =>
+    }
+
   }
 
   canvas.addEventListener[dom.MouseEvent]("mousemove", (event: dom.MouseEvent) => {
@@ -206,22 +242,5 @@ object Plot {
 
   def linSpace(min: Double, max: Double, nbrOfPoints: Int = 100): Vector[Double] =
     (0 until nbrOfPoints).map(min + _ * (max - min) / (nbrOfPoints - 1)).toVector
-
-//  private val xs = linSpace(-2, 2)
-//  private val ys = xs.map(j => j * j - 2)
-//
-//  private val p = Plot()
-//    .clear()
-//
-//  p
-//    .drawAxes()
-//    .addChild(new Line(xs, ys))
-//    .drawChildren()
-//    .addChild(new Segment(Complex(-0.5,0), Complex(0.5,0)))
-//    .drawChildren()
-//
-
-
-//  dom.document.body.appendChild(p.canvasElement)
 
 }

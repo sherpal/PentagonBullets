@@ -64,6 +64,9 @@ case class Complex(re: Double, im: Double) {
 }
 
 object Complex {
+
+  def apply(z: (Double, Double)): Complex = Complex(z._1, z._2)
+
   val i = Complex(0, 1)
 
   private val rnd: java.util.Random = new java.util.Random()

@@ -11,7 +11,7 @@ class Line(xs: Vector[Double], ys: Vector[Double], color: Vec4 = Vec4(0,0,0,1)) 
   private val segments: Vector[(Complex, Complex)] = zs.zip(zs.tail)
 
   def draw(plot: Plot): PlotElement = {
-    plot.drawLine(xs, ys, color.toVec3)
+    plot.drawLine(xs, ys, color)
 
     this
   }

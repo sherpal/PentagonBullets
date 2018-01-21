@@ -124,6 +124,9 @@ object GameStatistics {
     case PlayerDead(_, time, playerId, _, _) =>
       playerStats += playerId -> playerStats(playerId).copy(deathTime = Some(time))
       updatePlayerLives(gameState)
+      aPlayerDied(playerId, gameState)
+    case PlayerHitBySmashBullet(_, _, playerId, _, _) =>
+      updatePlayerLife(playerId, gameState)
     case GameBegins(_, _, _, _) =>
       updatePlayerLives(gameState)
       frame.setScript(ScriptKind.OnUpdate)((dt: Double) => {
@@ -168,16 +171,14 @@ object GameStatistics {
     })
   }
 
+  private def aPlayerDied(plrId: Long, gameState: GameState): Unit = {
+    playerLivesOverTime += plrId -> ((gameState.time, 0.0) +: playerLivesOverTime(plrId))
+  }
+
   private def updatePlayerLife(plrId: Long, gameState: GameState): Unit = {
     gameState.players.get(plrId) match {
       case Some(player) =>
-        val previousLives =
-          if (player.lifeTotal != playerLivesOverTime(plrId).head._2)
-          (gameState.time, playerLivesOverTime(plrId).head._2) +: playerLivesOverTime(plrId)
-        else
-          playerLivesOverTime(plrId)
-
-        playerLivesOverTime += plrId -> ((gameState.time, player.lifeTotal) +: previousLives)
+        playerLivesOverTime += plrId -> ((gameState.time, player.lifeTotal) +: playerLivesOverTime(plrId))
       case _ =>
     }
   }

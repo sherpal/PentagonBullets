@@ -7,6 +7,7 @@ import entities.{Bullet, Entity, GameArea, Player}
 import entitiescollections.PlayerTeam
 import gameengine.{Engine, GameState => GameRunner}
 import gamegui._
+import gamemessages.MessageMaker
 import gamemode.GameMode
 import gamestate.ActionSource.PlayerSource
 import gamestate.GameState.PlayingState
@@ -19,6 +20,7 @@ import networkcom.PlayerGameSettingsInfo
 import networkcom.messages._
 import networkcom.messages.{Point => NetworkPoint}
 import org.scalajs.dom
+import renderermainprocesscom.StoreGameInfo.StoreAction
 import time.Time
 
 import scala.collection.mutable
@@ -293,9 +295,6 @@ trait GameHandler {
 
     val (moving, direction) = if (headingTo == Complex(0,0)) (false, 0.0) else (true, headingTo.arg)
 
-//    val obstacles = gameState.obstacles.values
-//    val enemyBarriers = gameState.barriers.values.filter(_.teamId != player.team)
-
     val obstaclesLike = gameState.collidingPlayerObstacles(player)
 
     val newPosition = if (moving) {
@@ -419,6 +418,10 @@ trait GameHandler {
   protected var triggeredActions: List[GameAction] = Nil
 
   def addAction(action: GameAction, needUpdate: Boolean = true): Unit = {
+    renderermainprocesscom.Message.sendMessageToMainProcess(
+      StoreAction(networkcom.Message.encode(MessageMaker.toMessage(client.gameName, action)).toVector)
+    )
+
     triggeredActions :+= action
 
     if (isPredictableAction(action)) {

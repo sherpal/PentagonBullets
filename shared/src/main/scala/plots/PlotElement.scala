@@ -34,6 +34,8 @@ trait PlotElement {
    */
   def onMouseMove(x: Double, y: Double): Unit = {}
 
+  val zIndex: Int = 0
+
 }
 
 

@@ -4,9 +4,10 @@ import sharednodejsapis._
 
 import scala.scalajs.js.UndefOr
 import electron.{App, BrowserWindowMainProcess, MainProcessGlobals}
+import gameinfo.GameInfoStorage
 import globalvariables.WindowId
 import org.scalajs.dom.raw.Event
-import renderermainprocesscom.{CloseTooltip, MoveTooltip, OpenTooltip}
+import renderermainprocesscom._
 import tooltip.Tooltip
 
 import scala.collection.mutable
@@ -91,14 +92,18 @@ object MainProcess {
     })
 
 
-    IPCMain.on("main-renderer-message", (_: IPCMainEvent, msg: Any) => {
+    IPCMain.on("main-renderer-message", (event: IPCMainEvent, msg: Any) => {
       renderermainprocesscom.Message.decode(msg.asInstanceOf[scala.scalajs.js.Array[Byte]]) match {
+        case storeGameInfo: StoreGameInfo =>
+          GameInfoStorage.messageHandler(storeGameInfo, event.sender)
         case OpenTooltip(text, x, y) =>
           Tooltip.showTooltip(text, x, y)
         case MoveTooltip(x, y) =>
           Tooltip.moveTooltip(x, y)
         case CloseTooltip() =>
           Tooltip.hideTooltip()
+        case OpenDevTools() =>
+          event.sender.openDevTools()
         case _ => println(msg)
       }
     })

@@ -11,11 +11,12 @@ import org.scalajs.dom
 import org.scalajs.dom.html
 import org.scalajs.dom.raw.MouseEvent
 import plots.{Plot, PlotElement}
-import plots.plotelements.Line
+import plots.plotelements.{Line, Segment}
+import renderermainprocesscom.OpenDevTools
 import scoreboardui.UIPages
-import sharednodejsapis.BrowserWindow
+import sharednodejsapis.{BrowserWindow, IPCMainEvent, IPCRenderer}
 import ui._
-import webglgraphics.Vec3
+import webglgraphics.{Vec3, Vec4}
 
 import scala.scalajs.js
 import scala.scalajs.js.timers.setTimeout
@@ -33,6 +34,7 @@ import scala.scalajs.js.timers.setTimeout
  */
 object GamePlaying {
   def main(args: Array[String]): Unit = {
+
 
     dom.document.title match {
       case "Pentagon Bullets" =>
@@ -65,9 +67,45 @@ object GamePlaying {
 
         try {
 
+          var _toReceive = 0
+          var _received = 0
+
+          IPCRenderer.on("main-renderer-message", (_: IPCMainEvent, msg: Any) => {
+            renderermainprocesscom.Message.decode(msg.asInstanceOf[scala.scalajs.js.Array[Byte]]) match {
+              case renderermainprocesscom.GiveGameInfoBack.GeneralGameInfo(
+              gameName, startingGameTime, playersInfo, numberOfActions) =>
+                println(gameName, startingGameTime, playersInfo.info.length, numberOfActions)
+                _toReceive = numberOfActions
+              case renderermainprocesscom.GiveGameInfoBack.SendActionGroup(actions) =>
+                _received += actions.length
+                println(s"received: ${_received}")
+                if (_received == _toReceive) {
+                  println("end of receiving actions")
+                }
+              case _ =>
+            }
+          })
+
+          renderermainprocesscom.Message.sendMessageToMainProcess(
+            renderermainprocesscom.StoreGameInfo.GiveMeGameInfo()
+          )
+
 
           DataStorage.retrieveValue("endOfGameData") match {
             case StandardModeEOGData(_) =>
+
+              if (scala.scalajs.LinkingInfo.developmentMode) {
+                setTimeout(1000) {
+                  dom.window.addEventListener[dom.KeyboardEvent]("keydown", (event: dom.KeyboardEvent) => {
+                    println(event.keyCode)
+                    if (event.ctrlKey && event.keyCode == 68) {
+                      renderermainprocesscom.Message.sendMessageToMainProcess(OpenDevTools())
+                    } else if (event.ctrlKey && event.keyCode == 82)
+                      dom.window.location.href = "../gameplaying/scoreboard.html"
+                  })
+                }
+              }
+
 
               val (playerName, gameDuration, startTime, stats) = DataStorage.retrieveValue("statistics") match {
                 case PlayerStats(pName, gD, ss, s) =>
@@ -155,43 +193,35 @@ object GamePlaying {
                                     width: Int, height: Int,
                                     livesInfo: Map[PlotElement, LifeOverTime]
                                   ) extends Plot {
-                override def onMouseMoveCanvasCoords(x: Double, y: Double): Unit = {
-
-                  val child = closestChildToCanvasCoords(x, y)
-                  livesInfo.get(child) match {
-                    case Some(info) =>
-                      val closestPoint = child.closestPointToCanvasCoords(Complex(x, y), this)
-                      val closestPointPlotCoords = canvasToPlotCoordinates(closestPoint.re, closestPoint.im)
-
-                      val timeLifeInfo = info.lives.minBy(elem => math.abs(elem._1 - closestPointPlotCoords._1))
-
-                      val seconds = timeLifeInfo._1 / 1000
-
-                      clear()
-                      drawAxes()
-                      drawChildren()
-
-                      if ((Complex(x, y) - closestPoint).modulus2 < 60) {
-                        drawPoint(closestPoint.re, closestPoint.im, 5, info.color)
-                        write(
-                          s"${info.playerName}",
-                          5, height - 40
-                        )
-                        write(
-                          s"Time: ${seconds}s, Health: ${timeLifeInfo._2}",
-                          5, height - 20
-                        )
-                      }
-
-                    case None =>
-                  }
-                }
 
                 setSize(width, height)
 
                 setYAxis(-5, Player.maxLife + 5)
-                setXAxis(0, livesInfo.values.map(_.lives.head._1).max)
+                setXAxis(0, livesInfo.values.map(_.lives.head._1).max + 2000)
                 livesInfo.keys.foreach(addChild)
+
+                for (x <- 5000 until xAxis._2.toInt by 5000) {
+                  addChild(
+                    new Segment(
+                      Complex(x, -2), Complex(x, 2),
+                      color = Vec4(0.5, 0.5, 0.5, 0.5)
+                    )
+                  )
+                }
+
+                val dashedVerticalLines: Map[PlotElement, Double] = (for (j <- 1 to 9) yield {
+                  val x = j * xAxis._2 / 10
+
+                  val segment = new Segment(
+                    Complex(x, 0), Complex(x, yAxis._2),
+                    color = Vec4(0.5, 0.5, 0.5, 0.5),
+                    dashed = Some(Seq(5, 15))
+                  )
+
+                  addChild(segment)
+
+                  (segment, x / 1000.0)
+                }).toMap
 
                 dom.document.body.appendChild(canvasElement)
                 canvasElement.style.border = "1px solid black"
@@ -206,12 +236,76 @@ object GamePlaying {
                 }
 
 
+                override def onMouseMoveCanvasCoords(x: Double, y: Double): Unit = {
+                  clear()
+                  drawAxes()
+                  drawChildren()
+
+
+                  closestChildToCanvasCoords(x, y, (elem: PlotElement) => livesInfo.isDefinedAt(elem)) match {
+                    case Some(child) =>
+                      livesInfo.get(child) match {
+                        case Some(info) =>
+                          val closestPoint = child.closestPointToCanvasCoords(Complex(x, y), this)
+                          val closestPointPlotCoords = canvasToPlotCoordinates(closestPoint.re, closestPoint.im)
+
+                          val timeLifeInfo = info.lives.minBy(elem => math.abs(elem._1 - closestPointPlotCoords._1))
+
+                          val seconds = timeLifeInfo._1 / 1000
+
+                          if ((Complex(x, y) - closestPoint).modulus2 < 1000) {
+                            drawPoint(closestPoint.re, closestPoint.im, 5, info.color)
+                            write(
+                              s"${info.playerName}",
+                              5, height - 40,
+                              color = info.color
+                            )
+                            write(
+                              s"Time: ${seconds}s, Health: ${timeLifeInfo._2}",
+                              5, height - 20,
+                              info.color
+                            )
+                          }
+
+                        case None =>
+                          println("not a life line")
+                      }
+                    case _ =>
+                      println("there seems to be no life line, that's weird...")
+                  }
+
+
+                  closestChildToCanvasCoords(x, y, dashedVerticalLines.isDefinedAt) match {
+                    case Some(child) =>
+                      val closestPoint = child.closestPointToCanvasCoords(Complex(x, y), this)
+
+                      if (closestPoint.re > width / 4 && (closestPoint - Complex(x, y)).modulus2 < 500) {
+                        write(
+                          f"${dashedVerticalLines(child)}%1.2fs",
+                          closestPoint.re + 5, height - 20,
+                          color = Vec4(0.5, 0.5, 0.5, 1)
+                        )
+                      }
+                    case None =>
+                  }
+                }
               }
 
               val livesOverTime = stats.map(stat => LifeOverTime(
                 stat.playerName,
                 Vec3(stat.color.red, stat.color.green, stat.color.blue),
-                stat.lifeOverTime.map(tLS => ((tLS.time - startTime).toDouble, tLS.life))
+                stat.lifeOverTime
+                  .map(tLS => ((tLS.time - startTime).toDouble, tLS.life))
+                  .foldLeft(List[(Double, Double)]()){
+                    case (accumulator, (time, life)) =>
+                      if (accumulator.isEmpty)
+                        List((time, life))
+                      else if (accumulator.head._2 != life)
+                        (time, life) +: ((time, accumulator.head._2) +: accumulator)
+                      else
+                        (time, life) +: accumulator
+                  }
+                  .reverse
               ))
                 .filter(_.lives.nonEmpty)
 
@@ -229,8 +323,10 @@ object GamePlaying {
               }
 
 
-              UIPages.playersStat.quitButton.onclick = (_: MouseEvent) => {
-                dom.window.location.href = "../../gamemenus/mainscreen/index.html"
+              setTimeout(1000) {
+                UIPages.playersStat.quitButton.onclick = (_: MouseEvent) => {
+                  dom.window.location.href = "../../gamemenus/mainscreen/index.html"
+                }
               }
 
             case CaptureTheFlagModeEOGData(scores) =>

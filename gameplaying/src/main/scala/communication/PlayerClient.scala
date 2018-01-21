@@ -147,6 +147,10 @@ class PlayerClient(playerName: String,
 
         gameHandler
 
+        renderermainprocesscom.Message.sendMessageToMainProcess(
+          renderermainprocesscom.StoreGameInfo.NewGame(gameName, gameHandler.currentGameState.time)
+        )
+
         readyToConnect()
       })
     } else if (gameHandler.currentGameState.state != GameEnded) {
