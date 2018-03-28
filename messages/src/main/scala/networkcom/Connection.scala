@@ -7,7 +7,6 @@ import boopickle.CompositePickler
 import boopickle.Default._
 
 import scala.collection.mutable
-import scala.scalajs.js.timers._
 
 
 class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
@@ -16,7 +15,7 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
   private val latencyHistory: mutable.Queue[Int] = mutable.Queue[Int]()
   latencyHistory.enqueue(100)
 
-  private var pingIntervalHandle: SetIntervalHandle = _
+  private var pingIntervalHandle: PlatformDependent.IntervalHandle = _
 
   private var connectedCheck: Boolean = false
   private var connected: Boolean = true
@@ -35,11 +34,11 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
   private var lastDeliveredOrderedReliable: Int = -1
 
 
-  private val connectionCheckIntervalHandle: SetIntervalHandle = setInterval(10000) {
+  private val connectionCheckIntervalHandle: PlatformDependent.IntervalHandle = PlatformDependent.setInterval(10000) {
     if (connectedCheck) connectedCheck = false
     else {
       connected = false
-      clearInterval(connectionCheckIntervalHandle)
+      PlatformDependent.clearInterval(connectionCheckIntervalHandle)
     }
   }
 
@@ -47,14 +46,14 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
   def activatePing(delay: Int = 1000): Unit = {
     deactivatePing()
 
-    pingIntervalHandle = setInterval(delay) {
+    pingIntervalHandle = PlatformDependent.setInterval(delay) {
       ping()
     }
   }
 
   def deactivatePing(): Unit = {
     if (pingIntervalHandle != null) {
-      clearInterval(pingIntervalHandle)
+      PlatformDependent.clearInterval(pingIntervalHandle)
       pingIntervalHandle = null
     }
   }
@@ -156,7 +155,7 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
       }
 
     } else {
-      setTimeout(delayForComputingLinkTime) {
+      PlatformDependent.setTimeout(delayForComputingLinkTime) {
         ping()
       }
     }
@@ -168,11 +167,20 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
   def meanLatency: Int = latencyHistory.sum / latencyHistory.size
 
   private def sendInternal(msg: InternalMessage): Unit = {
+//    implicit val pickler: CompositePickler[InternalMessage] = InternalMessage.internalMessagePickler
+//    val bb = Pickle.intoBytes(msg)
+//    val array = new Array[Byte](bb.remaining())
+//    bb.get(array)
+//    socket.send(array, peer.port, peer.address)
+    sendInternal(msg, peer)
+  }
+
+  private def sendInternal(msg: InternalMessage, specialPeer: Peer): Unit = {
     implicit val pickler: CompositePickler[InternalMessage] = InternalMessage.internalMessagePickler
     val bb = Pickle.intoBytes(msg)
     val array = new Array[Byte](bb.remaining())
     bb.get(array)
-    socket.send(array, peer.port, peer.address)
+    socket.send(array, specialPeer.port, specialPeer.address)
   }
 
   def sendNormal(msg: Message): Unit =
@@ -189,7 +197,25 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
       sendInternal(Reliable(msg, id))
 
 
-      setTimeout(4 * latency) {
+      PlatformDependent.setTimeout(4 * latency) {
+        if (sentReliableIds.contains(id) && connected) loop()
+      }
+    }
+
+    loop()
+  }
+
+  def sendReliableTo(msg: Message, specialPeer: Peer): Unit = {
+    val id = nextReliableId
+    nextReliableId += 1
+
+    sentReliableIds += id
+
+    def loop(): Unit = {
+      sendInternal(Reliable(msg, id), specialPeer)
+
+
+      PlatformDependent.setTimeout(4 * latency) {
         if (sentReliableIds.contains(id) && connected) loop()
       }
     }
@@ -206,7 +232,7 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
     def loop(): Unit = {
       sendInternal(OrderedReliable(msg, id))
 
-      setTimeout(4 * latency) {
+      PlatformDependent.setTimeout(4 * latency) {
         if (sentOrderedReliableIds.contains(id) && connected) loop()
       }
     }

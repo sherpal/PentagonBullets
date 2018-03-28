@@ -5,6 +5,7 @@ import boopickle.CompositePickler
 import java.nio.ByteBuffer
 
 import networkcom.messages._
+import networkcom.tablemessages._
 
 abstract class Message
 
@@ -29,6 +30,31 @@ object Message {
     .addConcreteType[Disconnected]
     .addConcreteType[TestMessage]
     .addConcreteType[TestSendArray]
+
+    /**
+     * Tables messages
+     */
+    .addConcreteType[Table]
+    .addConcreteType[Tables]
+    .addConcreteType[OpenTable]
+    .addConcreteType[TableDestroyed]
+    .addConcreteType[TableOpened]
+    .addConcreteType[AskTables]
+    .addConcreteType[JoinTable]
+    .addConcreteType[TableJoined]
+    .addConcreteType[LeaveTable]
+    .addConcreteType[LaunchGameFromTable]
+    .addConcreteType[StandardTableInfoMessage]
+    .addConcreteType[LaunchGameError]
+    .addConcreteType[ClientCreated]
+    .addConcreteType[HolePunching]
+    .addConcreteType[CreateServer]
+    .addConcreteType[CreateClient]
+    .addConcreteType[StandardTableAllInfoMessage]
+    .addConcreteType[AskTableInfo]
+    .addConcreteType[PlayerPeers]
+    .addConcreteType[Hello]
+
 
     .addConcreteType[ChatMessage]
 
@@ -129,6 +155,7 @@ object Message {
     .addConcreteType[DestroyBulletAmplifierMessage]
     .addConcreteType[BulletAmplifierAmplifiedMessage]
     .addConcreteType[FireLaserMessage]
+    .addConcreteType[NewBulletGlueMessage]
 
     .addConcreteType[NewBarrierMessage]
     .addConcreteType[DestroyBarrierMessage]

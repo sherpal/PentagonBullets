@@ -24,7 +24,7 @@ object ScoreBoard extends Tooltip() {
   private var lastUpdate: Double = 0
 
   def update(gameState: GameState): Unit = {
-    if (gameState.time - lastUpdate > 1000) {
+    //if (gameState.time - lastUpdate > 1000) {
       lastUpdate = gameState.time
       topLife match {
         case Some(bar) =>
@@ -40,6 +40,15 @@ object ScoreBoard extends Tooltip() {
           })
         case None =>
       }
+    //}
+  }
+
+  def reset(time: Long): Unit = {
+    lastUpdate = time
+    topLife match {
+      case Some(bar) =>
+        bar.foreach(_.asInstanceOf[PlayerLife].setLife(0.0))
+      case None =>
     }
   }
 
@@ -80,12 +89,6 @@ object ScoreBoard extends Tooltip() {
       itemBullet.setPoint(Left)
       itemBullet.setTexture(PIXITexture.fromImage("../../assets/ui/player_item_bullet.png"))
       itemBullet.setVertexColor(color._1, color._2, color._3)
-
-//      val fs: FontString = bar.createFontString()
-//      fs.setSize(125, 25)
-//      fs.setText(playerName)
-//      fs.setPoint(Left, bar, Left, 10, 0)
-//      fs.setJustifyH(JustifyLeft)
 
       val bitmapText = bar.createBitmapText(playerName, "25px QuicksandBold", "left")
       bitmapText.setPoint(Left, bar, Left, 5, 0)

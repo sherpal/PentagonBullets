@@ -2,7 +2,7 @@ package gameserver
 
 import exceptions.{DoesNotManageThisMessage, GameModeCreationNotImplemented}
 import gamecreation.{CaptureFlagCreate, GameCreation, StandardGameCreate}
-import gamelogicserver.GamePlaying
+import gamelogicserver.{GameLogicServer, GamePlaying}
 import gamemode.{CaptureTheFlagMode, GameMode, StandardMode}
 import networkcom._
 import networkcom.messages._
@@ -17,7 +17,7 @@ import scala.collection.mutable
  * A GameServer runs on a dedicated BrowserWindow and will manage all communication to and from the Players.
  *
  */
-class GameServer(val address: String, val port: Int) extends Server {
+class GameServer(val address: String, val port: Int) extends GameLogicServer {
 
   /**
    * In this section, we manage everything that will happen before a game effectively launch.

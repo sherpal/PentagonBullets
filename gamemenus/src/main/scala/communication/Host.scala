@@ -47,7 +47,7 @@ class Host(val name: String, val gameName: String, val address: String, val port
     val notReady = notReadyPlayers
 
     if (mayLaunch) {
-      if (teams.values.map(_.nbrOfPlayers).toList.distinct.length == 1) {
+      if (teams.values.map(_.nbrOfPlayers).toList.distinct.lengthCompare(1) == 0) {
         launchGame()
       } else {
         UI.showConfirmBox(

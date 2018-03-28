@@ -12,6 +12,7 @@ import gamestate.GameState.GameEnded
 import graphics.EntityDrawer
 import graphics.gameanimations.LaserGunSight
 import gui.Center
+import networkcom.tablemessages.Hello
 import org.scalajs.dom
 import org.scalajs.dom.html
 import pixigraphics.{PIXILoader, PIXIResource}
@@ -95,8 +96,15 @@ class PlayerClient(playerName: String,
           disconnect()
           dom.window.location.href = "../../gamemenus/mainscreen/index.html" // TODO: change this
         } else {
+          println(message)
+
           dom.window.alert(message)
           dom.window.location.href = "../../gamemenus/mainscreen/index.html"
+        }
+
+      case Hello(_) =>
+        if (scala.scalajs.LinkingInfo.developmentMode) {
+          println("server says Hello")
         }
 
       case _ =>

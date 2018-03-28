@@ -4,7 +4,6 @@ import custommath.Complex
 import entities._
 import entitiescollections.CaptureTheFlagInfo
 import gamemode.{CaptureTheFlagMode, GameMode}
-import gameserver.GameServer
 import gamestate.ActionSource.ServerSource
 import gamestate.{GameAction, GameState}
 import gamestate.actions._
@@ -26,7 +25,7 @@ import scala.scalajs.js.timers.{SetTimeoutHandle, setInterval, setTimeout}
 class CaptureFlagGamePlaying(val gameName: String,
                              val password: Int,
                              protected val playersInfo: Vector[PlayerGameSettingsInfo],
-                             protected val server: GameServer) extends GamePlaying {
+                             protected val server: GameLogicServer) extends GamePlaying {
 
   val gameMode: GameMode = CaptureTheFlagMode
 

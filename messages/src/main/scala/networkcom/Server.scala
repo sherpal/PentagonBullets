@@ -1,9 +1,8 @@
 package networkcom
 
-import sharednodejsapis._
+import networkcom.tablemessages.{Hello, HolePunching}
 
 import scala.collection.mutable
-import scala.scalajs.js.timers._
 
 /**
  * A Server is a more evolved Node.js Socket that has [[Client]]s connected to it.
@@ -47,8 +46,7 @@ abstract class Server extends UDPNode {
       case Some(connection) =>
         connection.onMessage(array)
       case None =>
-        val connection = new Connection(peer, socket, msg => onMessage(peer, msg))
-        clientConnections += ((peer, connection))
+        val connection = makeConnection(peer)
         connection.onMessage(array)
     }
   })
@@ -60,40 +58,45 @@ abstract class Server extends UDPNode {
     println(s"server listening ${peer.address}:${peer.port}")
   })
 
-  //private val socket: Socket = DgramModule.createSocket(t)
+  /**
+   * Manually creates a Connection with the peer.
+   * This is used when a new socket sent a message, and when making a UDP hole punching.
+   *
+   * The ability to make UDP hole punching is the reason why this method is public (I guess).
+   */
+  def makeConnection(peer: Peer): Connection = {
+    val connection = clientConnections.getOrElse(peer, new Connection(peer, socket, msg => onMessage(peer, msg)))
+    clientConnections += peer -> connection
 
+    connection
+  }
 
-//  socket.on("listening", () => {
-//    val address = socket.address()
-//    println(s"server listening ${address.address}:${address.port}")
-//  })
+  def removeConnection(peer: Peer): Unit = {
+    clientConnections -= peer
+  }
 
-  //socket.on("close", () => println("server disconnected"))
+  def pushConnection(peer: Peer): Unit = {
+    var counter = 0
 
-//  socket.on("error", (err: ErrorEvent) => {
-//    println("server error:")
-//    println(s"${err.stack}")
-//    socket.close()
-//  })
+    def loop(): Unit = {
+      if (counter < 20) {
+        makeConnection(peer)
 
-//  socket.on("message", (msg: Buffer, rInfo: RInfo) => {
-//    val peer = Peer(rInfo.address, rInfo.port)
-//
-//    clientConnections.get(peer) match {
-//      case Some(connection) =>
-//        connection.onMessage(msg)
-//      case None =>
-//        val connection = new Connection(peer, socket, msg => onMessage(peer, msg))
-//        clientConnections += ((peer, connection))
-//        connection.onMessage(msg)
-//    }
-//  })
+        sendNormal(Hello(""), peer)
+
+        counter += 1
+
+        PlatformDependent.setTimeout(1000)(loop())
+      }
+    }
+    loop()
+  }
 
   def activate(): Unit = {
     if (address == "*") socket.bind(port) else socket.bind(port, Some(address))
 
     // checking every 10s which connected client is still alive
-    setInterval(10000)(checkingClientStatus())
+    PlatformDependent.setInterval(10000)(checkingClientStatus())
   }
 
   def broadcastNormal(msg: Message): Unit =
@@ -155,7 +158,7 @@ abstract class Server extends UDPNode {
   }
 
   private def clientDisconnect(peer: Peer): Unit = {
-    clientConnections(peer).sendNormal(Disconnected())
+    //clientConnections(peer).sendNormal(Disconnected())
     clientConnections -= peer
 
     clientConnectedCallback(this, peer, connected = false)

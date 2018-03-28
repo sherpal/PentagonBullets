@@ -3,7 +3,6 @@ package gamelogicserver
 import custommath.Complex
 import entities._
 import gamemode.{GameMode, StandardMode}
-import gameserver.GameServer
 import gamestate.ActionSource.ServerSource
 import gamestate.GameAction
 import gamestate.actions._
@@ -18,7 +17,7 @@ import scala.scalajs.js.timers.{setInterval, setTimeout}
 class StandardGamePlaying(val gameName: String,
                           val password: Int,
                           protected val playersInfo: Vector[PlayerGameSettingsInfo],
-                          protected val server: GameServer) extends GamePlaying {
+                          protected val server: GameLogicServer) extends GamePlaying {
 
   val gameMode: GameMode = StandardMode
 

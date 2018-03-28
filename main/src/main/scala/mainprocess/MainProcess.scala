@@ -11,6 +11,7 @@ import renderermainprocesscom._
 import tooltip.Tooltip
 
 import scala.collection.mutable
+import scala.scalajs.js
 
 
 
@@ -91,22 +92,47 @@ object MainProcess {
       }
     })
 
-
-    IPCMain.on("main-renderer-message", (event: IPCMainEvent, msg: Any) => {
+    val mainRendererMessageCallback: js.Function2[IPCMainEvent, Any, Unit] = (event: IPCMainEvent, msg: Any) => {
       renderermainprocesscom.Message.decode(msg.asInstanceOf[scala.scalajs.js.Array[Byte]]) match {
         case storeGameInfo: StoreGameInfo =>
           GameInfoStorage.messageHandler(storeGameInfo, event.sender)
+        case ShowAndHide(flag) =>
+          val window = BrowserWindowMainProcess.fromWebContents(event.sender)
+          if (flag) window.show() else window.hide()
+        case CloseMe() =>
+          BrowserWindowMainProcess.fromWebContents(event.sender).close()
         case OpenTooltip(text, x, y) =>
           Tooltip.showTooltip(text, x, y)
         case MoveTooltip(x, y) =>
           Tooltip.moveTooltip(x, y)
         case CloseTooltip() =>
           Tooltip.hideTooltip()
+        case OpenOneTimeServer() =>
+          val window = new BrowserWindowMainProcess(new BrowserWindowOptions {
+            override val width: UndefOr[Int] = 600
+            override val height: UndefOr[Int] = 600
+
+            override val show: UndefOr[Boolean] = scala.scalajs.LinkingInfo.developmentMode
+          })
+          window.loadURL("file://" +
+            Path.join(js.Dynamic.global.selectDynamic("__dirname").asInstanceOf[String],
+              "../one-time-server/html/server.html")
+          )
+          window.webContents.openDevTools()
+        case ReadyToShow(_) =>
+          val window = BrowserWindowMainProcess.fromWebContents(event.sender)
+          // messaging the main window that a new window is ready to be shown
+          renderermainprocesscom.Message.sendMessageToWebContents(
+            mainWindow.webContents, ReadyToShow(window.id)
+          )
+          window.show()
         case OpenDevTools() =>
           event.sender.openDevTools()
         case _ => println(msg)
       }
-    })
+    }
+
+    IPCMain.on("main-renderer-message", mainRendererMessageCallback)
 
   }
 }

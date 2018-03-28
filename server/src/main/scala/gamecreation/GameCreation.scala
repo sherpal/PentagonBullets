@@ -6,6 +6,7 @@ import exceptions.GameAlreadyStarted
 import gamelogicserver.GamePlaying
 import gamemode.GameMode
 import gameserver.GameServer
+import globalvariables.Color
 import networkcom.messages.SendPlayerInfo
 import networkcom.{Peer, PlayerGameSettingsInfo}
 
@@ -148,8 +149,23 @@ trait GameCreation {
 
   def makeGamePlaying(password: Int, playerInfo: Vector[PlayerGameSettingsInfo]): GamePlaying
 
-  def sendPlayerInfoArray: Array[SendPlayerInfo] = playersInfo.values.map(info =>
-    SendPlayerInfo(name, info.playerName, Entity.newId(), info.team, info.ready, info.abilities)
+  /**
+   * Sending information that already defines the players.
+   */
+  def sendPlayerInfoArray: Array[SendPlayerInfo] = playersInfo.values.toList
+    .sortBy(_.playerName)
+    .zip(GameCreation.definedColors)
+    .map({ case (info, color) =>
+      SendPlayerInfo(
+        name,
+        info.playerName,
+        Entity.newId(),
+        info.team,
+        info.ready,
+        info.abilities,
+        Vector(color.red, color.green, color.blue)
+      )
+    }
   ).toArray
 }
 
@@ -167,5 +183,16 @@ object GameCreation {
 
   def freeId(id: Long): Unit =
     idQueue.enqueue(id)
+
+  private val definedColors: List[Color] = List(
+    Color(255, 0, 0),
+    Color(100, 100, 255),
+    Color(0, 255, 0),
+    Color(204, 204, 0),
+    Color(204, 0, 204),
+    Color(102, 205, 170),
+    Color(255, 165, 0)
+  )
+
 
 }

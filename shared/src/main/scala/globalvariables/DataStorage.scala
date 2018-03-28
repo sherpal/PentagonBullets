@@ -24,6 +24,7 @@ object DataStorage {
       .addConcreteType[BaseDirectory]
       .addConcreteType[WindowId]
 
+      .addConcreteType[OneTimeServerGameData]
       .addConcreteType[GameData]
       .addConcreteType[PlayerData]
       .addConcreteType[PlayerDataList]
@@ -32,6 +33,7 @@ object DataStorage {
       .addConcreteType[Color]
       .addConcreteType[StandardModeEOGData]
       .addConcreteType[CaptureTheFlagModeEOGData]
+      .addConcreteType[PeerData]
 
       .addConcreteType[PlayerStat]
       .addConcreteType[PlayerStats]
@@ -83,14 +85,28 @@ final case class GameData(gameName: String,
                           host: Boolean,
                           gameMode: String) extends Data
 
-final case class PlayerData(gameName: String,
-                            playerName: String,
-                            id: Long,
-                            team: Int,
-                            ready: Boolean,
-                            abilities: List[Int]) extends Data
+final case class OneTimeServerGameData(
+                                        gameName: String,
+                                        gameMode: String,
+                                        enterPassword: Int,
+                                        tableServerAddress: String,
+                                        tableServerPort: Int,
+                                        playerData: List[PlayerData]
+                                      ) extends Data
+
+final case class PlayerData(
+                             gameName: String,
+                             playerName: String,
+                             id: Long,
+                             team: Int,
+                             ready: Boolean,
+                             abilities: List[Int],
+                             color: Vector[Double]
+                           ) extends Data
 
 final case class PlayerDataList(data: List[PlayerData]) extends Data
+
+final case class PeerData(address: String, port: Int) extends Data
 
 sealed trait EndOfGameData extends Data
 final case class StandardModeEOGData(playersFromLastToFirstDeath: List[String]) extends EndOfGameData

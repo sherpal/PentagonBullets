@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Replay</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="./w3-copy.css">
+    <link rel="stylesheet" type="text/css" href="./w3-color-theme.css">
+    <style type="text/css">
+        @font-face {
+        font-family: 'squareTTF';
+        src: url('FORCED_SQUARE.ttf');
+        font-weight: normal;
+        font-style: normal;
+        }
+        @font-face {
+        font-family: 'quicksand';
+        src: url('Quicksand_Bold.otf');
+        font-weight: normal;
+        font-style: normal;
+        }
+
+        .selectedPointOfView {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Replay the game</h1>
+
+<div style="display: flex">
+    <div id="pointOfViewDiv" style="border: 1px solid black">
+        <h2>Players</h2>
+    </div>
+    <div>
+        <canvas id="canvas" width="700" height="500" style="border: 1px solid black"></canvas>
+        <input id="timeSlider" type="range" style="width: 700px;">
+    </div>
+</div>
+<div>
+    <button>Previous action</button>
+    <button>Previous actions</button>
+    <button>Next actions</button>
+    <button>Next action</button>
+    <button id="playButton">Play</button>
+    <button id="pauseButton">Pause</button>
+</div>
+
+<script src="../libraries/pixi.min.js"></script>
+<script type="text/javascript">
+//##
+</script>
+
+
+</body>
+</html>

@@ -47,11 +47,8 @@ trait HealthBar {
 
         val coef = u.lifeTotal / maxLife
 
-        //val lifeWidth = worldWidth * coef
-
         lifeSprite.width = 100 * coef
 
-        //val lifeCenter = worldPos - (worldWidth - lifeWidth) / 2
         EntityDrawer.camera.viewportManagerSized(
           container, worldPos + Complex(-worldWidth / 2, worldHeight / 2),
           worldWidth, worldHeight, worldPos, boundingBox
@@ -61,8 +58,6 @@ trait HealthBar {
       case _ =>
         container.visible = false
     }
-
-
 
   }
 

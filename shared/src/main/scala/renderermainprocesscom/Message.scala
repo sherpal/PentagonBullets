@@ -17,10 +17,13 @@ object Message {
 
   implicit val messagePickler: CompositePickler[Message] = compositePickler[Message]
     .addConcreteType[OpenTooltip]
+    .addConcreteType[CloseMe]
     .addConcreteType[CloseTooltip]
     .addConcreteType[MoveTooltip]
 
     .addConcreteType[OpenDevTools]
+    .addConcreteType[ShowAndHide]
+    .addConcreteType[ReadyToShow]
     .addConcreteType[PlayersInfo]
     .addConcreteType[StoreAction]
     .addConcreteType[NewGame]
@@ -29,6 +32,8 @@ object Message {
 
     .addConcreteType[GeneralGameInfo]
     .addConcreteType[SendActionGroup]
+
+    .addConcreteType[OpenOneTimeServer]
 
 
 
@@ -50,12 +55,19 @@ object Message {
 
 
 final case class OpenDevTools() extends Message
+final case class CloseMe() extends Message
+
+final case class ShowAndHide(show: Boolean) extends Message
+final case class ReadyToShow(id: Int) extends Message
 
 sealed trait StoreGameInfo extends Message
 object StoreGameInfo {
   final case class NewGame(gameName: String, initialGameStateTime: Long) extends StoreGameInfo
   final case class StoreAction(compressedAction: Vector[Byte]) extends StoreGameInfo
-  final case class PlayersInfo(info: Vector[PlayerInfo]) extends StoreGameInfo
+  final case class PlayersInfo(
+                                info: Vector[PlayerInfo],
+                                teamLeaders: Vector[Long]
+                              ) extends StoreGameInfo
   final case class GiveMeGameInfo() extends StoreGameInfo
 
   final case class PlayerInfo(
@@ -80,10 +92,10 @@ object GiveGameInfoBack {
 
 
 sealed trait ManageTooltipMsg extends Message
-
-
 final case class OpenTooltip(text: String, xMousePos: Int, yMousePos: Int) extends ManageTooltipMsg
 final case class MoveTooltip(xMousePos: Int, yMousePos: Int) extends ManageTooltipMsg
 final case class CloseTooltip() extends ManageTooltipMsg
 
 
+
+final case class OpenOneTimeServer() extends Message

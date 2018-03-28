@@ -46,7 +46,7 @@ class CaptureTheFlagGameHandler(protected val playerName: String,
 
   lazy val playerHealthBars: Map[Long, PlayerHealthBar] = playersInfo
     .map(_.id)
-    .map(id => id -> new PlayerHealthBar(id, this))
+    .map(id => id -> new PlayerHealthBar(id, () => this.currentGameState.players.get(id)))
     .toMap
 
   object Runner extends GameRunner {

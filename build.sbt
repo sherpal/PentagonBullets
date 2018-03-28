@@ -4,16 +4,24 @@ name := "PentagonBullets"
 
 val copyGamePlaying = taskKey[File]("Return compiled gamePlaying file.")
 val copyGameMenus = taskKey[File]("Return compiled gameMenus file.")
+val copyTableServerMenus = taskKey[File]("Return compiled menusfortableserver file")
 val copyMain = taskKey[File]("Return main file.")
 val copyServer = taskKey[File]("Return server file.")
+val copyOneTimeServer = taskKey[File]("Return one time server file")
 val copyTooltip = taskKey[File]("Return tooltip file.")
+val copyReplay = taskKey[File]("Return replay file.")
+val compileTableServer = taskKey[File]("Compile table server.")
 lazy val fastOptCompileCopy = taskKey[Unit]("Compile and copy paste all the projects in the right directories.")
 
 val copyGamePlayingFullOpt = taskKey[File]("Return full optimized compiled gamePlaying file")
 val copyGameMenusFullOpt = taskKey[File]("Return full optimized compiled gameMenus file")
+val copyTableServerMenusFullOpt = taskKey[File]("Return compiled menusfortableserver full opt file")
 val copyMainFullOpt = taskKey[File]("Return full optimized compiled main file")
 val copyServerFullOpt = taskKey[File]("Return full optimized compiled server file")
+val copyOneTimeServerFullOpt = taskKey[File]("Return full optimized compiled one time server file")
 val copyTooltipFullOpt = taskKey[File]("Return full optimized compiled tooltip file")
+val copyReplayFullOpt = taskKey[File]("Return full optimized compiled replay file")
+val compileTableServerFullOpt = taskKey[File]("Compile table server.")
 lazy val fullOptCompileCopy = taskKey[Unit]("FullCompile and copy paste all the projects in the relevant directories")
 
 val commonSettings = Seq(
@@ -28,12 +36,26 @@ def fileNameWithoutPath(fileName: String): String = """[a-z\.-]+$""".r.findFirst
 
 fastOptCompileCopy := {
 
+  (compileTableServer in `tableServer`).value
+  println("[info] table server is compiled.")
+
   val gamePlayingDirectory = (copyGamePlaying in `gamePlaying`).value
   IO.delete(baseDirectory.value / "electron/gameplaying/js-files")
   IO.copyFile(
     gamePlayingDirectory,
     baseDirectory.value / ("electron/gameplaying/js-files/" + fileNameWithoutPath(gamePlayingDirectory.toString))
   )
+
+  /**
+   * Replay window copy and paste
+   */
+  val replayDirectory = (copyReplay in `replay`).value
+  IO.copyFile(
+    replayDirectory,
+    baseDirectory.value / ("electron/gameplaying/js-files/" + fileNameWithoutPath(replayDirectory.toString))
+  )
+
+
 
   val gameMenusDirectory = (copyGameMenus in `gameMenus`).value
   IO.delete(baseDirectory.value / "electron/gamemenus/js-files")
@@ -42,11 +64,27 @@ fastOptCompileCopy := {
     baseDirectory.value / ("electron/gamemenus/js-files/" + fileNameWithoutPath(gameMenusDirectory.toString))
   )
 
+  val tableMenusDirectory = (copyTableServerMenus in `menusForTableServer`).value
+  IO.delete(baseDirectory.value / "electron/table-menus/js-files")
+  IO.copyFile(
+    tableMenusDirectory,
+    baseDirectory.value / ("electron/table-menus/js-files/" + fileNameWithoutPath(tableMenusDirectory.toString))
+  )
+
+
   val serverDirectory = (copyServer in `server`).value
   IO.delete(baseDirectory.value / "electron/server/js-files")
   IO.copyFile(
     serverDirectory,
     baseDirectory.value / ("electron/server/js-files/" + fileNameWithoutPath(serverDirectory.toString))
+  )
+
+  val oneTimeServerDirectory = (copyOneTimeServer in `oneTimeServer`).value
+  IO.delete(baseDirectory.value / "electron/one-time-server/js-files")
+  IO.copyFile(
+    oneTimeServerDirectory,
+    baseDirectory.value /
+      ("electron/one-time-server/js-files/" + fileNameWithoutPath(oneTimeServerDirectory.toString))
   )
 
 
@@ -56,6 +94,7 @@ fastOptCompileCopy := {
     tooltipDirectory,
     baseDirectory.value / ("electron/tooltip/js/" + fileNameWithoutPath(tooltipDirectory.toString))
   )
+
 
 
   val mainProcessDirectory = (copyMain in `main`).value
@@ -81,9 +120,21 @@ fastOptCompileCopy := {
   )
 
   makeHtmlFile(
+    "source-html/table-menus.html",
+    "electron/table-menus/html/table-menus.html",
+    "require(\"../js-files/menusfortableserver-fastopt.js\")"
+  )
+
+  makeHtmlFile(
     "source-html/scoreboard.html",
     "electron/gameplaying/gameplaying/scoreboard.html",
     "require(\"../js-files/gameplaying-fastopt.js\")"
+  )
+
+  makeHtmlFile(
+    "source-html/replay.html",
+    "electron/gameplaying/gameplaying/replay.html",
+    "require(\"../js-files/replay-fastopt.js\")"
   )
 
   makeHtmlFile(
@@ -116,15 +167,33 @@ fastOptCompileCopy := {
     "require(\"../js/tooltip-fastopt.js\")"
   )
 
+  makeHtmlFile(
+    "source-html/server.html",
+    "electron/one-time-server/html/server.html",
+    "require(\"../js-files/onetimeserver-fastopt.js\")"
+  )
+
   println("[info] Files copied to relevant directories")
 }
 
 fullOptCompileCopy := {
+
+  (compileTableServerFullOpt in `tableServer`).value
+  println("[info] table server is compiled.")
+
+
   val gamePlayingDirectory = (copyGamePlayingFullOpt in `gamePlaying`).value
   IO.delete(baseDirectory.value / "electron/gameplaying/js-files")
   IO.copyFile(
     gamePlayingDirectory,
     baseDirectory.value / ("electron/gameplaying/js-files/" + fileNameWithoutPath(gamePlayingDirectory.toString))
+  )
+
+  /** Replay */
+  val replayDirectory = (copyReplayFullOpt in `replay`).value
+  IO.copyFile(
+    replayDirectory,
+    baseDirectory.value / ("electron/gameplaying/js-files/" + fileNameWithoutPath(replayDirectory.toString))
   )
 
   val gameMenusDirectory = (copyGameMenusFullOpt in `gameMenus`).value
@@ -134,11 +203,27 @@ fullOptCompileCopy := {
     baseDirectory.value / ("electron/gamemenus/js-files/" + fileNameWithoutPath(gameMenusDirectory.toString))
   )
 
+  val tableMenusDirectory = (copyTableServerMenusFullOpt in `menusForTableServer`).value
+  IO.delete(baseDirectory.value / "electron/table-menus/js-files")
+  IO.copyFile(
+    tableMenusDirectory,
+    baseDirectory.value / ("electron/table-menus/js-files/" + fileNameWithoutPath(tableMenusDirectory.toString))
+  )
+
+
   val serverDirectory = (copyServerFullOpt in `server`).value
   IO.delete(baseDirectory.value / "electron/server/js-files")
   IO.copyFile(
     serverDirectory,
     baseDirectory.value / ("electron/server/js-files/" + fileNameWithoutPath(serverDirectory.toString))
+  )
+
+  val oneTimeServerDirectory = (copyOneTimeServerFullOpt in `oneTimeServer`).value
+  IO.delete(baseDirectory.value / "electron/one-time-server/js-files")
+  IO.copyFile(
+    oneTimeServerDirectory,
+    baseDirectory.value /
+      ("electron/one-time-server/js-files/" + fileNameWithoutPath(oneTimeServerDirectory.toString))
   )
 
   val tooltipDirectory = (copyTooltipFullOpt in `tooltip`).value
@@ -171,6 +256,12 @@ fullOptCompileCopy := {
   )
 
   makeHtmlFile(
+    "source-html/table-menus.html",
+    "electron/table-menus/html/table-menus.html",
+    "require(\"../js-files/menusfortableserver-opt.js\")"
+  )
+
+  makeHtmlFile(
     "source-html/scoreboard.html",
     "electron/gameplaying/gameplaying/scoreboard.html",
     "require(\"../js-files/gameplaying-opt.js\")"
@@ -189,6 +280,12 @@ fullOptCompileCopy := {
   )
 
   makeHtmlFile(
+    "source-html/replay.html",
+    "electron/gameplaying/gameplaying/replay.html",
+    "require(\"../js-files/replay-opt.js\")"
+  )
+
+  makeHtmlFile(
     "source-html/createserver.html",
     "electron/gamemenus/createserver/createserver.html",
     "require(\"../js-files/gamemenus-opt.js\")"
@@ -204,6 +301,12 @@ fullOptCompileCopy := {
     "source-html/tooltip.html",
     "electron/tooltip/html/tooltip.html",
     "require(\"../js/tooltip-opt.js\")"
+  )
+
+  makeHtmlFile(
+    "source-html/server.html",
+    "electron/one-time-server/html/server.html",
+    "require(\"../js-files/onetimeserver-opt.js\")"
   )
 
   println("[info] Files copied to relevant directories")
@@ -270,6 +373,26 @@ lazy val `tooltip` = project.in(file("tooltip"))
   )
   .dependsOn(shared)
 
+lazy val `replay` = project.in(file("replay"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(commonSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom" % "0.9.3",
+      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT",
+      "be.adoeraene" %%% "pixi-scalajs-gui" % "0.1.0-SNAPSHOT"
+    ),
+    scalaJSUseMainModuleInitializer := true,
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    copyReplay := {
+      (fastOptJS in Compile).value.data
+    },
+    copyReplayFullOpt := {
+      (fullOptJS in Compile).value.data
+    }
+  )
+  .dependsOn(`gamePlaying`)
+
 lazy val `gamePlaying` = project.in(file("gameplaying"))
   .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings)
@@ -312,6 +435,26 @@ lazy val `gameMenus` = project.in(file("gamemenus"))
   .dependsOn(`shared`)
   .dependsOn(`server`)
 
+lazy val `menusForTableServer` = project.in(file("./menus-for-table-server"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(commonSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom" % "0.9.3",
+      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT",
+      "be.adoeraene" %%% "pixi-scalajs-gui" % "0.1.0-SNAPSHOT"
+    ),
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSUseMainModuleInitializer := true,
+    copyTableServerMenus := {
+      (fastOptJS in Compile).value.data
+    },
+    copyTableServerMenusFullOpt := {
+      (fullOptJS in Compile).value.data
+    }
+  )
+  .dependsOn(`shared`)
+  .dependsOn(`messagesJS`)
 
 lazy val `main` = project.in(file("main"))
   .enablePlugins(ScalaJSPlugin)
@@ -334,6 +477,19 @@ lazy val `main` = project.in(file("main"))
   .dependsOn(`shared`)
 
 
+lazy val `serverLogic` = project.in(file("server-logic"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(commonSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom" % "0.9.3",
+      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT"
+    ),
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+  )
+.dependsOn(`gameLogicJS`)
+.dependsOn(`messagesJS`)
+
 lazy val `server` = project.in(file("server"))
   .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings)
@@ -352,6 +508,7 @@ lazy val `server` = project.in(file("server"))
       (fullOptJS in Compile).value.data
     }
   )
+  .dependsOn(`serverLogic`)
   .dependsOn(`shared`)
 
 
@@ -379,3 +536,54 @@ lazy val `ui` = project.in(file("ui"))
       "org.scala-js" %%% "scalajs-dom" % "0.9.3"
     )
   )
+
+
+/**
+ * This project will be a node.js module that keeps track of all the tables currently occupied by people.
+ *
+ * A table is a (virtual) place where people gather before starting a game.
+ * The module should be put on a server accessible for every body.
+ */
+lazy val `tableServer` = project.in(file("tableserver"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(commonSettings)
+  .settings(
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSUseMainModuleInitializer := true,
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom" % "0.9.3"
+    ),
+    compileTableServer := {
+      (fastOptJS in Compile).value.data
+    },
+    compileTableServerFullOpt := {
+      (fullOptJS in Compile).value.data
+    }
+  )
+  .dependsOn(messagesJS)
+  .dependsOn(gameLogicJS)
+
+
+/**
+ * This is a server created for one game.
+ * An invisible browser window will pop, open a server, and will quit once the game is over.
+ */
+lazy val `oneTimeServer` = project.in(file("onetimeserver"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(commonSettings)
+  .settings(
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSUseMainModuleInitializer := true,
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom" % "0.9.3"
+    ),
+    copyOneTimeServer := {
+      (fastOptJS in Compile).value.data
+    },
+    copyOneTimeServerFullOpt := {
+      (fullOptJS in Compile).value.data
+    }
+  )
+  .dependsOn(`serverLogic`)
+  .dependsOn(shared)
+

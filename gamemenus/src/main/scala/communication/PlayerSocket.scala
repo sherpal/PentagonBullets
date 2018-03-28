@@ -39,7 +39,6 @@ trait PlayerSocket extends Client {
         playerRow(playerName) match {
           case Some(row) =>
             row.className = if (status) "w3-green" else ""
-//            row.className = if (status) "success" else "danger"
           case None =>
             dom.console.warn(s"Didn't find the row attached to $playerName")
         }
@@ -188,7 +187,8 @@ trait PlayerSocket extends Client {
 
     DataStorage.storeValue("playerGameSettings", PlayerDataList(info.map(infoPiece =>
       PlayerData(
-        infoPiece.gameName, infoPiece.playerName, infoPiece.id, infoPiece.team, infoPiece.ready, infoPiece.abilities
+        infoPiece.gameName, infoPiece.playerName, infoPiece.id, infoPiece.team, infoPiece.ready, infoPiece.abilities,
+        infoPiece.color
       )
     ).toList))
 

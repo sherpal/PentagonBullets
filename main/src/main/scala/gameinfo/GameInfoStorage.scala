@@ -20,8 +20,8 @@ object GameInfoStorage {
   def messageHandler(message: StoreGameInfo, webContents: WebContents): Unit = message match {
     case StoreAction(compressedAction) =>
       addActionInfo(compressedAction)
-    case PlayersInfo(info) =>
-      _playersInfo = PlayersInfo(info)
+    case PlayersInfo(info, teamLeaders) =>
+      _playersInfo = PlayersInfo(info, teamLeaders)
     case NewGame(gameName, initialGameStateTime) =>
       println(gameName, initialGameStateTime)
       resetInfo()
@@ -35,7 +35,7 @@ object GameInfoStorage {
   private var _gameName: String = ""
   private var _initialGameStateTime: Long = 0
   private var _actionsInfo: List[Vector[Byte]] = Nil
-  private var _playersInfo: PlayersInfo = PlayersInfo(Vector())
+  private var _playersInfo: PlayersInfo = PlayersInfo(Vector(), Vector())
 
   /**
    * Adds the actionInfo to the list.

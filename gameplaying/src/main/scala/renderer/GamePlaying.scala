@@ -2,19 +2,21 @@ package renderer
 
 import communication.PlayerClient
 import custommath.Complex
+import debug.DebugPackage
 import entities.Player
 import exceptions.StorageDecodingError
 import globalvariables._
 import globalvariables.VariableStorage.retrieveValue
-import networkcom.PlayerGameSettingsInfo
+import networkcom.tablemessages.Hello
+import networkcom.{Disconnect, Peer, PlayerGameSettingsInfo}
 import org.scalajs.dom
 import org.scalajs.dom.html
 import org.scalajs.dom.raw.MouseEvent
 import plots.{Plot, PlotElement}
 import plots.plotelements.{Line, Segment}
-import renderermainprocesscom.OpenDevTools
+import replay.ReplayWindow
 import scoreboardui.UIPages
-import sharednodejsapis.{BrowserWindow, IPCMainEvent, IPCRenderer}
+import sharednodejsapis.BrowserWindow
 import ui._
 import webglgraphics.{Vec3, Vec4}
 
@@ -35,6 +37,9 @@ import scala.scalajs.js.timers.setTimeout
 object GamePlaying {
   def main(args: Array[String]): Unit = {
 
+    if (scala.scalajs.LinkingInfo.developmentMode) {
+      new DebugPackage("../gameplaying/scoreboard.html")
+    }
 
     dom.document.title match {
       case "Pentagon Bullets" =>
@@ -48,11 +53,25 @@ object GamePlaying {
               case _ =>
                 throw new StorageDecodingError
             }).map(data => PlayerGameSettingsInfo.fromInfo(
-              data.playerName, data.ready, data.team, data.id, data.abilities
+              data.playerName, data.ready, data.team, data.id, data.abilities,
+              (data.color(0), data.color(1), data.color(2))
             ))
 
+            println(address + ":" + port)
 
-            new PlayerClient(playerName, gameName, address, port, password, playersData, gameMode)
+            val playerClient = new PlayerClient(playerName, gameName, address, port, password, playersData, gameMode)
+
+            DataStorage.retrieveValue("tableServerPeer") match {
+              case null =>
+              case PeerData(a, p) =>
+                playerClient.sendReliableTo(Hello(gameName), Peer(a, p))
+                setTimeout(5000) {
+                  playerClient.sendReliableTo(Disconnect(), Peer(a, p))
+                }
+              case _ =>
+            }
+
+
 
           case _ =>
             dom.window.alert("Fatal error: game data where not saved correctly.")
@@ -63,48 +82,17 @@ object GamePlaying {
 
       case "Score Board" =>
 
+        dom.document.getElementById("replay").asInstanceOf[html.Button].onclick = (_: dom.MouseEvent) => {
+          new ReplayWindow
+        }
+
         // TODO: change all of this when Justin finishes it.
 
         try {
 
-          var _toReceive = 0
-          var _received = 0
-
-          IPCRenderer.on("main-renderer-message", (_: IPCMainEvent, msg: Any) => {
-            renderermainprocesscom.Message.decode(msg.asInstanceOf[scala.scalajs.js.Array[Byte]]) match {
-              case renderermainprocesscom.GiveGameInfoBack.GeneralGameInfo(
-              gameName, startingGameTime, playersInfo, numberOfActions) =>
-                println(gameName, startingGameTime, playersInfo.info.length, numberOfActions)
-                _toReceive = numberOfActions
-              case renderermainprocesscom.GiveGameInfoBack.SendActionGroup(actions) =>
-                _received += actions.length
-                println(s"received: ${_received}")
-                if (_received == _toReceive) {
-                  println("end of receiving actions")
-                }
-              case _ =>
-            }
-          })
-
-          renderermainprocesscom.Message.sendMessageToMainProcess(
-            renderermainprocesscom.StoreGameInfo.GiveMeGameInfo()
-          )
-
-
           DataStorage.retrieveValue("endOfGameData") match {
             case StandardModeEOGData(_) =>
 
-              if (scala.scalajs.LinkingInfo.developmentMode) {
-                setTimeout(1000) {
-                  dom.window.addEventListener[dom.KeyboardEvent]("keydown", (event: dom.KeyboardEvent) => {
-                    println(event.keyCode)
-                    if (event.ctrlKey && event.keyCode == 68) {
-                      renderermainprocesscom.Message.sendMessageToMainProcess(OpenDevTools())
-                    } else if (event.ctrlKey && event.keyCode == 82)
-                      dom.window.location.href = "../gameplaying/scoreboard.html"
-                  })
-                }
-              }
 
 
               val (playerName, gameDuration, startTime, stats) = DataStorage.retrieveValue("statistics") match {

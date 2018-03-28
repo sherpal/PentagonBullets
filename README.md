@@ -75,6 +75,9 @@ The game clients use [Electron](https://electronjs.org/) with [Scala.js](https:/
 The game logic is implemented in Scala and is purely functional. A Game State is updated via Game Actions that occur during the game. These actions are communicated between the clients and the server using UDP message and [boopickle](https://github.com/suzaku-io/boopickle) for serializing case classes. The server currently also is a node.js application (made with Scala.js), but the plan for the future is to make a server as a stand alone Scala application.
 
 
+When fastOptimizing, CTRL+D opens the dev tools.
+
+
 ## Issues
 
 The game has some known bugs that we are constantly trying to fix. Feel free to report any bugs or weird behaviour that happens.

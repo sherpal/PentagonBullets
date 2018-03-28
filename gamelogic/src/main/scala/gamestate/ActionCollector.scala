@@ -29,6 +29,8 @@ class ActionCollector(val originalGameState: GameState, val timeBetweenGameState
 
   def backupState(n: Int): (GameState, List[GameAction]) = actionsAndStates(n)
 
+  def printStates(): Unit = actionsAndStates.foreach({ case (gs, actions) => println(gs.time, actions.length) })
+
   // TODO: add all actions that share the same time all together.
   def addActions(actions: Traversable[GameAction]): Unit = {
     actions.foreach(addAction(_, needUpdate = false))
@@ -143,7 +145,7 @@ class ActionCollector(val originalGameState: GameState, val timeBetweenGameState
     if (action.time > actionsAndStates.head._1.time + timeBetweenGameStates) {
       updateGameState()
       actionsAndStates = (currentGameState, List(action)) +: actionsAndStates
-      if (actionsAndStates.last._1.time + timeToOldestGameState < actionsAndStates.head._1.time) {
+      if (timeToOldestGameState < actionsAndStates.head._1.time - actionsAndStates.last._1.time) {
         actionsAndStates = actionsAndStates.dropRight(1)
       }
       if (needUpdate) {
@@ -196,10 +198,12 @@ class ActionCollector(val originalGameState: GameState, val timeBetweenGameState
   /**
    * Returns the GameState as it was at time time.
    */
-  def gameStateUpTo(time: Long): GameState = actionsAndStates.find(_._1.time < time) match {
+  def gameStateUpTo(time: Long): GameState = actionsAndStates.find(_._1.time <= time) match {
     case Some((gs, actions)) =>
       gs(actions.takeWhile(_.time <= time))
     case None =>
+      println(time)
+      actionsAndStates.map(_._1).map(_.time).foreach(println)
       throw new TooOldActionException(time)
   }
 

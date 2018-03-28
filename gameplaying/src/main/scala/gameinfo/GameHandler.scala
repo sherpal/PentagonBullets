@@ -13,7 +13,7 @@ import gamestate.ActionSource.PlayerSource
 import gamestate.GameState.PlayingState
 import gamestate.actions._
 import gamestate.{ActionCollector, GameAction, GameState}
-import graphics.{Color, EntityDrawer}
+import graphics.EntityDrawer
 import gui._
 import io.{ControlBindings, ControlType, KeyBindingsLoader}
 import networkcom.PlayerGameSettingsInfo
@@ -25,7 +25,7 @@ import time.Time
 
 import scala.collection.mutable
 import scala.language.implicitConversions
-import scala.scalajs.js.timers.{SetIntervalHandle, clearInterval, setInterval}
+import scala.scalajs.js.timers.{SetIntervalHandle, clearInterval, setInterval, setTimeout}
 
 /**
  * The GameHandler receives information from the PlayerClient, and transfers it new actions.
@@ -60,12 +60,28 @@ trait GameHandler {
 
 
   val playerColors: Map[Long, (Double, Double, Double)] =
-    playerIds.zip(GameHandler.definedColors.map(_.toRGB)).toMap
+    playersInfo.map(info => info.id -> info.color).toMap
 
   EntityDrawer.setPlayerColors(playerColors)
 
+
+  /**
+   * Sending the player information to the main process for replay mode.
+   */
+  renderermainprocesscom.Message.sendMessageToMainProcess(
+    renderermainprocesscom.StoreGameInfo.PlayersInfo(
+      playersInfo.map(info => renderermainprocesscom.StoreGameInfo.PlayerInfo(
+        info.id, info.playerName, {
+          val colors = playerColors(info.id)
+          Vector(colors._1, colors._2, colors._3)
+        }, info.team
+      )).toVector,
+      teams.values.map(_.leader).toVector
+    )
+  )
+
   val teamColors: Map[Int, (Double, Double, Double)] =
-    teams.map(elem => elem._1 -> playerColors(elem._2.playerIds.head))
+    teams.map(elem => elem._1 -> playerColors(elem._2.leader))
 
   val colorByPlayerName: Map[String, (Double, Double, Double)] =
     playerNames.zip(playerIds).map(elem => elem._1 -> playerColors(elem._2)).toMap
@@ -463,7 +479,7 @@ trait GameHandler {
 
 
       case _: GameBegins =>
-        currentGameState.players.keys.map(new PlayerHealthBar(_, this))
+        currentGameState.players.keys.map(id => new PlayerHealthBar(id, () => this.currentGameState.players.get(id)))
         currentGameState.players.values.foreach(player => playerNamesById += (player.id -> player.name))
 
         ScoreBoard.colorMap = client.gameHandler.colorByPlayerName
@@ -648,20 +664,28 @@ trait GameHandler {
       Frame.updateHandler(dt)
     }
   }
+
+
+  private val adjustServerTimeDuration: Long = 5000
+  private val adjustServerTimeRate: Long = 1000
+
+  private def adjustServerTime(newDelta: Long): Unit = {
+    val deltaVariation = (newDelta - Time.deltaTime) / (adjustServerTimeDuration / adjustServerTimeRate)
+
+    (adjustServerTimeRate to adjustServerTimeDuration by adjustServerTimeRate).foreach(t => {
+      setTimeout(t) {
+        Time.setDeltaTime(Time.deltaTime + deltaVariation)
+      }
+    })
+  }
+
+  setInterval(30000) {
+    PlayerClient.playerClient.computeLinkTime(
+      endCallback = adjustServerTime
+    )
+  }
+
 }
 
-object GameHandler {
-
-  private val definedColors: List[Color] = List(
-    Color(255, 0, 0),
-    Color(100, 100, 255),
-    Color(0, 255, 0),
-    Color(204, 204, 0),
-    Color(204, 0, 204),
-    Color(102, 205, 170),
-    Color(255, 165, 0)
-  )
-
-}
 
 

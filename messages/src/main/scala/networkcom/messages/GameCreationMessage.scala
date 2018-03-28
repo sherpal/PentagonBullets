@@ -18,12 +18,15 @@ final case class PlayerReady(gameName: String, playerName: String, status: Boole
 final case class ChoseAbility(gameName: String, playerName: String, abilityId: Int) extends GameCreationMessage
 final case class DoNotChoseAbility(gameName: String, playerName: String, abilityId: Int) extends GameCreationMessage
 final case class ChoseTeam(gameName: String, playerName: String, team: Int) extends GameCreationMessage
-final case class SendPlayerInfo(gameName: String,
-                                playerName: String,
-                                id: Long,
-                                team: Int,
-                                ready: Boolean,
-                                abilities: List[Int]) extends GameCreationMessage
+final case class SendPlayerInfo(
+                                 gameName: String,
+                                 playerName: String,
+                                 id: Long,
+                                 team: Int,
+                                 ready: Boolean,
+                                 abilities: List[Int],
+                                 color: Vector[Double]
+                               ) extends GameCreationMessage
 
 final case class GameCreationChatMessage(gameName: String, s: String, time: Long, sender: String)
   extends GameCreationMessage with networkcom.ChatMessageType

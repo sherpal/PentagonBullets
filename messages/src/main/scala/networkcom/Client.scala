@@ -29,11 +29,11 @@ abstract class Client extends UDPNode {
   private var connected = false
   def isConnected: Boolean = connected
 
-  private val socket: UDPSocket = PlatformDependent.createSocket()
+  private lazy val socket: UDPSocket = PlatformDependent.createSocket()
 
   //private val socket: Socket = DgramModule.createSocket(t)
 
-  private val connection: Connection = new Connection(Peer(address, port), socket, onMessage)
+  private lazy val connection: Connection = new Connection(Peer(address, port), socket, onMessage)
 
   def latency: Int = connection.latency
 
@@ -87,8 +87,21 @@ abstract class Client extends UDPNode {
     }
   }
 
-  def connect(): Unit =
-    connection.sendReliable(Connect())
+  def connect(): Unit = {
+
+    def loop(): Unit = {
+      if (!connected) {
+        connection.sendNormal(Connect())
+
+        PlatformDependent.setTimeout(500) {
+          loop()
+        }
+      }
+    }
+
+    loop()
+  }
+//    connection.sendReliable(Connect())
 
   def disconnect(): Unit = {
     if (connected) {
@@ -109,6 +122,9 @@ abstract class Client extends UDPNode {
 
   def sendOrderedReliable(msg: Message): Unit =
     if (connected) connection.sendOrderedReliable(msg)
+
+  def sendReliableTo(msg: Message, peer: Peer): Unit =
+    connection.sendReliableTo(msg, peer)
 
   //    val buffer = Pickle.intoBytes(dateObject.getTime)
 //    val data = Array.ofDim[Byte](buffer.remaining())

@@ -300,8 +300,8 @@ class GameState(val time: Long, val startTime: Option[Long],
     abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
 
-  def timeUpdate(time: Long): GameState = new GameState(
-    time, startTime, gameBounds,
+  def timeUpdate(newTime: Long): GameState = new GameState(
+    newTime, startTime, gameBounds,
     players, deadPlayers, bullets, obstacles, healUnits, gunTurrets, damageZones, healingZones,
     abilityGivers, bulletAmplifiers, barriers, smashBullets, mists, actionChangers, laserLaunchers, flags
   )
@@ -309,8 +309,6 @@ class GameState(val time: Long, val startTime: Option[Long],
 
   def applyActionChangers(action: GameAction): List[GameAction] = {
     applyActionChangers(List(action))
-//    actionChangers.values.foldLeft(List(action))(
-//      (as: List[GameAction], changer: ActionChanger) => as.flatMap(changer.changeAction))
   }
 
   def applyActionChangers(actions: List[GameAction]): List[GameAction] = {

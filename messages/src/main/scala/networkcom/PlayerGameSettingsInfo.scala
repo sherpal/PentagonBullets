@@ -15,8 +15,10 @@ final class PlayerGameSettingsInfo(val playerName: String) {
 
   var id: Long = 0: Long
 
+  var color: (Double, Double, Double) = (0,0,0)
+
   def toSendPlayerInfo(gameName: String): SendPlayerInfo = SendPlayerInfo(
-    gameName, playerName, id, team, ready, abilities
+    gameName, playerName, id, team, ready, abilities, Vector(color._1, color._2, color._3)
   )
 
   override def toString: String = List[String](
@@ -33,20 +35,29 @@ object PlayerGameSettingsInfo {
     val team = infoList.tail.head.toInt
     val id = infoList.tail.tail.head.toLong
     val abilities = infoList.tail.tail.tail.head.split(",").map(_.toInt).toList
-    fromInfo(playerName, ready, team, id, abilities)
+    val colors = infoList.tail.tail.tail.tail.head.split(",").map(_.toDouble).toVector
+    fromInfo(playerName, ready, team, id, abilities, (colors(0), colors(1), colors(2)))
   } catch {
     case e: Throwable =>
       println("There was a problem reading a PlayerGameSettingsInfo string.")
       throw e
   }
 
-  def fromInfo(playerName: String, ready: Boolean, team: Int, id: Long, abilities: List[Int]): PlayerGameSettingsInfo =
+  def fromInfo(
+                playerName: String,
+                ready: Boolean,
+                team: Int,
+                id: Long,
+                abilities: List[Int],
+                color: (Double, Double, Double)
+              ): PlayerGameSettingsInfo =
   {
     val info = new PlayerGameSettingsInfo(playerName)
     info.ready = ready
     info.team = team
     info.id = id
     info.abilities = abilities
+    info.color = color
     info
   }
 

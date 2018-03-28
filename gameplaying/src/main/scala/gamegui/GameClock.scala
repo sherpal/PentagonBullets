@@ -35,5 +35,10 @@ class GameClock extends Frame() {
     })
   }
 
+  def setTime(newTime: Double): Unit = {
+    time = newTime
+    setText()
+  }
+
 
 }

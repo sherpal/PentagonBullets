@@ -1,5 +1,7 @@
 package sharednodejsapis
 
+import sharednodejsapis.process.Stdin
+
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 
@@ -23,6 +25,11 @@ object NodeProcess extends EventEmitter {
    * returns an object describing the memory usage of the Node.js process measured in bytes.
    */
   def memoryUsage(): MemoryUsage = js.native
+
+
+
+  val stdin: Stdin = js.native
+
 }
 
 trait ProcessMemoryInfo extends js.Object {

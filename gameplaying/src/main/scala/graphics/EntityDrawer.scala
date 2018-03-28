@@ -69,10 +69,16 @@ object EntityDrawer {
 
   val camera: Camera = new Camera(Engine.graphics.canvas)
 
-  camera.worldWidth = 1500
-  camera.worldHeight = 800
+  /**
+   * World dimensions seen by a player.
+   */
+  val worldWidth: Int = 1500
+  val worldHeight: Int = 800
 
-  val cameraWidthToHeightRatio: Double = 800.0 / 1500
+  camera.worldWidth = worldWidth
+  camera.worldHeight = worldHeight
+
+  val cameraWidthToHeightRatio: Double = worldHeight.toDouble / worldWidth
 
 
   def newDisk(center: Complex, radius: Int, r: Double, g: Double, b: Double,

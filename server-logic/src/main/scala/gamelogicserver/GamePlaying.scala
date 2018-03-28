@@ -6,7 +6,6 @@ import entities._
 import entitiescollections.PlayerTeam
 import gamemessages.MessageMaker
 import gamemode.GameMode
-import gameserver.GameServer
 import gamestate.ActionSource.{PlayerSource, ServerSource}
 import gamestate.GameState.{GameEnded, PlayingState}
 import gamestate._
@@ -32,7 +31,7 @@ trait GamePlaying {
   val password: Int
   val gameMode: GameMode
   protected val playersInfo: Vector[PlayerGameSettingsInfo]
-  protected val server: GameServer
+  protected val server: GameLogicServer
 
 
   val desiredFPS: Int = 120
@@ -149,6 +148,15 @@ trait GamePlaying {
           setTimeout(1000) {
             performAction()
           }
+        }
+
+      case PlayerConnecting(gName, pName, pw) =>
+        if (gName != gameName) {
+          dom.console.warn(s"received PlayerConnecting but with game name $gName instead of $gameName...")
+        } else if (pw != password) {
+          dom.console.warn(s"received PlayerConnecting but with password $pw instead of $password...")
+        } else {
+          dom.console.warn(s"received PlayerConnecting from $pName, but they are not in the game...")
         }
 
       case GuessClockTime(gName, time) =>

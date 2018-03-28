@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pentagon Bullets</title>
+</head>
+<style type="text/css">
+@font-face {
+font-family: 'squareTTF';
+src: url('FORCED_SQUARE.ttf');
+font-weight: normal;
+font-style: normal;
+}
+@font-face {
+font-family: 'quicksand';
+src: url('Quicksand_Bold.otf');
+font-weight: normal;
+font-style: normal;
+}
+*{font-family:quicksand;}
+.page-panel {
+	transition: opacity 0.4s;
+	opacity: 0;
+	position: absolute;
+	top: -5000px;
+	left: -5000px;
+	display: block;
+}
+.menu-button {
+	color:#fff;
+	background-color:#f44336;
+}
+
+.selectedTable {
+    background-color: #ccc
+}
+
+#readyButton.notReady {
+    background-color: red;
+}
+
+#readyButton.ready {
+    background-color: green;
+}
+
+div.ready {
+    background-color: green;
+}
+
+html,body{height:100%;}
+		</style>
+
+<body>
+
+<div id="tableListTab" class="tab">
+    <h1 style="font-family: squareTTF; font-size: 10vh">Pentagon Bullets</h1>
+
+    <div>
+        <label>Player name</label>
+        <input id="playerNameInput" type="text" name="name" maxlength="12">
+    </div>
+
+    <h1>Join or Open a table</h1>
+
+    <button id="openTableButton">Open table</button>
+
+    <div id="tableListDiv" style="width: 500px; height: 300px; x-overflow: hidden; y-overflow: auto; border: 1px solid black">
+
+    </div>
+
+    <button id="joinTable" disabled>Join table</button>
+</div>
+
+<div id="gameSettingsTab" style="display: none">
+    <h1>Game</h1>
+
+    <h2 id="gameName"></h2>
+    <h2 id="gameMode"></h2>
+    <h3 id="playerNameHeading"></h3>
+
+    <div id="players" style="width: 500px; height: 200px; y-overflow: auto; border: 2px solid black">
+       <div style="width: 100%; border-bottom: 1px solid black">
+           <label style="width: 70%">Name</label>
+           <label style="text-align: right; width: 30%">Team</label>
+       </div>
+
+    </div>
+
+    <button id="readyButton" class="notReady" style="display: block">Ready</button>
+
+    <select id="abilities" style="display: block">
+        <option value="0" selected disabled>Choose</option>
+    </select>
+
+    <select id="teamSelect" style="display: block"></select>
+
+    <button id="launchGameButton" style="display: block">Launch Game</button>
+
+    <button id="quitStandardTable" style="display: block">Quit Table</button>
+
+</div>
+
+<div id="openTableDiv" style="display: none; z-index: 3; width: 100%; height: 100%; position: absolute; left: 0px; top: 0px; background-color: rgba(50,50,50,0.5)">
+    <form id="openTableForm" style="background-color: white; z-index: 4; margin-left: auto; margin-right: auto; margin-top: 200px; max-width: 500px; padding: 20px;">
+        <div>
+            <label>Table name</label>
+            <input id="tableNameInput" type="text" value="test" name="name">
+        </div>
+        <div>
+            <label>Game mode</label>
+            <select id="gameModeSelect" name="gameMode"></select>
+        </div>
+        <div>
+            <input type="submit" value="Open table">
+            <button id="cancelOpen">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<div id="alertBox" style="display: none; z-index: 10; width: 100%; height: 100%; background-color: rgba(50,50,50,0.5); position: absolute; top: 0px; left:0px">
+    <div style="background-color: white; padding: 20px; margin-top: 200px; max-width: 500px; margin-left: auto; margin-right: auto">
+        <h3>Title</h3>
+        <p>Message</p>
+        <button>Close</button>
+    </div>
+</div>
+
+<button id="disconnect" style="display: none">Disconnect</button>
+
+
+<script type = "text/javascript">
+//##
+</script>
+</body>
+</html>

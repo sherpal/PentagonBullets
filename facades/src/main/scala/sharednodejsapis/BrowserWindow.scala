@@ -14,7 +14,7 @@ class BrowserWindow(options: BrowserWindowOptions) extends EventEmitter {
 
   val webContents: WebContents = js.native
 
-  val id: Integer = js.native
+  val id: Int = js.native
 
   def close(): Unit = js.native
 

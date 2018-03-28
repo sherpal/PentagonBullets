@@ -5,7 +5,6 @@ import globalvariables.VariableStorage
 import org.scalajs.dom
 import parsinginputs.RetrieveInfo
 import sharednodejsapis.{BrowserWindow, BrowserWindowOptions, Path}
-import ui.UI
 
 import scala.scalajs.js
 
