@@ -330,7 +330,7 @@ lazy val `messages` = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.
   .settings(
     name := "messages",
     libraryDependencies ++= Seq(
-      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT"
+      "io.suzaku" %%% "boopickle" % "1.3.0"
     )
   )
 
@@ -345,10 +345,11 @@ lazy val `shared` = project.in(file("shared"))
   .settings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.3",
-      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT",
+      "io.suzaku" %%% "boopickle" % "1.3.0",
       "be.adoeraene" %%% "pixi-scalajs-gui" % "0.1.0-SNAPSHOT"
     ),
-    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSLinkerConfig in (Compile, fullOptJS) ~= { _.withBatchMode(true) }
   )
   .dependsOn(gameLogicJS)
   .dependsOn(facades)
@@ -360,10 +361,11 @@ lazy val `tooltip` = project.in(file("tooltip"))
   .settings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.3",
-      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT"
+      "io.suzaku" %%% "boopickle" % "1.3.0"
     ),
     scalaJSUseMainModuleInitializer := true,
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSLinkerConfig in (Compile, fullOptJS) ~= { _.withBatchMode(true) },
     copyTooltip := {
       (fastOptJS in Compile).value.data
     },
@@ -379,11 +381,12 @@ lazy val `replay` = project.in(file("replay"))
   .settings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.3",
-      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT",
+      "io.suzaku" %%% "boopickle" % "1.3.0",
       "be.adoeraene" %%% "pixi-scalajs-gui" % "0.1.0-SNAPSHOT"
     ),
     scalaJSUseMainModuleInitializer := true,
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSLinkerConfig in (Compile, fullOptJS) ~= { _.withBatchMode(true) },
     copyReplay := {
       (fastOptJS in Compile).value.data
     },
@@ -399,11 +402,12 @@ lazy val `gamePlaying` = project.in(file("gameplaying"))
   .settings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.3",
-      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT",
+      "io.suzaku" %%% "boopickle" % "1.3.0",
       "be.adoeraene" %%% "pixi-scalajs-gui" % "0.1.0-SNAPSHOT"
     ),
     scalaJSUseMainModuleInitializer := true,
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSLinkerConfig in (Compile, fullOptJS) ~= { _.withBatchMode(true) },
     copyGamePlaying := {
       (fastOptJS in Compile).value.data
     },
@@ -420,10 +424,11 @@ lazy val `gameMenus` = project.in(file("gamemenus"))
   .settings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.3",
-      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT",
+      "io.suzaku" %%% "boopickle" % "1.3.0",
       "be.adoeraene" %%% "pixi-scalajs-gui" % "0.1.0-SNAPSHOT"
     ),
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSLinkerConfig in (Compile, fullOptJS) ~= { _.withBatchMode(true) },
     scalaJSUseMainModuleInitializer := true,
     copyGameMenus := {
       (fastOptJS in Compile).value.data
@@ -441,10 +446,11 @@ lazy val `menusForTableServer` = project.in(file("./menus-for-table-server"))
   .settings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.3",
-      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT",
+      "io.suzaku" %%% "boopickle" % "1.3.0",
       "be.adoeraene" %%% "pixi-scalajs-gui" % "0.1.0-SNAPSHOT"
     ),
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSLinkerConfig in (Compile, fullOptJS) ~= { _.withBatchMode(true) },
     scalaJSUseMainModuleInitializer := true,
     copyTableServerMenus := {
       (fastOptJS in Compile).value.data
@@ -462,10 +468,11 @@ lazy val `main` = project.in(file("main"))
   .settings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.3",
-      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT",
+      "io.suzaku" %%% "boopickle" % "1.3.0",
       "be.adoeraene" %%% "pixi-scalajs-gui" % "0.1.0-SNAPSHOT"
     ),
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSLinkerConfig in (Compile, fullOptJS) ~= { _.withBatchMode(true) },
     scalaJSUseMainModuleInitializer := true,
     copyMain := {
       (fastOptJS in Compile).value.data
@@ -483,9 +490,10 @@ lazy val `serverLogic` = project.in(file("server-logic"))
   .settings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.3",
-      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT"
+      "io.suzaku" %%% "boopickle" % "1.3.0"
     ),
-    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSLinkerConfig in (Compile, fullOptJS) ~= { _.withBatchMode(true) }
   )
 .dependsOn(`gameLogicJS`)
 .dependsOn(`messagesJS`)
@@ -496,7 +504,7 @@ lazy val `server` = project.in(file("server"))
   .settings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.3",
-      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT",
+      "io.suzaku" %%% "boopickle" % "1.3.0",
       "be.adoeraene" %%% "pixi-scalajs-gui" % "0.1.0-SNAPSHOT"
     ),
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
@@ -518,7 +526,7 @@ lazy val `gameLogic` = crossProject(JSPlatform, JVMPlatform).crossType(CrossType
   .settings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.3",
-      "io.suzaku" %%% "boopickle" % "1.2.7-SNAPSHOT",
+      "io.suzaku" %%% "boopickle" % "1.3.0",
       "be.adoeraene" %%% "pixi-scalajs-gui" % "0.1.0-SNAPSHOT"
     )
   )
@@ -549,6 +557,7 @@ lazy val `tableServer` = project.in(file("tableserver"))
   .settings(commonSettings)
   .settings(
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSLinkerConfig in (Compile, fullOptJS) ~= { _.withBatchMode(true) },
     scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.3"
@@ -573,6 +582,7 @@ lazy val `oneTimeServer` = project.in(file("onetimeserver"))
   .settings(commonSettings)
   .settings(
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+    scalaJSLinkerConfig in (Compile, fullOptJS) ~= { _.withBatchMode(true) },
     scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.3"
