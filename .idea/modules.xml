@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/facades.iml" filepath="$PROJECT_DIR$/.idea/modules/facades.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/facades-build.iml" filepath="$PROJECT_DIR$/.idea/modules/facades-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gameLogicJS.iml" filepath="$PROJECT_DIR$/.idea/modules/gameLogicJS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gameLogicJS-build.iml" filepath="$PROJECT_DIR$/.idea/modules/gameLogicJS-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gameLogicJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/gameLogicJVM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gameLogicJVM-build.iml" filepath="$PROJECT_DIR$/.idea/modules/gameLogicJVM-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gameMenus.iml" filepath="$PROJECT_DIR$/.idea/modules/gameMenus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gameMenus-build.iml" filepath="$PROJECT_DIR$/.idea/modules/gameMenus-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gamePlaying.iml" filepath="$PROJECT_DIR$/.idea/modules/gamePlaying.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gamePlaying-build.iml" filepath="$PROJECT_DIR$/.idea/modules/gamePlaying-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gamelogic-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/gamelogic-sources.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/main.iml" filepath="$PROJECT_DIR$/.idea/modules/main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/main-build.iml" filepath="$PROJECT_DIR$/.idea/modules/main-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/menusForTableServer.iml" filepath="$PROJECT_DIR$/.idea/modules/menusForTableServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/menusForTableServer-build.iml" filepath="$PROJECT_DIR$/.idea/modules/menusForTableServer-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/messages-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/messages-sources.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/messagesJS.iml" filepath="$PROJECT_DIR$/.idea/modules/messagesJS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/messagesJS-build.iml" filepath="$PROJECT_DIR$/.idea/modules/messagesJS-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/messagesJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/messagesJVM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/messagesJVM-build.iml" filepath="$PROJECT_DIR$/.idea/modules/messagesJVM-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/oneTimeServer.iml" filepath="$PROJECT_DIR$/.idea/modules/oneTimeServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/oneTimeServer-build.iml" filepath="$PROJECT_DIR$/.idea/modules/oneTimeServer-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pentagonbullets.iml" filepath="$PROJECT_DIR$/.idea/modules/pentagonbullets.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pentagonbullets-build.iml" filepath="$PROJECT_DIR$/.idea/modules/pentagonbullets-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/replay.iml" filepath="$PROJECT_DIR$/.idea/modules/replay.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/replay-build.iml" filepath="$PROJECT_DIR$/.idea/modules/replay-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server.iml" filepath="$PROJECT_DIR$/.idea/modules/server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server-build.iml" filepath="$PROJECT_DIR$/.idea/modules/server-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/serverLogic.iml" filepath="$PROJECT_DIR$/.idea/modules/serverLogic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/serverLogic-build.iml" filepath="$PROJECT_DIR$/.idea/modules/serverLogic-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shared.iml" filepath="$PROJECT_DIR$/.idea/modules/shared.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shared-build.iml" filepath="$PROJECT_DIR$/.idea/modules/shared-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tableServer.iml" filepath="$PROJECT_DIR$/.idea/modules/tableServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tableServer-build.iml" filepath="$PROJECT_DIR$/.idea/modules/tableServer-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tooltip.iml" filepath="$PROJECT_DIR$/.idea/modules/tooltip.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tooltip-build.iml" filepath="$PROJECT_DIR$/.idea/modules/tooltip-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui.iml" filepath="$PROJECT_DIR$/.idea/modules/ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ui-build.iml" filepath="$PROJECT_DIR$/.idea/modules/ui-build.iml" />
+    </modules>
+  </component>
+</project>

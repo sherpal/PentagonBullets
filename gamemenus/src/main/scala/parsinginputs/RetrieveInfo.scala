@@ -118,7 +118,7 @@ object RetrieveInfo {
         throw IllegalPortChoice(s"Port number should be comprised between 1024 and 65535 (actual: $portContent)")
       }
 
-      (playerName, gameName, addressContent, portContent)
+      (playerName, gameName, addressContent, portContent.toInt)
 
     } catch {
       case illegalPort: IllegalPortChoice =>
