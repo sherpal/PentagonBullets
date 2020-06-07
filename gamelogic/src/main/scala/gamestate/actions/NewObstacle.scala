@@ -5,19 +5,21 @@ import entities.Obstacle
 import gamestate.{ActionSource, GameAction, GameState}
 
 /**
- * Add a new [[Obstacle]] to the game.
- */
+  * Add a new [[Obstacle]] to the game.
+  */
 final case class NewObstacle(
-                              actionId: Long,
-                              time: Long,
-                              id: Long,
-                              pos: Complex,
-                              vertices: Vector[Complex],
-                              actionSource: ActionSource
-                            ) extends GameAction {
+    actionId: Long,
+    time: Long,
+    id: Long,
+    pos: Complex,
+    vertices: Vector[Complex],
+    actionSource: ActionSource
+) extends GameAction {
 
   def applyDefault(gameState: GameState): GameState = gameState.withObstacle(
-    id, time, Obstacle(id, pos, vertices)
+    id,
+    time,
+    Obstacle(id, pos, vertices)
   )
 
   def changeTime(newTime: Long): GameAction = copy(time = newTime)

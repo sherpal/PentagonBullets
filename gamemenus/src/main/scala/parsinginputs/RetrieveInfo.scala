@@ -6,12 +6,9 @@ import org.scalajs.dom.html
 import ui.UI
 
 /**
- * It has one method that returns all information contained in host game or join game fields.
- */
+  * It has one method that returns all information contained in host game or join game fields.
+  */
 object RetrieveInfo {
-
-
-
 
   def retrievePlayerName(playerElement: html.Input): String = {
     val playerName = playerElement.value.trim
@@ -73,7 +70,7 @@ object RetrieveInfo {
 
   }
 
-  def retrievePortNumber(portElement: html.Input): Int = {
+  def retrievePortNumber(portElement: html.Input): Int =
     try {
       val portContent = portElement.value.toInt
 
@@ -90,18 +87,13 @@ object RetrieveInfo {
         UI.showAlertBox("Malformed port number", "")
         0
     }
-  }
 
-
-
-
-    def apply(): (String, String, String, Int) = {
+  def apply(): (String, String, String, Int) =
     try {
 
-      val playerName = dom.document.getElementById("inputName").asInstanceOf[html.Input].value.trim
-      val gameName = dom.document.getElementById("inputGameName").asInstanceOf[html.Input].value.trim
+      val playerName     = dom.document.getElementById("inputName").asInstanceOf[html.Input].value.trim
+      val gameName       = dom.document.getElementById("inputGameName").asInstanceOf[html.Input].value.trim
       val addressContent = dom.document.getElementById("inputAddress").asInstanceOf[html.Input].value.trim
-
 
       if (playerName == "") {
         throw MalformedExpressionInInput("Player name is empty.")
@@ -124,7 +116,7 @@ object RetrieveInfo {
       case illegalPort: IllegalPortChoice =>
         val portError = dom.document.getElementById("portError").asInstanceOf[html.Div]
         portError.style.visibility = "visible"
-        portError.innerHTML = illegalPort.msg
+        portError.innerHTML        = illegalPort.msg
         ("", "", "", 0)
       case e: MalformedExpressionInInput =>
         dom.console.error(e.msg)
@@ -134,6 +126,5 @@ object RetrieveInfo {
         dom.console.error("An error occurred in the onclick event")
         ("", "", "", 0)
     }
-  }
 
 }

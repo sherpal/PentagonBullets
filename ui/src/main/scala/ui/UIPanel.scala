@@ -1,12 +1,9 @@
 package ui
 
-
 import org.scalajs.dom.html
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
-
-
 @js.native
 @JSGlobal("UI.Panel")
 abstract class UIPanel extends js.Object {
@@ -20,5 +17,3 @@ abstract class UIPanel extends js.Object {
   def close(): Unit = js.native
 
 }
-
-

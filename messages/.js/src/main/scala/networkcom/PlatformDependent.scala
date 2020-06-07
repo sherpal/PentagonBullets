@@ -15,18 +15,15 @@ private[networkcom] object PlatformDependent {
       Peer(address.address, address.port)
     }
 
-    def bind(port: Int, address: Option[String] = None): Unit = {
+    def bind(port: Int, address: Option[String] = None): Unit =
       socket.bind(port, if (address.isDefined) address.get else "")
-    }
 
-    def send(message: Array[Byte], port: Int, address: String): Unit = {
-
+    def send(message: Array[Byte], port: Int, address: String): Unit =
       socket.send(
         Buffer.from(message.toJSArray),
-        port, address
+        port,
+        address
       )
-
-    }
 
     def setMessageCallback(callback: (Array[Byte], Peer) => Unit): Unit = {
 
@@ -63,7 +60,6 @@ private[networkcom] object PlatformDependent {
       socket.close()
     })
 
-
     def close(): Unit =
       socket.close()
 
@@ -71,14 +67,12 @@ private[networkcom] object PlatformDependent {
 
   def createSocket(): UDPSocket = new UDPSocketJS(DgramModule.createSocket("udp4"))
 
-
-
   sealed trait TimeoutHandle {
     val handle: Any
 
     override def equals(that: Any): Boolean = that match {
       case that: TimeoutHandle => that.handle == this.handle
-      case _ => false
+      case _                   => false
     }
 
     override def hashCode(): Int = handle.hashCode()
@@ -95,7 +89,7 @@ private[networkcom] object PlatformDependent {
 
     override def equals(that: Any): Boolean = that match {
       case that: IntervalHandle => that.handle == this.handle
-      case _ => false
+      case _                    => false
     }
 
     override def hashCode(): Int = handle.hashCode()
@@ -115,7 +109,6 @@ private[networkcom] object PlatformDependent {
 
   def clearTimeout(handle: TimeoutHandle): Unit =
     scala.scalajs.js.timers.clearTimeout(handle.handle.asInstanceOf[SetTimeoutHandle])
-
 
   def setInterval(interval: Long)(body: => Unit): IntervalHandle = IntervalHandle(
     scala.scalajs.js.timers.setInterval(interval) {

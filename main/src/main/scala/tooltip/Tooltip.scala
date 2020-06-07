@@ -26,17 +26,15 @@ object Tooltip {
 
   })
 
-
   tooltipWindow.loadURL(
     "file://" + Path.join(
-      Path.dirname(MainProcessGlobals.__dirname), "/tooltip/html/tooltip.html"
+      Path.dirname(MainProcessGlobals.__dirname),
+      "/tooltip/html/tooltip.html"
     )
   )
 
   // TODO: private var fadingIntervalId: Option[Int] = None
   private var willAppearTimeoutId: Option[SetTimeoutHandle] = None
-
-
 
   def hideTooltip(): Unit = {
     if (willAppearTimeoutId.isDefined) {
@@ -78,8 +76,7 @@ object Tooltip {
     println(error)
   })
 
-  def close(): Unit = {
+  def close(): Unit =
     tooltipWindow.close()
-  }
 
 }

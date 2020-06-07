@@ -4,7 +4,6 @@ import gamestate.actions._
 import gamestate.{GameAction, GameState}
 import gui.{Frame, ScriptKind, ScriptObject}
 
-
 object GameEvents {
 
   val OnActionTaken: ScriptKind { type Handler = (GameAction, GameState) => Unit } =
@@ -98,30 +97,29 @@ object GameEvents {
   }
 
   def fireGameEvent(action: GameAction, gameState: GameState): Unit = action match {
-    case action: UpdatePlayerPos => ScriptObject.firesEvent(OnUpdatePlayerPos)(action, gameState)
-    case action: NewBullet => ScriptObject.firesEvent(OnNewBullet)(action, gameState)
-    case action: PlayerHitByBullet => ScriptObject.firesEvent(OnPlayerHitByBullet)(action, gameState)
+    case action: UpdatePlayerPos            => ScriptObject.firesEvent(OnUpdatePlayerPos)(action, gameState)
+    case action: NewBullet                  => ScriptObject.firesEvent(OnNewBullet)(action, gameState)
+    case action: PlayerHitByBullet          => ScriptObject.firesEvent(OnPlayerHitByBullet)(action, gameState)
     case action: PlayerHitByMultipleBullets => ScriptObject.firesEvent(OnPlayerHitByMultipleBullets)(action, gameState)
-    case action: PlayerTakeAbilityGiver => ScriptObject.firesEvent(OnPlayerTakeAbilityGiver)(action, gameState)
-    case action: PlayerTakeDamage => ScriptObject.firesEvent(OnPlayerTakeDamage)(action, gameState)
-    case action: PlayerTakeHealUnit => ScriptObject.firesEvent(OnPlayerTakeHealUnit)(action, gameState)
-    case action: UseAbilityAction => ScriptObject.firesEvent(OnUseAbilityAction)(action, gameState)
-    case action: HealingZoneHeals => ScriptObject.firesEvent(OnHealingZoneHeals)(action, gameState)
-    case action: ChangeBulletRadius => ScriptObject.firesEvent(OnChangeBulletRadius)(action, gameState)
-    case action: PlayerHitBySmashBullet => ScriptObject.firesEvent(OnPlayerHitBySmashBullet)(action, gameState)
-    case action: GunTurretTakesDamage => ScriptObject.firesEvent(OnGunTurretTakesDamage)(action, gameState)
-    case action: NewGunTurret => ScriptObject.firesEvent(OnNewGunTurret)(action, gameState)
-    case action: DestroyGunTurret => ScriptObject.firesEvent(OnDestroyGunTurret)(action, gameState)
-    case action: SmashBulletGrows => ScriptObject.firesEvent(OnSmashBulletGrows)(action, gameState)
-    case action: NewLaserLauncher => ScriptObject.firesEvent(OnNewLaserLauncher)(action, gameState)
-    case action: FireLaser => ScriptObject.firesEvent(OnFireLaser)(action, gameState)
-    case action: PlayerBringsFlagBack => ScriptObject.firesEvent(OnPlayerBringsBackFlag)(action, gameState)
-    case action: GameBegins => ScriptObject.firesEvent(OnGameBegins)(action, gameState)
-    case action: PlayerDead => ScriptObject.firesEvent(OnPlayerDead)(action, gameState)
-    case action: NewPlayer => ScriptObject.firesEvent(OnNewPlayer)(action, gameState)
-    case _ => //ScriptObject.firesEvent(OnActionTaken)(action, gameState)
-      //println(s"Action ${action.getClass} is not yet implemented :(")
+    case action: PlayerTakeAbilityGiver     => ScriptObject.firesEvent(OnPlayerTakeAbilityGiver)(action, gameState)
+    case action: PlayerTakeDamage           => ScriptObject.firesEvent(OnPlayerTakeDamage)(action, gameState)
+    case action: PlayerTakeHealUnit         => ScriptObject.firesEvent(OnPlayerTakeHealUnit)(action, gameState)
+    case action: UseAbilityAction           => ScriptObject.firesEvent(OnUseAbilityAction)(action, gameState)
+    case action: HealingZoneHeals           => ScriptObject.firesEvent(OnHealingZoneHeals)(action, gameState)
+    case action: ChangeBulletRadius         => ScriptObject.firesEvent(OnChangeBulletRadius)(action, gameState)
+    case action: PlayerHitBySmashBullet     => ScriptObject.firesEvent(OnPlayerHitBySmashBullet)(action, gameState)
+    case action: GunTurretTakesDamage       => ScriptObject.firesEvent(OnGunTurretTakesDamage)(action, gameState)
+    case action: NewGunTurret               => ScriptObject.firesEvent(OnNewGunTurret)(action, gameState)
+    case action: DestroyGunTurret           => ScriptObject.firesEvent(OnDestroyGunTurret)(action, gameState)
+    case action: SmashBulletGrows           => ScriptObject.firesEvent(OnSmashBulletGrows)(action, gameState)
+    case action: NewLaserLauncher           => ScriptObject.firesEvent(OnNewLaserLauncher)(action, gameState)
+    case action: FireLaser                  => ScriptObject.firesEvent(OnFireLaser)(action, gameState)
+    case action: PlayerBringsFlagBack       => ScriptObject.firesEvent(OnPlayerBringsBackFlag)(action, gameState)
+    case action: GameBegins                 => ScriptObject.firesEvent(OnGameBegins)(action, gameState)
+    case action: PlayerDead                 => ScriptObject.firesEvent(OnPlayerDead)(action, gameState)
+    case action: NewPlayer                  => ScriptObject.firesEvent(OnNewPlayer)(action, gameState)
+    case _                                  => //ScriptObject.firesEvent(OnActionTaken)(action, gameState)
+    //println(s"Action ${action.getClass} is not yet implemented :(")
   }
-
 
 }

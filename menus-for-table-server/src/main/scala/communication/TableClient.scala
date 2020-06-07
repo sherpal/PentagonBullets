@@ -16,8 +16,7 @@ object TableClient extends Client {
 
   val port: Int = 22222
 
-  def messageCallback(client: Client, msg: Message): Unit = {
-
+  def messageCallback(client: Client, msg: Message): Unit =
     msg match {
       case Tables(tables) =>
         TableInfo.updateTables(tables)
@@ -37,12 +36,8 @@ object TableClient extends Client {
         println(s"do not handle this message (yet): $msg")
     }
 
-  }
-
-  def connectedCallback(client: Client, peer: Peer, connected: Boolean): Unit = {
+  def connectedCallback(client: Client, peer: Peer, connected: Boolean): Unit =
     println("connected")
-  }
-
 
   setInterval(1000) {
     sendNormal(

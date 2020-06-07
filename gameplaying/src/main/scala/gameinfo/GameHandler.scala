@@ -25,13 +25,13 @@ import time.Time
 
 import scala.collection.mutable
 import scala.language.implicitConversions
-import scala.scalajs.js.timers.{SetIntervalHandle, clearInterval, setInterval, setTimeout}
+import scala.scalajs.js.timers.{clearInterval, setInterval, setTimeout, SetIntervalHandle}
 
 /**
- * The GameHandler receives information from the PlayerClient, and transfers it new actions.
- *
- * It is also responsible to draw the scene.
- */
+  * The GameHandler receives information from the PlayerClient, and transfers it new actions.
+  *
+  * It is also responsible to draw the scene.
+  */
 trait GameHandler {
 
   protected val playerName: String
@@ -41,41 +41,45 @@ trait GameHandler {
 
   def saveGameDataAndLoadScoreBoard(startTime: Long, deadPlayers: List[String]): Unit
 
-  playersInfo.foreach(info => GameStatistics.newPlayer(
-    info.id, info.playerName, info.team, Ability.abilityNames(info.abilities.head))
+  playersInfo.foreach(
+    info => GameStatistics.newPlayer(info.id, info.playerName, info.team, Ability.abilityNames(info.abilities.head))
   )
 
-  Engine.graphics.setBackgroundColor(0,0,0)
+  Engine.graphics.setBackgroundColor(0, 0, 0)
 
-  val playerIds: List[Long] = playersInfo.map(_.id)
+  val playerIds: List[Long]     = playersInfo.map(_.id)
   val playerNames: List[String] = playersInfo.map(_.playerName)
 
   val gameClock: GameClock = new GameClock
 
-  val teams: Map[Int, PlayerTeam] = playersInfo.groupBy(_.team).map(elem =>
-    elem._1 -> new PlayerTeam(elem._2.head.team, elem._2.map(_.id))
-  )
+  val teams: Map[Int, PlayerTeam] =
+    playersInfo.groupBy(_.team).map(elem => elem._1 -> new PlayerTeam(elem._2.head.team, elem._2.map(_.id)))
 
   val teamsByPlayerId: Map[Long, Int] = playersInfo.map(info => (info.id, info.team)).toMap
-
 
   val playerColors: Map[Long, (Double, Double, Double)] =
     playersInfo.map(info => info.id -> info.color).toMap
 
   EntityDrawer.setPlayerColors(playerColors)
 
-
   /**
-   * Sending the player information to the main process for replay mode.
-   */
+    * Sending the player information to the main process for replay mode.
+    */
   renderermainprocesscom.Message.sendMessageToMainProcess(
     renderermainprocesscom.StoreGameInfo.PlayersInfo(
-      playersInfo.map(info => renderermainprocesscom.StoreGameInfo.PlayerInfo(
-        info.id, info.playerName, {
-          val colors = playerColors(info.id)
-          Vector(colors._1, colors._2, colors._3)
-        }, info.team
-      )).toVector,
+      playersInfo
+        .map(
+          info =>
+            renderermainprocesscom.StoreGameInfo.PlayerInfo(
+              info.id,
+              info.playerName, {
+                val colors = playerColors(info.id)
+                Vector(colors._1, colors._2, colors._3)
+              },
+              info.team
+            )
+        )
+        .toVector,
       teams.values.map(_.leader).toVector
     )
   )
@@ -110,52 +114,63 @@ trait GameHandler {
 
   KeyBindingsLoader
   def bindings: ControlBindings = KeyBindingsLoader.bindings
-  def isUpPressed: Boolean = (bindings.up._1 == ControlType.KeyboardType() && Engine.isDown(bindings.up._2)) ||
-    (bindings.up._1 == ControlType.MouseType() && Engine.isMouseDown(bindings.up._2))
-  def isDownPressed: Boolean = (bindings.down._1 == ControlType.KeyboardType() && Engine.isDown(bindings.down._2)) ||
-    (bindings.down._1 == ControlType.MouseType() && Engine.isMouseDown(bindings.down._2))
-  def isLeftPressed: Boolean = (bindings.left._1 == ControlType.KeyboardType() && Engine.isDown(bindings.left._2)) ||
-    (bindings.left._1 == ControlType.MouseType() && Engine.isMouseDown(bindings.left._2))
-  def isRightPressed: Boolean = (bindings.right._1 == ControlType.KeyboardType() && Engine.isDown(bindings.right._2)) ||
-    (bindings.right._1 == ControlType.MouseType() && Engine.isMouseDown(bindings.right._2))
+  def isUpPressed: Boolean =
+    (bindings.up._1 == ControlType.KeyboardType() && Engine.isDown(bindings.up._2)) ||
+      (bindings.up._1 == ControlType.MouseType() && Engine.isMouseDown(bindings.up._2))
+  def isDownPressed: Boolean =
+    (bindings.down._1 == ControlType.KeyboardType() && Engine.isDown(bindings.down._2)) ||
+      (bindings.down._1 == ControlType.MouseType() && Engine.isMouseDown(bindings.down._2))
+  def isLeftPressed: Boolean =
+    (bindings.left._1 == ControlType.KeyboardType() && Engine.isDown(bindings.left._2)) ||
+      (bindings.left._1 == ControlType.MouseType() && Engine.isMouseDown(bindings.left._2))
+  def isRightPressed: Boolean =
+    (bindings.right._1 == ControlType.KeyboardType() && Engine.isDown(bindings.right._2)) ||
+      (bindings.right._1 == ControlType.MouseType() && Engine.isMouseDown(bindings.right._2))
 
-  def pressButton(controlType: ControlType, code: Int): Unit = {
+  def pressButton(controlType: ControlType, code: Int): Unit =
     if (bindings.isBulletShootPressed(controlType, code)) {
       shootBullet()
     } else if (bindings.isSelectedAbilityPressed(controlType, code)) {
       useSelectedAbility()
     } else {
       bindings.isAbilityPressed(controlType, code) match {
-        case -1 =>
+        case -1  =>
         case idx => useAbility(idx, currentGameState)
       }
     }
-
-  }
-
 
   private var lastShotTime: Long = 0
 
   def shootBullet(): Unit = {
     val gameState = currentGameState
-    val now = Time.getTime
+    val now       = Time.getTime
 
     if (now - lastShotTime > Bullet.reloadTime &&
-      gameState.isPlayerAlive(playerId) && gameState.state == PlayingState) {
+        gameState.isPlayerAlive(playerId) && gameState.state == PlayingState) {
       val (mouseX, mouseY) = Engine.mousePosition
-      val mousePos = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
-      val playerOpt = playerById(playerId, gameState)
+      val mousePos         = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
+      val playerOpt        = playerById(playerId, gameState)
       if (playerOpt.isDefined) {
         val player = playerOpt.get
 
-        val rotation = (mousePos - player.pos).arg
+        val rotation    = (mousePos - player.pos).arg
         val startingPos = player.pos + Player.radius * Complex.rotation(rotation)
 
-        client.sendAction(NewBullet(
-          GameAction.newId(), Entity.newId(), playerId, teamsByPlayerId(playerId),
-          startingPos, Bullet.defaultRadius, rotation, Bullet.speed, now, 0,
-          PlayerSource
-        ))
+        client.sendAction(
+          NewBullet(
+            GameAction.newId(),
+            Entity.newId(),
+            playerId,
+            teamsByPlayerId(playerId),
+            startingPos,
+            Bullet.defaultRadius,
+            rotation,
+            Bullet.speed,
+            now,
+            0,
+            PlayerSource
+          )
+        )
 
         lastShotTime = now
       }
@@ -178,7 +193,7 @@ trait GameHandler {
   def useAbility(id: Int, gameState: GameState): Unit = if (gameState.isPlayerAlive(playerId)) {
     implicit def fromComplexToNetworkPoint(z: Complex): NetworkPoint = NetworkPoint(z.re, z.im)
 
-    val player = gameState.players(playerId)
+    val player           = gameState.players(playerId)
     val allowedAbilities = player.allowedAbilities.distinct
     if (allowedAbilities.lengthCompare(id) > 0) {
       // now the player has the ability, we can use it
@@ -191,38 +206,61 @@ trait GameHandler {
             client.sendNormal(UseActivateShield(client.gameName, Time.getTime, 0, playerId))
           case Ability.bigBulletId =>
             val (mouseX, mouseY) = Engine.mousePosition
-            val targetPos = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
-            val rotation = (targetPos - player.pos).arg
-            val startingPos = player.pos + Player.radius * Complex.rotation(rotation)
-            client.sendNormal(UseBigBullet(client.gameName, Time.getTime, 0, playerId, teamsByPlayerId(playerId),
-              startingPos.re, startingPos.im, rotation))
+            val targetPos        = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
+            val rotation         = (targetPos - player.pos).arg
+            val startingPos      = player.pos + Player.radius * Complex.rotation(rotation)
+            client.sendNormal(
+              UseBigBullet(
+                client.gameName,
+                Time.getTime,
+                0,
+                playerId,
+                teamsByPlayerId(playerId),
+                startingPos.re,
+                startingPos.im,
+                rotation
+              )
+            )
           case Ability.tripleBulletId =>
             val (mouseX, mouseY) = Engine.mousePosition
-            val targetPos = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
-            val rotation = (targetPos - player.pos).arg
-            val startingPos = player.pos + Player.radius * Complex.rotation(rotation)
-            client.sendNormal(UseTripleBullet(client.gameName, Time.getTime, 0, playerId, teamsByPlayerId(playerId),
-              startingPos.re, startingPos.im, rotation))
+            val targetPos        = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
+            val rotation         = (targetPos - player.pos).arg
+            val startingPos      = player.pos + Player.radius * Complex.rotation(rotation)
+            client.sendNormal(
+              UseTripleBullet(
+                client.gameName,
+                Time.getTime,
+                0,
+                playerId,
+                teamsByPlayerId(playerId),
+                startingPos.re,
+                startingPos.im,
+                rotation
+              )
+            )
           case Ability.teleportationId =>
             val (mouseX, mouseY) = Engine.mousePosition
-            val targetPos = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
-            val time = Time.getTime
-            val ability = new Teleportation(time, 0, playerId, player.pos, targetPos)
+            val targetPos        = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
+            val time             = Time.getTime
+            val ability          = new Teleportation(time, 0, playerId, player.pos, targetPos)
 
             if (ability.isLegal(currentGameState)) {
               val message = UseTeleportation(client.gameName, time, 0, playerId, player.pos, targetPos)
               client.sendNormal(message)
-              if (player.relevantUsedAbilities.values.filter(_.id == abilityId).forall(ability =>
-                ability.time + ability.cooldown / player.allowedAbilities.count(_ == abilityId) < Time.getTime
-              )) {
+              if (player.relevantUsedAbilities.values
+                    .filter(_.id == abilityId)
+                    .forall(
+                      ability =>
+                        ability.time + ability.cooldown / player.allowedAbilities.count(_ == abilityId) < Time.getTime
+                    )) {
                 unConfirmedActions = ability.createActions(currentGameState)
               }
             }
           case Ability.createHealingZoneId =>
             val (mouseX, mouseY) = Engine.mousePosition
-            val targetPos = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
-            val time = Time.getTime
-            val ability = new CreateHealingZone(time, 0, playerId, targetPos)
+            val targetPos        = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
+            val time             = Time.getTime
+            val ability          = new CreateHealingZone(time, 0, playerId, targetPos)
 
             if (ability.isLegal(currentGameState)) {
               val message = UseCreateHealingZone(client.gameName, time, 0, playerId, targetPos)
@@ -230,56 +268,61 @@ trait GameHandler {
             }
           case Ability.createBulletAmplifierId =>
             val (mouseX, mouseY) = Engine.mousePosition
-            val targetPos = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
-            val time = Time.getTime
-            val rotation = (targetPos - gameState.players(playerId).pos).arg
-            val ability = new CreateBulletAmplifier(time, 0, playerId, targetPos, rotation)
+            val targetPos        = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
+            val time             = Time.getTime
+            val rotation         = (targetPos - gameState.players(playerId).pos).arg
+            val ability          = new CreateBulletAmplifier(time, 0, playerId, targetPos, rotation)
 
             if (ability.isLegal(currentGameState)) {
-              val message = UseCreateBulletAmplifier(client.gameName, time, 0, playerId,
-                targetPos, rotation)
+              val message = UseCreateBulletAmplifier(client.gameName, time, 0, playerId, targetPos, rotation)
               client.sendNormal(message)
             }
           case Ability.launchSmashBulletId =>
             val (mouseX, mouseY) = Engine.mousePosition
-            val targetPos = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
-            val rotation = (targetPos - player.pos).arg
-            val startingPos = player.pos + Player.radius * Complex.rotation(rotation)
-            client.sendNormal(UseLaunchSmashBullet(client.gameName, Time.getTime, 0, playerId,
-              startingPos, rotation))
+            val targetPos        = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
+            val rotation         = (targetPos - player.pos).arg
+            val startingPos      = player.pos + Player.radius * Complex.rotation(rotation)
+            client.sendNormal(UseLaunchSmashBullet(client.gameName, Time.getTime, 0, playerId, startingPos, rotation))
           case Ability.craftGunTurretId =>
             client.sendNormal(
               UseCraftGunTurret(client.gameName, Time.getTime, 0, playerId, teamsByPlayerId(playerId), player.pos)
             )
           case Ability.createBarrierId =>
             val (mouseX, mouseY) = Engine.mousePosition
-            val targetPos = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
-            val time = Time.getTime
-            val rotation = (targetPos - gameState.players(playerId).pos).arg
-            val ability = new CreateBarrier(time, 0, playerId, teamsByPlayerId(playerId), targetPos, rotation)
+            val targetPos        = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
+            val time             = Time.getTime
+            val rotation         = (targetPos - gameState.players(playerId).pos).arg
+            val ability          = new CreateBarrier(time, 0, playerId, teamsByPlayerId(playerId), targetPos, rotation)
 
             if (ability.isLegal(currentGameState)) {
-              val message = UseCreateBarrier(client.gameName, time, 0, playerId, teamsByPlayerId(playerId),
-                targetPos, rotation)
+              val message =
+                UseCreateBarrier(client.gameName, time, 0, playerId, teamsByPlayerId(playerId), targetPos, rotation)
               client.sendNormal(message)
             }
           case Ability.putBulletGlue =>
             client.sendNormal(UsePutBulletGlue(client.gameName, Time.getTime, 0, playerId, teamsByPlayerId(playerId)))
           case Ability.laserId =>
             val (mouseX, mouseY) = Engine.mousePosition
-            val targetPos = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
+            val targetPos        = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
 
             val stepNumber = if (currentGameState.laserLaunchers.values.exists(_.ownerId == playerId)) 1 else 0
 
             val now = Time.getTime
-            client.sendNormal(UseLaser(
-              client.gameName, now, 0, playerId, teamsByPlayerId(playerId), stepNumber, targetPos
-            ))
+            client.sendNormal(
+              UseLaser(
+                client.gameName,
+                now,
+                0,
+                playerId,
+                teamsByPlayerId(playerId),
+                stepNumber,
+                targetPos
+              )
+            )
         }
       }
     }
   }
-
 
 //  def useAbility(bind: String, gameState: GameState): Unit = abilityBinds.get(bind) match {
 //    case Some(index) if gameState.isPlayerAlive(playerId) =>
@@ -287,14 +330,10 @@ trait GameHandler {
 //    case None =>
 //  }
 
-
-
   def movePlayer(gameState: GameState, time: Long, dt: Double, mousePos: Complex, player: Player): UpdatePlayerPos = {
     val rotation = (mousePos - Complex(player.xPos, player.yPos)).arg
 
-    var headingTo = Complex(0,0)
-
-
+    var headingTo = Complex(0, 0)
 
     if (isUpPressed) {
       headingTo += Complex(0, 200)
@@ -309,68 +348,71 @@ trait GameHandler {
       headingTo += Complex(-200, 0)
     }
 
-    val (moving, direction) = if (headingTo == Complex(0,0)) (false, 0.0) else (true, headingTo.arg)
+    val (moving, direction) = if (headingTo == Complex(0, 0)) (false, 0.0) else (true, headingTo.arg)
 
     val obstaclesLike = gameState.collidingPlayerObstacles(player)
 
     val newPosition = if (moving) {
 
       val pos = player.lastValidPosition(
-        player.pos + player.speed * dt / 1000 * Complex.rotation(direction), obstaclesLike
+        player.pos + player.speed * dt / 1000 * Complex.rotation(direction),
+        obstaclesLike
       )
 
       if (pos != player.pos)
         pos
       else {
         val secondTry = player.lastValidPosition(
-          player.pos + player.speed * dt / 1000 * Complex.rotation(direction - math.Pi / 4), obstaclesLike
+          player.pos + player.speed * dt / 1000 * Complex.rotation(direction - math.Pi / 4),
+          obstaclesLike
         )
 
         if (secondTry != player.pos)
           secondTry
         else
           player.lastValidPosition(
-            player.pos + player.speed * dt / 1000 * Complex.rotation(direction + math.Pi / 4), obstaclesLike
+            player.pos + player.speed * dt / 1000 * Complex.rotation(direction + math.Pi / 4),
+            obstaclesLike
           )
       }
-    }
-    else
+    } else
       player.pos
 
-
-
-
-    val newRotation = if (obstaclesLike.exists(obstacle =>
-      player.shape.collides(newPosition, rotation, obstacle.shape, obstacle.pos, obstacle.rotation)
-    )) {
-      player.rotation
-    } else {
-      rotation
-    }
+    val newRotation =
+      if (obstaclesLike.exists(
+            obstacle => player.shape.collides(newPosition, rotation, obstacle.shape, obstacle.pos, obstacle.rotation)
+          )) {
+        player.rotation
+      } else {
+        rotation
+      }
 
     val finalMoving = player.pos != newPosition
 
     UpdatePlayerPos(
-      GameAction.newId(), time, playerId, newPosition.re, newPosition.im, (newPosition - player.pos).arg,
-      finalMoving, newRotation,
+      GameAction.newId(),
+      time,
+      playerId,
+      newPosition.re,
+      newPosition.im,
+      (newPosition - player.pos).arg,
+      finalMoving,
+      newRotation,
       PlayerSource
     )
 
   }
 
-
-
   protected def isPredictableAction(action: GameAction): Boolean = action match {
     case a: UpdatePlayerPos if a.playerId == playerId => true
-    case _ => false
+    case _                                            => false
   }
 
-  def addActions(actions: Seq[GameAction]): Unit = {
+  def addActions(actions: Seq[GameAction]): Unit =
     if (actions.nonEmpty) {
       addAction(actions.head, actions.tail.isEmpty)
       addActions(actions.tail)
     }
-  }
 
   def actionDenied(action: GameAction): Unit = action match {
     case UpdatePlayerPos(_, _, id, _, _, _, _, _, _) if id == playerId =>
@@ -378,23 +420,21 @@ trait GameHandler {
         dom.console.warn(s"An action has been denied [$action]")
       }
       unConfirmedActions = Nil // we remove all unConfirmedActions if an UpdatePlayerPos is denied, so that the client
-                               // can synchronize again with the server
+    // can synchronize again with the server
     case _ =>
   }
 
   def actionsDenied(actions: Seq[GameAction]): Unit =
     actions.foreach(actionDenied)
 
-  def deleteActions(oldestTime: Long, actionIds: List[Long]): Unit = {
+  def deleteActions(oldestTime: Long, actionIds: List[Long]): Unit =
     actionCollector.removeActions(oldestTime, actionIds)
-  }
-
 
   protected var abilityButtons: List[AbilityButton] = List()
-  protected var focusBtnIndex: Int = 1
+  protected var focusBtnIndex: Int                  = 1
 
   protected def changeFocusedBtn(index: Int): Unit = {
-    val mod = abilityButtons.length - 1
+    val mod      = abilityButtons.length - 1
     val newIndex = (index + mod) % mod // -1 % n = -1 :'(
     abilityButtons(focusBtnIndex).blur()
     focusBtnIndex = newIndex
@@ -410,26 +450,24 @@ trait GameHandler {
   val watchingFrame: Frame = new Frame()
   watchingFrame.registerEvent(GameEvents.OnPlayerTakeAbilityGiver)(
     (action: PlayerTakeAbilityGiver, state: GameState) => {
-    val pId = action.playerId
-    val abilityId = action.abilityId
-    if (pId == playerId && state.isPlayerAlive(playerId) && !abilityButtons.exists(_.abilityId == abilityId)) {
-      abilityButtons +:= new AbilityButton(abilityId, playerId, Some(abilityButtons.head))
-      focusPreviousBtn() // the new button shifts all the buttons to the right in indices
+      val pId       = action.playerId
+      val abilityId = action.abilityId
+      if (pId == playerId && state.isPlayerAlive(playerId) && !abilityButtons.exists(_.abilityId == abilityId)) {
+        abilityButtons +:= new AbilityButton(abilityId, playerId, Some(abilityButtons.head))
+        focusPreviousBtn() // the new button shifts all the buttons to the right in indices
+      }
     }
-  })
+  )
 
-
-
-  val actionCollector: ActionCollector = new ActionCollector(GameState.originalState, 1000, 30000)
+  val actionCollector: ActionCollector               = new ActionCollector(GameState.originalState, 1000, 30000)
   protected var unConfirmedActions: List[GameAction] = Nil
-  protected var buffer: List[GameAction] = Nil
+  protected var buffer: List[GameAction]             = Nil
   protected var lastUpdatePosAction: UpdatePlayerPos =
     UpdatePlayerPos(0, 0, playerId, 0, 0, 0, moving = false, 0, PlayerSource)
   protected var otherPlayersPredictions: Iterable[UpdatePlayerPos] = Nil
 
-
   protected var pendingActionHandler: Option[SetIntervalHandle] = None
-  protected var gameEnded: Boolean = false
+  protected var gameEnded: Boolean                              = false
 
   protected var triggeredActions: List[GameAction] = Nil
 
@@ -442,77 +480,84 @@ trait GameHandler {
 
     if (isPredictableAction(action)) {
       unConfirmedActions = unConfirmedActions.dropWhile(_.time < action.time)
-    } else action match {
-      case UseAbilityAction(_, _, ability, _, _)
-        if ability.isInstanceOf[Teleportation] && ability.casterId == playerId =>
-        unConfirmedActions = Nil
-      case a: PlayerDead =>
-        deadPlayers = playerNamesById(a.playerId) +: deadPlayers
-        if (a.playerId == playerId) {
+    } else
+      action match {
+        case UseAbilityAction(_, _, ability, _, _)
+            if ability.isInstanceOf[Teleportation] && ability.casterId == playerId =>
           unConfirmedActions = Nil
-          buffer = Nil
-          if (deadPlayers.lengthCompare(playerNames.length) < 0) {
-            Engine.changeGameState(SpectatorModeRunner)
-            Engine.startGameLoop()
+        case a: PlayerDead =>
+          deadPlayers = playerNamesById(a.playerId) +: deadPlayers
+          if (a.playerId == playerId) {
+            unConfirmedActions = Nil
+            buffer             = Nil
+            if (deadPlayers.lengthCompare(playerNames.length) < 0) {
+              Engine.changeGameState(SpectatorModeRunner)
+              Engine.startGameLoop()
+            }
           }
-        }
-        otherPlayersPredictions = otherPlayersPredictions.filter(_.playerId != a.playerId)
-      case _: GameEndedAction =>
-        val startTime = currentGameState.startTime.get
+          otherPlayersPredictions = otherPlayersPredictions.filter(_.playerId != a.playerId)
+        case _: GameEndedAction =>
+          val startTime = currentGameState.startTime.get
 
-        unConfirmedActions = Nil
-        clearInterval(pendingActionHandler.get)
-        gameEnded = true
+          unConfirmedActions = Nil
+          clearInterval(pendingActionHandler.get)
+          gameEnded = true
 
-        actionCollector.addActions(triggeredActions)
-        triggeredActions.foreach(GameEvents.fireGameEvent(_, currentGameState))
-        triggeredActions = Nil
+          actionCollector.addActions(triggeredActions)
+          triggeredActions.foreach(GameEvents.fireGameEvent(_, currentGameState))
+          triggeredActions = Nil
 
-        if (currentGameState.players.nonEmpty) {
-          deadPlayers = currentGameState.players.values.map(_.name).toList ++ deadPlayers
-        }
+          if (currentGameState.players.nonEmpty) {
+            deadPlayers = currentGameState.players.values.map(_.name).toList ++ deadPlayers
+          }
 
+          GameStatistics.saveGameStatistics(playerName, startTime, currentGameState)
+          saveGameDataAndLoadScoreBoard(startTime, deadPlayers)
 
-        GameStatistics.saveGameStatistics(playerName, startTime, currentGameState)
-        saveGameDataAndLoadScoreBoard(startTime, deadPlayers)
+        case _: GameBegins =>
+          currentGameState.players.keys.map(id => new PlayerHealthBar(id, () => this.currentGameState.players.get(id)))
+          currentGameState.players.values.foreach(player => playerNamesById += (player.id -> player.name))
 
+          ScoreBoard.colorMap = client.gameHandler.colorByPlayerName
 
+          gameClock.startClock()
 
-      case _: GameBegins =>
-        currentGameState.players.keys.map(id => new PlayerHealthBar(id, () => this.currentGameState.players.get(id)))
-        currentGameState.players.values.foreach(player => playerNamesById += (player.id -> player.name))
+          PlayerNameFS.hideFontStrings()
 
-        ScoreBoard.colorMap = client.gameHandler.colorByPlayerName
-
-        gameClock.startClock()
-
-        PlayerNameFS.hideFontStrings()
-
-         pendingActionHandler = Some(setInterval(1000 / 15) {
-          sendPendingActions()
-        })
-      case a: NewPlayer  =>
-        if (a.player.id == playerId) {
-          lastUpdatePosAction =
-            UpdatePlayerPos(
-              GameAction.newId(), a.time, playerId, a.player.xPos, a.player.yPos, 0, moving = false, 0, PlayerSource
+          pendingActionHandler = Some(setInterval(1000 / 15) {
+            sendPendingActions()
+          })
+        case a: NewPlayer =>
+          if (a.player.id == playerId) {
+            lastUpdatePosAction = UpdatePlayerPos(
+              GameAction.newId(),
+              a.time,
+              playerId,
+              a.player.xPos,
+              a.player.yPos,
+              0,
+              moving = false,
+              0,
+              PlayerSource
             )
-          EntityDrawer.camera.worldCenter = a.player.pos
-          PlayerNameFS.placeFontStrings()
-          if (a.player.allowedAbilities.nonEmpty) {
-            abilityButtons = a.player.allowedAbilities.tail.foldLeft(
-              List(new AbilityButton(a.player.allowedAbilities.head, playerId))
-            )({ case (buts, id) =>
-                new AbilityButton(id, playerId, Some(buts.head)) +: buts
-            })
-            changeFocusedBtn(0)
+            EntityDrawer.camera.worldCenter = a.player.pos
+            PlayerNameFS.placeFontStrings()
+            if (a.player.allowedAbilities.nonEmpty) {
+              abilityButtons = a.player.allowedAbilities.tail.foldLeft(
+                List(new AbilityButton(a.player.allowedAbilities.head, playerId))
+              )({
+                case (buts, id) =>
+                  new AbilityButton(id, playerId, Some(buts.head)) +: buts
+              })
+              changeFocusedBtn(0)
+            }
           }
-        }
-        PlayerNameFS.newName(
-          a.player.name, a.player.pos + Complex(0, Player.radius + 2)// - EntityDrawer.camera.worldCenter
-        )
-      case _ =>
-    }
+          PlayerNameFS.newName(
+            a.player.name,
+            a.player.pos + Complex(0, Player.radius + 2) // - EntityDrawer.camera.worldCenter
+          )
+        case _ =>
+      }
 
   }
 
@@ -521,7 +566,7 @@ trait GameHandler {
 
   def playerById(id: Long, gameState: GameState = currentGameState): Option[Player] = gameState.players.get(id)
 
-  private var deadPlayers: List[String] = Nil
+  private var deadPlayers: List[String]                    = Nil
   protected val playerNamesById: mutable.Map[Long, String] = mutable.Map[Long, String]()
 
   def sendPendingActions(): Unit = {
@@ -532,25 +577,22 @@ trait GameHandler {
     buffer = Nil
   }
 
-
-  def currentGameState: GameState = {
+  def currentGameState: GameState =
     // unConfirmedActions apply at the top of the game state, meaning that it is not in order, but it is much better
     // performance-wise and it's not a big deal for game rendering
     actionCollector.currentGameState(unConfirmedActions ++ otherPlayersPredictions)
-  }
 
-  val computationTimes: mutable.Queue[Int] = mutable.Queue()
+  val computationTimes: mutable.Queue[Int]           = mutable.Queue()
   val computationTimesUpdateDraw: mutable.Queue[Int] = mutable.Queue()
-  val renderTimes: mutable.Queue[Int] = mutable.Queue()
-  val processActions: mutable.Queue[Int] = mutable.Queue()
-  val dts: mutable.Queue[Int] = mutable.Queue()
-  val inUpdateFunction: mutable.Queue[Int] = mutable.Queue()
-  val inUpdateHandlers: mutable.Queue[Int] = mutable.Queue()
-  val debugTime: mutable.Queue[Int] = mutable.Queue()
-
+  val renderTimes: mutable.Queue[Int]                = mutable.Queue()
+  val processActions: mutable.Queue[Int]             = mutable.Queue()
+  val dts: mutable.Queue[Int]                        = mutable.Queue()
+  val inUpdateFunction: mutable.Queue[Int]           = mutable.Queue()
+  val inUpdateHandlers: mutable.Queue[Int]           = mutable.Queue()
+  val debugTime: mutable.Queue[Int]                  = mutable.Queue()
 
   val computationTimeFrame: Frame = new Frame()
-  computationTimeFrame.setSize(150,40)
+  computationTimeFrame.setSize(150, 40)
   computationTimeFrame.setPoint(BottomRight, UIParent, BottomRight)
   val computationTimeFS: FontString = computationTimeFrame.createFontString()
   computationTimeFS.setPoint(BottomRight, computationTimeFrame, Right)
@@ -563,40 +605,34 @@ trait GameHandler {
   protected var lastComputationTime: Int = 0
 
   protected var actionsThatWhereOnStack: Int = 0
-  protected var maxActionsOnStack: Int = 0
-  val actionsOnStackFS: FontString = computationTimeFrame.createFontString()
+  protected var maxActionsOnStack: Int       = 0
+  val actionsOnStackFS: FontString           = computationTimeFrame.createFontString()
   actionsOnStackFS.setPoint(TopRight, computationTimeFrame, Right)
-  actionsOnStackFS.setSize(150,20)
+  actionsOnStackFS.setSize(150, 20)
 
   computationTimeFrame.setScript(ScriptKind.OnUIParentResize)(() => {
     computationTimeFrame.clearAllPoints()
     computationTimeFrame.setPoint(BottomRight, UIParent, BottomRight)
   })
 
-
-
-
   val Runner: GameRunner
 
-
-
-
   /**
-   * This state is set when the player dies. It can also be used if we want to implement spectator mode in the future.
-   */
+    * This state is set when the player dies. It can also be used if we want to implement spectator mode in the future.
+    */
   object SpectatorModeRunner extends GameRunner {
 
     val run: Option[() => Unit] = None
 
     def draw(): Unit = {
-      val (w, h) = Engine.graphics.dimensions
+      val (w, h)    = Engine.graphics.dimensions
       val cameraPos = Complex(0, 0)
 
-      EntityDrawer.camera.worldWidth = GameArea.sizeFromNbrPlayers(playerNames.length) * math.max(1, w / h.toDouble)
+      EntityDrawer.camera.worldWidth  = GameArea.sizeFromNbrPlayers(playerNames.length) * math.max(1, w / h.toDouble)
       EntityDrawer.camera.worldHeight = GameArea.sizeFromNbrPlayers(playerNames.length) * math.max(1, h.toDouble / w)
 
       val gameState = currentGameState
-      val gameTime = if (gameEnded) gameState.time else Time.getTime
+      val gameTime  = if (gameEnded) gameState.time else Time.getTime
 
       EntityDrawer.drawState(cameraPos, gameState, gameTime, playerColors, teamColors, bulletColors)
 
@@ -610,30 +646,23 @@ trait GameHandler {
       if (computationTimes.lengthCompare(100) > 0) computationTimes.dequeue()
     }
 
-    def keyPressed(key: String, keyCode: Int, isRepeat: Boolean): Unit = {
+    def keyPressed(key: String, keyCode: Int, isRepeat: Boolean): Unit =
       Frame.keyPressed(key, keyCode, isRepeat)
-    }
 
-    def keyReleased(key: String, keyCode: Int): Unit = {
-
+    def keyReleased(key: String, keyCode: Int): Unit =
       Frame.keyReleased(key, keyCode)
-    }
 
-    def mousePressed(x: Double, y: Double, button: Int): Unit = {
+    def mousePressed(x: Double, y: Double, button: Int): Unit =
       Frame.clickHandler(x, y, button)
-    }
 
-    def mouseMoved(x: Double, y: Double, dx: Double, dy: Double, button: Int): Unit = {
+    def mouseMoved(x: Double, y: Double, dx: Double, dy: Double, button: Int): Unit =
       Frame.mouseMoved(x, y, dx, dy, button)
-    }
 
-    def mouseReleased(x: Double, y: Double, button: Int): Unit = {
+    def mouseReleased(x: Double, y: Double, button: Int): Unit =
       Frame.mouseReleased(x, y, button)
-    }
 
-    def mouseWheel(dx: Int, dy: Int, dz: Int): Unit = {
+    def mouseWheel(dx: Int, dy: Int, dz: Int): Unit =
       Frame.wheelMoved(dx, dy)
-    }
 
     def update(dt: Double): Unit = {
 
@@ -649,25 +678,33 @@ trait GameHandler {
         ScoreBoard.update(gameState)
 
       val time = Time.getTime
-      otherPlayersPredictions = gameState.players.values.filter(_.id != playerId).filter(_.moving).map(
-        player => {
-          val pos = player.currentPosition(time - player.time)
+      otherPlayersPredictions = gameState.players.values
+        .filter(_.id != playerId)
+        .filter(_.moving)
+        .map(
+          player => {
+            val pos = player.currentPosition(time - player.time)
 
-          UpdatePlayerPos(
-            GameAction.newId(), time, player.id, pos.re, pos.im, player.direction, player.moving, player.rotation,
-            PlayerSource
-          )
-        }
-      )
-
+            UpdatePlayerPos(
+              GameAction.newId(),
+              time,
+              player.id,
+              pos.re,
+              pos.im,
+              player.direction,
+              player.moving,
+              player.rotation,
+              PlayerSource
+            )
+          }
+        )
 
       Frame.updateHandler(dt)
     }
   }
 
-
   private val adjustServerTimeDuration: Long = 5000
-  private val adjustServerTimeRate: Long = 1000
+  private val adjustServerTimeRate: Long     = 1000
 
   private def adjustServerTime(newDelta: Long): Unit = {
     val deltaVariation = (newDelta - Time.deltaTime) / (adjustServerTimeDuration / adjustServerTimeRate)
@@ -686,6 +723,3 @@ trait GameHandler {
   }
 
 }
-
-
-

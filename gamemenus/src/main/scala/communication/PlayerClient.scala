@@ -9,11 +9,16 @@ import org.scalajs.dom
 import org.scalajs.dom.html
 
 /**
- * A PlayerClient joined a game
- */
-class PlayerClient(val name: String, val gameName: String, val address: String, val port: Int, registrationId: Int,
-                   val gameMode: GameMode)
-  extends PlayerSocket {
+  * A PlayerClient joined a game
+  */
+class PlayerClient(
+    val name: String,
+    val gameName: String,
+    val address: String,
+    val port: Int,
+    registrationId: Int,
+    val gameMode: GameMode
+) extends PlayerSocket {
 
 //  val panel: InGamePanel = UI.joinPanel
   val page: GameSettingsPage = UIPages.join
@@ -25,7 +30,7 @@ class PlayerClient(val name: String, val gameName: String, val address: String, 
 
   connect()
 
-  def messageCallback(client: Client, msg: Message): Unit = {
+  def messageCallback(client: Client, msg: Message): Unit =
     msg match {
       case PlayerReady(_, playerName, status) =>
         playerReady(playerName, status)
@@ -50,7 +55,7 @@ class PlayerClient(val name: String, val gameName: String, val address: String, 
 
       case CurrentPlayers(_, info) =>
         updatePlayerList(info)
-        //sendReadyStatus()
+      //sendReadyStatus()
 
       case GameCreated(_, _) =>
         dom.console.warn(s"Received $msg but shouldn't have. I'll just ignore it.")
@@ -58,14 +63,10 @@ class PlayerClient(val name: String, val gameName: String, val address: String, 
       case _ =>
         dom.console.warn(s"Received $msg but I don't know what it is. I'll juste ignore it.")
     }
-  }
 
-  def connectedCallback(client: Client, peer: Peer, connected: Boolean): Unit = {
+  def connectedCallback(client: Client, peer: Peer, connected: Boolean): Unit =
     if (connected) {
       sendReliable(NewPlayerArrives(gameName, name, registrationId))
     }
-  }
-
 
 }
-

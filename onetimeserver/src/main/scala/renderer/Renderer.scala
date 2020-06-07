@@ -11,17 +11,22 @@ object Renderer {
 
   var server: GameServer = _
 
-  def main(args: Array[String]): Unit = {
-
+  def main(args: Array[String]): Unit =
     /**
-     * First finding an available port.
-     */
+      * First finding an available port.
+      */
     PortFinder.getPort((_, port) => {
       println(s"Port: $port")
 
       DataStorage.retrieveGlobalValue("gameData") match {
-        case OneTimeServerGameData
-          (gameName, gameMode, enterPassword, tableServerAddress, tableServerPort, playerData) =>
+        case OneTimeServerGameData(
+            gameName,
+            gameMode,
+            enterPassword,
+            tableServerAddress,
+            tableServerPort,
+            playerData
+            ) =>
           server = new GameServer(
             gameName,
             port,
@@ -40,12 +45,11 @@ object Renderer {
           )
 
           /**
-           * Removing ids from available ids.
-           */
+            * Removing ids from available ids.
+            */
           playerData.foreach(_ => Entity.newId())
 
           val peer = Peer(tableServerAddress, tableServerPort)
-
 
           server.activate()
           server.makeConnection(peer)
@@ -54,15 +58,9 @@ object Renderer {
             peer
           )
 
-
-
         case _ =>
           println("Game data were not saved correctly.")
       }
     })
-
-
-
-  }
 
 }

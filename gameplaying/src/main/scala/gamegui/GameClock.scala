@@ -19,26 +19,23 @@ class GameClock extends Frame() {
   fs.setJustifyH(JustifyLeft)
 
   private def setText(): Unit = {
-    val t = time.toInt
+    val t       = time.toInt
     val seconds = t % 60
     val minutes = (t - seconds) / 60
-    val text = s"$minutes m:${if (seconds < 10) "0" else ""}$seconds s"
+    val text    = s"$minutes m:${if (seconds < 10) "0" else ""}$seconds s"
     if (fs.text != text)
       fs.setText(text)
   }
 
-
-  def startClock(): Unit = {
+  def startClock(): Unit =
     setScript(ScriptKind.OnUpdate)((dt: Double) => {
       time += dt / 1000
       setText()
     })
-  }
 
   def setTime(newTime: Double): Unit = {
     time = newTime
     setText()
   }
-
 
 }

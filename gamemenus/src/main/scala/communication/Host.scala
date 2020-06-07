@@ -10,10 +10,14 @@ import org.scalajs.dom.html
 import sharednodejsapis.IPCRenderer
 import ui.UI
 
-
-class Host(val name: String, val gameName: String, val address: String, val port: Int, registrationId: Int,
-           val gameMode: GameMode)
-  extends PlayerSocket {
+class Host(
+    val name: String,
+    val gameName: String,
+    val address: String,
+    val port: Int,
+    registrationId: Int,
+    val gameMode: GameMode
+) extends PlayerSocket {
 
 //  val panel: InGamePanel = UI.hostPanel
   val page: GameSettingsPage = UIPages.host
@@ -29,18 +33,18 @@ class Host(val name: String, val gameName: String, val address: String, val port
 
   private def mayLaunch: Boolean =
     nbrOfPlayers > 1 &&
-    nbrOfPlayers <= maxNbrPlayers &&
-    notReadyPlayers.isEmpty &&
-    teams.size > 1 &&
+      nbrOfPlayers <= maxNbrPlayers &&
+      notReadyPlayers.isEmpty &&
+      teams.size > 1 &&
       (gameMode != CaptureTheFlagMode || teams.size == 2)
 
   private def launchGame(): Unit =
     sendReliable(LaunchGame(gameName))
 
   /**
-   * The submit event is triggered when the launch button is pressed, which is why we don't access the
-   * launch button, we don't need to.
-   */
+    * The submit event is triggered when the launch button is pressed, which is why we don't access the
+    * launch button, we don't need to.
+    */
   page.form.onsubmit = (event: dom.Event) => {
     event.preventDefault()
 
@@ -51,7 +55,9 @@ class Host(val name: String, val gameName: String, val address: String, val port
         launchGame()
       } else {
         UI.showConfirmBox(
-          "Teams", "All teams does not have the same number of players. Launch anyway?", if (_) launchGame()
+          "Teams",
+          "All teams does not have the same number of players. Launch anyway?",
+          if (_) launchGame()
         )
       }
     } else if (nbrOfPlayers == 1) {
@@ -73,10 +79,9 @@ class Host(val name: String, val gameName: String, val address: String, val port
     false
   }
 
-
   private var _gameId: Long = 0
 
-  def messageCallback(client: Client, msg: Message): Unit = {
+  def messageCallback(client: Client, msg: Message): Unit =
     msg match {
       case PlayerReady(_, playerName, status) =>
         playerReady(playerName, status)
@@ -103,7 +108,7 @@ class Host(val name: String, val gameName: String, val address: String, val port
 
       case CurrentPlayers(_, info) =>
         updatePlayerList(info)
-        //sendReadyStatus()
+      //sendReadyStatus()
 
       case GameCreated(_, id) =>
         _gameId = id
@@ -113,16 +118,12 @@ class Host(val name: String, val gameName: String, val address: String, val port
       case _ =>
         dom.console.warn(s"Received $msg but I don't know what it is. I'll juste ignore it.")
     }
-  }
 
-  def connectedCallback(client: Client, peer: Peer, connected: Boolean): Unit = {
+  def connectedCallback(client: Client, peer: Peer, connected: Boolean): Unit =
     if (connected) {
       sendReliable(NewGameCreation(gameName, name, registrationId, gameMode.toString))
     } else {
       if (!gameWasLaunched) println("I have been disconnected from the GameServer :(")
     }
-  }
 
 }
-
-

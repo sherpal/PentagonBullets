@@ -7,7 +7,6 @@ import gamestate.actions.NewObstacle
 import physics.ConvexPolygon
 import time.Time
 
-
 class GameArea(val width: Int = 1000, val height: Int = 800) {
 
   def randomPos(): (Double, Double) = (
@@ -16,15 +15,15 @@ class GameArea(val width: Int = 1000, val height: Int = 800) {
   )
 
   /**
-   * Returns a random position in the region with specified center and dimensions.
-   */
+    * Returns a random position in the region with specified center and dimensions.
+    */
   def randomPos(center: Complex, width: Double, height: Double): (Double, Double) = (
     scala.util.Random.nextInt(width.toInt) + center.re - width / 2,
     scala.util.Random.nextInt(height.toInt) + center.im - height / 2
   )
 
-  def randomPos(mist: Mist) : (Double, Double) = {
-    val width = mist.sideLength.toInt
+  def randomPos(mist: Mist): (Double, Double) = {
+    val width  = mist.sideLength.toInt
     val height = mist.sideLength.toInt
     (
       (scala.util.Random.nextInt(width - 100) - width / 2 + 50).toDouble,
@@ -41,7 +40,7 @@ class GameArea(val width: Int = 1000, val height: Int = 800) {
   )
 
   val bottomEdgeVertices: (Complex, Vector[Complex]) = (
-    Complex(0, - height / 2 - 5),
+    Complex(0, -height / 2 - 5),
     Obstacle.segmentObstacleVertices(-width / 2 - 10, width / 2 + 10, 10)
 //    Vector(
 //      Complex(-width / 2 - 10, -5), Complex(width / 2 + 10, -5),
@@ -51,7 +50,7 @@ class GameArea(val width: Int = 1000, val height: Int = 800) {
 
   val leftEdgeVertices: (Complex, Vector[Complex]) = (
     Complex(-width / 2 - 5, 0),
-    Obstacle.segmentObstacleVertices(- i * height / 2, i * height / 2, 10)
+    Obstacle.segmentObstacleVertices(-i * height / 2, i * height / 2, 10)
 //    Vector(
 //      Complex(-5, -height / 2), Complex(5, -height / 2),
 //      Complex(5, height / 2), Complex(-5, height / 2)
@@ -60,7 +59,7 @@ class GameArea(val width: Int = 1000, val height: Int = 800) {
 
   val rightEdgeVertices: (Complex, Vector[Complex]) = (
     Complex(width / 2 + 5, 0),
-    Obstacle.segmentObstacleVertices(- i * height / 2, i * height / 2, 10)
+    Obstacle.segmentObstacleVertices(-i * height / 2, i * height / 2, 10)
 //    Vector(
 //      Complex(-5, -height / 2), Complex(5, -height / 2),
 //      Complex(5, height / 2), Complex(-5, height / 2)
@@ -68,7 +67,10 @@ class GameArea(val width: Int = 1000, val height: Int = 800) {
   )
 
   val gameAreaEdgesVertices: List[(Complex, Vector[Complex])] = List(
-    topEdgeVertices, bottomEdgeVertices, leftEdgeVertices, rightEdgeVertices
+    topEdgeVertices,
+    bottomEdgeVertices,
+    leftEdgeVertices,
+    rightEdgeVertices
   )
 
   def createCenterSquare(radius: Double, source: ActionSource): NewObstacle = {
@@ -80,15 +82,17 @@ class GameArea(val width: Int = 1000, val height: Int = 800) {
   def createObstacle(gameState: GameState, width: Int, height: Int, source: ActionSource): NewObstacle = {
     val (x, y) = randomPos()
     val vertices = Vector(
-      Complex(-width / 2, -height / 2), Complex(width / 2, -height / 2),
-      Complex(width / 2, height / 2), Complex(-width / 2, height / 2)
+      Complex(-width / 2, -height / 2),
+      Complex(width / 2, -height / 2),
+      Complex(width / 2, height / 2),
+      Complex(-width / 2, height / 2)
     )
 
     val obstacleShape: ConvexPolygon = new ConvexPolygon(vertices)
 
-    if (gameState.players.values.exists(player =>
-      player.shape.collides(player.pos, player.rotation, obstacleShape, Complex(x, y), 0)
-    ))
+    if (gameState.players.values.exists(
+          player => player.shape.collides(player.pos, player.rotation, obstacleShape, Complex(x, y), 0)
+        ))
       createObstacle(gameState, width, height, source)
     else
       NewObstacle(GameAction.newId(), Time.getTime, Entity.newId(), Complex(x, y), vertices, source)

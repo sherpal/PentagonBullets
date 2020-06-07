@@ -3,7 +3,15 @@ package tables
 import exceptions._
 import gamemode.{CaptureTheFlagMode, GameMode, StandardMode}
 import networkcom.{Message, Peer, Server}
-import networkcom.tablemessages.{CreateClient, CreateServer, PlayerInfoMessage, PlayerPeers, TableDestroyed, Tables, Table => TableMessage}
+import networkcom.tablemessages.{
+  CreateClient,
+  CreateServer,
+  PlayerInfoMessage,
+  PlayerPeers,
+  TableDestroyed,
+  Tables,
+  Table => TableMessage
+}
 import org.scalajs.dom.ext.Color
 
 import scala.collection.mutable
@@ -64,27 +72,24 @@ trait Table {
     this
   }
 
-  def removePlayer(peer: Peer): Table = {
+  def removePlayer(peer: Peer): Table =
     if (isPlayerSeated(peer)) {
       removePlayer(playersFromPeer(peer))
     } else this
-  }
 
   /** Sends a message to every player seated at this table through the given server. */
-  def broadcastToPlayers(message: Message, server: Server): Unit = {
+  def broadcastToPlayers(message: Message, server: Server): Unit =
     players.keys.foreach(sendToPlayer(_, message, server))
-  }
 
-  def sendToPlayer(playerName: String, message: Message, server: Server): Unit = {
+  def sendToPlayer(playerName: String, message: Message, server: Server): Unit =
     server.sendOrderedReliable(message, players(playerName))
-  }
 
   /**
-   * Launches the game for the players.
-   *
-   * @param peer   the peer from which the launch request comes. If peer != players(host), throws an exception.
-   * @param server the server where the
-   */
+    * Launches the game for the players.
+    *
+    * @param peer   the peer from which the launch request comes. If peer != players(host), throws an exception.
+    * @param server the server where the
+    */
   def launchGame(peer: Peer, server: Server): Unit = {
     if (players.getOrElse(host, Peer("", 0)) != peer) {
       throw new NotHostTryToLaunch
@@ -104,7 +109,6 @@ trait Table {
     server.sendReliable(CreateServer(), players(host))
   }
 
-
   private var oneTimeServerPeer: Option[Peer] = None
 
   def sendServerInfo(peer: Peer, server: Server): Unit = {
@@ -116,9 +120,8 @@ trait Table {
     broadcastToPlayers(CreateClient(peer), server)
   }
 
-  def sendPlayerClientInfoToServer(peer: Peer): Unit = {
+  def sendPlayerClientInfoToServer(peer: Peer): Unit =
     server.sendReliable(PlayerPeers(List(peer.address), List(peer.port)), oneTimeServerPeer.get)
-  }
 
   private var createdClients: Int = 0
 
@@ -129,23 +132,23 @@ trait Table {
     }
   }
 
-
-
   /**
-   * Sends all the information of the table available to the given player.
-   *
-   * For example, we do not send the ability chosen by a player to players not on their team.
-   *
-   * @param playerName the name of the player to give the information to.
-   */
+    * Sends all the information of the table available to the given player.
+    *
+    * For example, we do not send the ability chosen by a player to players not on their team.
+    *
+    * @param playerName the name of the player to give the information to.
+    */
   def sendTableInfo(playerName: String, server: Server): Unit
 
-  def broadcastTableInfo(): Unit = {
+  def broadcastTableInfo(): Unit =
     players.keys.foreach(sendTableInfo(_, server))
-  }
 
   def toTableMessage: TableMessage = TableMessage(
-    name, gameMode.toString, players.keys.toList, password.getOrElse("")
+    name,
+    gameMode.toString,
+    players.keys.toList,
+    password.getOrElse("")
   )
 
   def needPassword: Boolean = password.isDefined
@@ -153,7 +156,6 @@ trait Table {
   def receivedPlayerInfo(message: PlayerInfoMessage): Unit
 
 }
-
 
 object Table {
 
@@ -202,14 +204,11 @@ object Table {
   def -=(table: Table): Unit =
     tables -= table
 
-
-
   def tablesMessage: Tables = Tables(tables.toList.filterNot(_.gameHasStarted).map(_.toTableMessage))
 
   def allConnectedPlayerPeers: Set[Peer] = tables.flatMap(_.players.values).toSet
 
   def playerAlreadyConnected(peer: Peer): Boolean = allConnectedPlayerPeers.contains(peer)
-
 
   def removePeerFromExistence(peer: Peer): Unit = {
     tables.foreach(_.removePlayer(peer))
@@ -219,11 +218,10 @@ object Table {
     }
   }
 
-
   /**
-   * Stores the information of the players at the table.
-   * The information of a player depend on the game mode.
-   */
+    * Stores the information of the players at the table.
+    * The information of a player depend on the game mode.
+    */
   trait PlayerInfo
 
   val definedColors: List[Color] = List(

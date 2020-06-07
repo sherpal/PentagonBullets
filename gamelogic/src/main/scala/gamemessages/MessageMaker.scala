@@ -12,11 +12,9 @@ import physics.Polygon
 
 import scala.language.implicitConversions
 
-
-
 /**
- * This Object will transform [[GameAction]]s into [[Message]]s in order to send them.
- */
+  * This Object will transform [[GameAction]]s into [[Message]]s in order to send them.
+  */
 object MessageMaker {
 
   private implicit def complexToPoint(z: Complex): Point = Point(z.re, z.im)
@@ -29,8 +27,14 @@ object MessageMaker {
     val player = newPlayerAction.player
     NewPlayerMessage(
       newPlayerAction.actionId,
-      gameName, newPlayerAction.actionSource,
-      newPlayerAction.time, player.name, player.id, player.xPos, player.yPos, player.team,
+      gameName,
+      newPlayerAction.actionSource,
+      newPlayerAction.time,
+      player.name,
+      player.id,
+      player.xPos,
+      player.yPos,
+      player.team,
       player.allowedAbilities
     )
   }
@@ -38,33 +42,69 @@ object MessageMaker {
   private def playerTakeHealUnit(gameName: String, action: PlayerTakeHealUnit): PlayerTakeHealUnitMessage =
     PlayerTakeHealUnitMessage(
       action.actionId,
-      gameName, action.actionSource,
-      action.time, action.playerId, action.healUnitId
+      gameName,
+      action.actionSource,
+      action.time,
+      action.playerId,
+      action.healUnitId
     )
 
   private def playerTakeDamage(gameName: String, action: PlayerTakeDamage): PlayerTakeDamageMessage =
     PlayerTakeDamageMessage(
       action.actionId,
-      gameName, action.actionSource,
-      action.time, action.playerId, action.sourceId, action.damage
+      gameName,
+      action.actionSource,
+      action.time,
+      action.playerId,
+      action.sourceId,
+      action.damage
     )
 
   private def updateDamageZone(gameName: String, action: UpdateDamageZone): UpdateDamageZoneMessage =
     UpdateDamageZoneMessage(
       action.actionId,
-      gameName, action.actionSource,
-      action.time, action.id, action.lastGrow, action.lastTick,
-      action.xPos, action.yPos, action.radius
+      gameName,
+      action.actionSource,
+      action.time,
+      action.id,
+      action.lastGrow,
+      action.lastTick,
+      action.xPos,
+      action.yPos,
+      action.radius
     )
 
   def toMessage(gameName: String, action: GameAction): ActionMessage = action match {
     case UpdatePlayerPos(actionId, time, playerId, x, y, dir, moving, rot, actionSource) =>
       UpdatePlayerPosMessage(actionId, gameName, actionSource, time, playerId, x, y, dir, moving, rot)
 
-    case NewBullet(actionId, bulletId, playerId, teamId, pos, radius, dir, speed, time, travelledDistance, actionSource) =>
+    case NewBullet(
+        actionId,
+        bulletId,
+        playerId,
+        teamId,
+        pos,
+        radius,
+        dir,
+        speed,
+        time,
+        travelledDistance,
+        actionSource
+        ) =>
       NewBulletMessage(
-        actionId, gameName, actionSource,
-        time, bulletId, playerId, teamId, pos.re, pos.im, radius, dir, speed, travelledDistance
+        actionId,
+        gameName,
+        actionSource,
+        time,
+        bulletId,
+        playerId,
+        teamId,
+        pos.re,
+        pos.im,
+        radius,
+        dir,
+        speed,
+        travelledDistance
       )
 
     case DestroyBullet(actionId, bulletId, time, actionSource) =>
@@ -83,8 +123,8 @@ object MessageMaker {
       DestroyHealUnitMessage(actionId, gameName, actionSource, time, id)
 
     case action: PlayerTakeHealUnit => playerTakeHealUnit(gameName, action)
-    case action: PlayerTakeDamage => playerTakeDamage(gameName, action)
-    case action: UpdateDamageZone => updateDamageZone(gameName, action)
+    case action: PlayerTakeDamage   => playerTakeDamage(gameName, action)
+    case action: UpdateDamageZone   => updateDamageZone(gameName, action)
 
     case UpdateMist(actionId, time, id, lastGrow, lastTick, sideLength, gameAreaSideLength, actionSource) =>
       UpdateMistMessage(actionId, gameName, actionSource, time, id, lastGrow, lastTick, sideLength, gameAreaSideLength)
@@ -94,7 +134,15 @@ object MessageMaker {
 
     case GunTurretShoots(actionId, time, turretId, rotation, bulletId, bulletRadius, bulletSpeed, actionSource) =>
       GunTurretShootsMessage(
-        actionId, gameName, actionSource, time, turretId, rotation, bulletId, bulletRadius, bulletSpeed
+        actionId,
+        gameName,
+        actionSource,
+        time,
+        turretId,
+        rotation,
+        bulletId,
+        bulletRadius,
+        bulletSpeed
       )
 
     case GunTurretTakesDamage(actionId, time, turretId, damage, actionSource) =>
@@ -126,50 +174,116 @@ object MessageMaker {
           ActivateShieldMessage(actionId, gameName, actionSource, time, useId, ability.playerId)
         case ability: BigBullet =>
           BigBulletMessage(
-            actionId, gameName, actionSource,
-            time, useId, ability.casterId, ability.teamId,
-            ability.startingPos.re, ability.startingPos.im, ability.rotation
+            actionId,
+            gameName,
+            actionSource,
+            time,
+            useId,
+            ability.casterId,
+            ability.teamId,
+            ability.startingPos.re,
+            ability.startingPos.im,
+            ability.rotation
           )
         case ability: TripleBullet =>
           TripleBulletMessage(
-            actionId, gameName, actionSource,
-            time, useId, ability.casterId, ability.teamId,
-            ability.startingPos.re, ability.startingPos.im, ability.rotation
+            actionId,
+            gameName,
+            actionSource,
+            time,
+            useId,
+            ability.casterId,
+            ability.teamId,
+            ability.startingPos.re,
+            ability.startingPos.im,
+            ability.rotation
           )
         case ability: Teleportation =>
           TeleportationMessage(
-            actionId, gameName, actionSource,
-            time, useId, ability.casterId, ability.startingPos, ability.endPos
+            actionId,
+            gameName,
+            actionSource,
+            time,
+            useId,
+            ability.casterId,
+            ability.startingPos,
+            ability.endPos
           )
         case ability: CreateHealingZone =>
           CreateHealingZoneMessage(
-            actionId, gameName, actionSource,
-            time, useId, ability.casterId, ability.targetPos
+            actionId,
+            gameName,
+            actionSource,
+            time,
+            useId,
+            ability.casterId,
+            ability.targetPos
           )
         case ability: CreateBulletAmplifier =>
           CreateBulletAmplifierMessage(
-            actionId, gameName, actionSource, time, useId, ability.casterId, ability.targetPos, ability.rotation
+            actionId,
+            gameName,
+            actionSource,
+            time,
+            useId,
+            ability.casterId,
+            ability.targetPos,
+            ability.rotation
           )
         case ability: LaunchSmashBullet =>
           LaunchSmashBulletMessage(
-            actionId, gameName, actionSource, time, useId, ability.casterId, ability.startingPos, ability.rotation
+            actionId,
+            gameName,
+            actionSource,
+            time,
+            useId,
+            ability.casterId,
+            ability.startingPos,
+            ability.rotation
           )
         case ability: CraftGunTurret =>
           CraftGunTurretMessage(
-            actionId, gameName, actionSource, time, useId, ability.casterId, ability.teamId, ability.pos
+            actionId,
+            gameName,
+            actionSource,
+            time,
+            useId,
+            ability.casterId,
+            ability.teamId,
+            ability.pos
           )
         case ability: CreateBarrier =>
           CreateBarrierMessage(
-            actionId, gameName, actionSource, time, useId,
-            ability.casterId, ability.teamId, ability.targetPos, ability.rotation
+            actionId,
+            gameName,
+            actionSource,
+            time,
+            useId,
+            ability.casterId,
+            ability.teamId,
+            ability.targetPos,
+            ability.rotation
           )
         case ability: PutBulletGlue =>
           PutBulletGlueMessage(
-            actionId, gameName, actionSource, time, useId, ability.casterId, ability.teamId
+            actionId,
+            gameName,
+            actionSource,
+            time,
+            useId,
+            ability.casterId,
+            ability.teamId
           )
         case ability: LaserAbility =>
           LaserAbilityMessage(
-            actionId, gameName, actionSource, time, useId, ability.casterId, ability.teamId, ability.stepNumber,
+            actionId,
+            gameName,
+            actionSource,
+            time,
+            useId,
+            ability.casterId,
+            ability.teamId,
+            ability.stepNumber,
             ability.pos
           )
         case _ =>
@@ -212,8 +326,6 @@ object MessageMaker {
 
     case DestroyBulletAmplifier(actionId, time, id, actionSource) =>
       DestroyBulletAmplifierMessage(actionId, gameName, actionSource, time, id)
-
-
 
     case NewBarrier(actionId, time, id, ownerId, teamId, pos, rotation, actionSource) =>
       NewBarrierMessage(actionId, gameName, actionSource, time, id, ownerId, teamId, rotation, pos)
@@ -263,9 +375,14 @@ object MessageMaker {
     case action: NewPlayerAction =>
       newPlayer(gameName, action)
 
-    case GameBegins(actionId, time, gameBounds, actionSource) => GameBeginsMessage(
-      actionId, gameName, actionSource, time, gameBounds.vertices
-    )
+    case GameBegins(actionId, time, gameBounds, actionSource) =>
+      GameBeginsMessage(
+        actionId,
+        gameName,
+        actionSource,
+        time,
+        gameBounds.vertices
+      )
 
     case action: GameEndedAction => GameEndedMessage(action.actionId, gameName, action.actionSource, action.time)
 
@@ -274,18 +391,30 @@ object MessageMaker {
       throw new NotImplementedError(s"this action is not yet implemented ${action.getClass}")
   }
 
-
   def actionsMessage(gameName: String, actions: List[GameAction]): ActionsMessage = ActionsMessage(
-    gameName, actions.map(toMessage(gameName, _))
+    gameName,
+    actions.map(toMessage(gameName, _))
   )
-
 
   def messageToAction(message: ActionMessage): GameAction = message match {
     case UpdatePlayerPosMessage(actionId, _, actionSource, time, id, x, y, dir, moving, rot) =>
       UpdatePlayerPos(actionId, time, id, x, y, dir, moving, rot, actionSource)
 
-    case NewBulletMessage(actionId, _, actionSource, time, id,
-    plrId, teamId, x, y, radius, dir, speed, travelledDistance) =>
+    case NewBulletMessage(
+        actionId,
+        _,
+        actionSource,
+        time,
+        id,
+        plrId,
+        teamId,
+        x,
+        y,
+        radius,
+        dir,
+        speed,
+        travelledDistance
+        ) =>
       NewBullet(actionId, id, plrId, teamId, Complex(x, y), radius, dir, speed, time, travelledDistance, actionSource)
 
     case DestroyBulletMessage(actionId, _, actionSource, time, id) =>
@@ -318,8 +447,17 @@ object MessageMaker {
     case DestroyDamageZoneMessage(actionId, _, actionSource, time, zoneId) =>
       DestroyDamageZone(actionId, time, zoneId, actionSource)
 
-    case GunTurretShootsMessage(actionId, _, actionSource, time,
-    turretId, rotation, bulletId, bulletRadius, bulletSpeed) =>
+    case GunTurretShootsMessage(
+        actionId,
+        _,
+        actionSource,
+        time,
+        turretId,
+        rotation,
+        bulletId,
+        bulletRadius,
+        bulletSpeed
+        ) =>
       GunTurretShoots(actionId, time, turretId, rotation, bulletId, bulletRadius, bulletSpeed, actionSource)
 
     case GunTurretTakesDamageMessage(actionId, _, actionSource, time, turretId, damage) =>
@@ -345,55 +483,92 @@ object MessageMaker {
 
     case BigBulletMessage(actionId, _, actionSource, time, useId, casterId, teamId, xPos, yPos, direction) =>
       UseAbilityAction(
-        actionId, time,
+        actionId,
+        time,
         new BigBullet(time, useId, casterId, teamId, Complex(xPos, yPos), direction),
-        useId, actionSource
+        useId,
+        actionSource
       )
 
     case TripleBulletMessage(actionId, _, actionSource, time, useId, casterId, teamId, xPos, yPos, direction) =>
       UseAbilityAction(
-        actionId, time,
-        new TripleBullet(time, useId, casterId, teamId, Complex(xPos, yPos), direction), useId, actionSource
+        actionId,
+        time,
+        new TripleBullet(time, useId, casterId, teamId, Complex(xPos, yPos), direction),
+        useId,
+        actionSource
       )
 
     case TeleportationMessage(actionId, _, actionSource, time, useId, casterId, startPos, endPos) =>
       UseAbilityAction(
-        actionId, time,
-        new Teleportation(time, useId, casterId, startPos.toComplex, endPos.toComplex), useId, actionSource
+        actionId,
+        time,
+        new Teleportation(time, useId, casterId, startPos.toComplex, endPos.toComplex),
+        useId,
+        actionSource
       )
 
     case CreateHealingZoneMessage(actionId, _, actionSource, time, useId, casterId, targetPos) =>
-      UseAbilityAction(actionId, time,
-        new CreateHealingZone(time, useId, casterId, targetPos.toComplex), useId, actionSource)
+      UseAbilityAction(
+        actionId,
+        time,
+        new CreateHealingZone(time, useId, casterId, targetPos.toComplex),
+        useId,
+        actionSource
+      )
 
     case LaunchSmashBulletMessage(actionId, _, actionSource, time, useId, casterId, pos, direction) =>
       UseAbilityAction(
-        actionId, time, new LaunchSmashBullet(time, useId, casterId, pos.toComplex, direction), useId, actionSource
+        actionId,
+        time,
+        new LaunchSmashBullet(time, useId, casterId, pos.toComplex, direction),
+        useId,
+        actionSource
       )
 
     case CraftGunTurretMessage(actionId, _, actionSource, time, useId, casterId, teamId, pos) =>
-      UseAbilityAction(actionId, time,
-        new CraftGunTurret(time, useId, casterId, teamId, pos.toComplex), useId, actionSource)
+      UseAbilityAction(
+        actionId,
+        time,
+        new CraftGunTurret(time, useId, casterId, teamId, pos.toComplex),
+        useId,
+        actionSource
+      )
 
     case CreateBulletAmplifierMessage(actionId, _, actionSource, time, useId, casterId, targetPos, rotation) =>
       UseAbilityAction(
-        actionId, time,
-        new CreateBulletAmplifier(time, useId, casterId, targetPos.toComplex, rotation), useId, actionSource
+        actionId,
+        time,
+        new CreateBulletAmplifier(time, useId, casterId, targetPos.toComplex, rotation),
+        useId,
+        actionSource
       )
 
     case CreateBarrierMessage(actionId, _, actionSource, time, useId, casterId, teamId, pos, rotation) =>
       UseAbilityAction(
-        actionId, time, new CreateBarrier(time, useId, casterId, teamId, pos.toComplex, rotation), useId, actionSource
+        actionId,
+        time,
+        new CreateBarrier(time, useId, casterId, teamId, pos.toComplex, rotation),
+        useId,
+        actionSource
       )
 
     case PutBulletGlueMessage(actionId, _, actionSource, time, useId, casterId, teamId) =>
       UseAbilityAction(
-        actionId, time, new PutBulletGlue(time, useId, casterId, teamId), useId, actionSource
+        actionId,
+        time,
+        new PutBulletGlue(time, useId, casterId, teamId),
+        useId,
+        actionSource
       )
 
     case LaserAbilityMessage(actionId, _, actionSource, time, useId, casterId, teamId, stepNumber, pos) =>
       UseAbilityAction(
-        actionId, time, new LaserAbility(time, useId, casterId, teamId, stepNumber, pos.toComplex), useId, actionSource
+        actionId,
+        time,
+        new LaserAbility(time, useId, casterId, teamId, stepNumber, pos.toComplex),
+        useId,
+        actionSource
       )
 
     case ChangeBulletRadiusMessage(actionId, _, actionSource, time, bulletId, newRadius) =>
@@ -478,9 +653,21 @@ object MessageMaker {
       PlayerDead(actionId, time, playerId, playerName, actionSource)
 
     case NewPlayerMessage(actionId, _, actionSource, time, name, id, x, y, team, allowedAbilities) =>
-      NewPlayerAction(actionId, new Player(
-        id, team, time, name, x, y, allowedAbilities = allowedAbilities, relevantUsedAbilities = Map()
-      ), time, actionSource)
+      NewPlayerAction(
+        actionId,
+        new Player(
+          id,
+          team,
+          time,
+          name,
+          x,
+          y,
+          allowedAbilities      = allowedAbilities,
+          relevantUsedAbilities = Map()
+        ),
+        time,
+        actionSource
+      )
 
     case GameBeginsMessage(actionId, _, actionSource, time, vertices) =>
       GameBegins(actionId, time, Polygon(vertices.map(_.toComplex)), actionSource)
@@ -489,52 +676,102 @@ object MessageMaker {
       GameEndedAction(actionId, time, actionSource)
   }
 
-
-
   def abilityToMessage(gameName: String, ability: Ability): UseAbility = ability match {
     case ability: ActivateShield =>
       UseActivateShield(gameName, ability.time, ability.useId, ability.playerId)
     case ability: BigBullet =>
       UseBigBullet(
-        gameName, ability.time, ability.useId, ability.casterId, ability.teamId,
-        ability.startingPos.re, ability.startingPos.im, ability.rotation
+        gameName,
+        ability.time,
+        ability.useId,
+        ability.casterId,
+        ability.teamId,
+        ability.startingPos.re,
+        ability.startingPos.im,
+        ability.rotation
       )
     case ability: TripleBullet =>
       UseTripleBullet(
-        gameName, ability.time, ability.useId, ability.casterId, ability.teamId,
-        ability.startingPos.re, ability.startingPos.im, ability.rotation
+        gameName,
+        ability.time,
+        ability.useId,
+        ability.casterId,
+        ability.teamId,
+        ability.startingPos.re,
+        ability.startingPos.im,
+        ability.rotation
       )
     case ability: Teleportation =>
       UseTeleportation(
-        gameName, ability.time, ability.useId, ability.casterId, ability.startingPos, ability.endPos
+        gameName,
+        ability.time,
+        ability.useId,
+        ability.casterId,
+        ability.startingPos,
+        ability.endPos
       )
     case ability: CreateHealingZone =>
       UseCreateHealingZone(
-        gameName, ability.time, ability.useId, ability.casterId, ability.targetPos
+        gameName,
+        ability.time,
+        ability.useId,
+        ability.casterId,
+        ability.targetPos
       )
     case ability: CreateBulletAmplifier =>
       UseCreateBulletAmplifier(
-        gameName, ability.time, ability.useId, ability.casterId, ability.targetPos, ability.rotation
+        gameName,
+        ability.time,
+        ability.useId,
+        ability.casterId,
+        ability.targetPos,
+        ability.rotation
       )
     case ability: LaunchSmashBullet =>
       UseLaunchSmashBullet(
-        gameName, ability.time, ability.useId, ability.casterId, ability.startingPos, ability.rotation
+        gameName,
+        ability.time,
+        ability.useId,
+        ability.casterId,
+        ability.startingPos,
+        ability.rotation
       )
     case ability: CraftGunTurret =>
       UseCraftGunTurret(
-        gameName, ability.time, ability.useId, ability.casterId, ability.teamId, ability.pos
+        gameName,
+        ability.time,
+        ability.useId,
+        ability.casterId,
+        ability.teamId,
+        ability.pos
       )
     case ability: CreateBarrier =>
       UseCreateBarrier(
-        gameName, ability.time, ability.useId, ability.casterId, ability.teamId, ability.targetPos, ability.rotation
+        gameName,
+        ability.time,
+        ability.useId,
+        ability.casterId,
+        ability.teamId,
+        ability.targetPos,
+        ability.rotation
       )
     case ability: PutBulletGlue =>
       UsePutBulletGlue(
-        gameName, ability.time, ability.useId, ability.casterId, ability.teamId
+        gameName,
+        ability.time,
+        ability.useId,
+        ability.casterId,
+        ability.teamId
       )
     case ability: LaserAbility =>
       UseLaser(
-        gameName, ability.time, ability.useId, ability.casterId, ability.teamId, ability.stepNumber, ability.pos
+        gameName,
+        ability.time,
+        ability.useId,
+        ability.casterId,
+        ability.teamId,
+        ability.stepNumber,
+        ability.pos
       )
     case _ =>
       println(s"You forgot to add ability (${ability.id}) to the case match of abilityToMessage.")
@@ -565,9 +802,5 @@ object MessageMaker {
     case UseLaser(_, time, useId, casterId, teamId, stepNbr, pos) =>
       new LaserAbility(time, useId, casterId, teamId, stepNbr, pos.toComplex)
   }
-
-
-
-
 
 }

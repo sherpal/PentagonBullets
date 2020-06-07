@@ -4,12 +4,12 @@ import custommath.Complex
 import gamestate.{ActionSource, GameAction, GameState}
 
 final case class FireLaser(
-                            actionId: Long,
-                            time: Long,
-                            ownerId: Long,
-                            laserVertices: Vector[Complex],
-                            actionSource: ActionSource
-                          ) extends GameAction {
+    actionId: Long,
+    time: Long,
+    ownerId: Long,
+    laserVertices: Vector[Complex],
+    actionSource: ActionSource
+) extends GameAction {
 
   def applyDefault(gameState: GameState): GameState = gameState
 

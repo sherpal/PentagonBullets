@@ -3,11 +3,11 @@ package gamestate.actions
 import gamestate.{ActionSource, GameAction, GameState}
 
 final case class DestroyBarrier(
-                                 actionId: Long,
-                                 time: Long,
-                                 barrierId: Long,
-                                 actionSource: ActionSource
-                               ) extends GameAction {
+    actionId: Long,
+    time: Long,
+    barrierId: Long,
+    actionSource: ActionSource
+) extends GameAction {
 
   def applyDefault(gameState: GameState): GameState = gameState.removeBarrier(barrierId, time)
 

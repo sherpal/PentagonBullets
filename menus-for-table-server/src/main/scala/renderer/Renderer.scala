@@ -11,8 +11,6 @@ object Renderer {
 
     println("Menus for connecting to the table server.")
 
-
-
     if (scala.scalajs.LinkingInfo.developmentMode) {
       val debug = new DebugPackage("../html/table-menus.html")
       debug.beforeReload = () => {

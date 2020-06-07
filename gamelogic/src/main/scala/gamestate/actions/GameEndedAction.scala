@@ -3,10 +3,10 @@ package gamestate.actions
 import gamestate.{ActionSource, GameAction, GameState}
 
 final case class GameEndedAction(
-                                  actionId: Long,
-                                  time: Long,
-                                  actionSource: ActionSource
-                                ) extends GameAction {
+    actionId: Long,
+    time: Long,
+    actionSource: ActionSource
+) extends GameAction {
 
   def applyDefault(gameState: GameState): GameState = gameState.ends(time)
 

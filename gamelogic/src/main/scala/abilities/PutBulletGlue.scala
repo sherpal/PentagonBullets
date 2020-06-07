@@ -11,7 +11,10 @@ final class PutBulletGlue(val time: Long, val useId: Long, val casterId: Long, v
   val cooldown: Long = 20000
 
   def copyWithUseId(newUseId: Long, newTime: Long): Ability = new PutBulletGlue(
-    newTime, newUseId, casterId, teamId
+    newTime,
+    newUseId,
+    casterId,
+    teamId
   )
 
   def isLegal(gameState: GameState): Boolean = gameState.isPlayerAlive(casterId)

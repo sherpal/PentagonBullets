@@ -21,8 +21,8 @@ class SpinningPentagon extends Animation {
   def animate(currentTime: Long, camera: Camera): Unit = {
 
     pentagon.rotation = (currentTime - startTime).toDouble / 1000 * math.Pi
-    camera.viewportManager(pentagon, Complex(0,0), new BoundingBox(-10, -10, 10, 10))
-    pentagon.width = 30.0
+    camera.viewportManager(pentagon, Complex(0, 0), new BoundingBox(-10, -10, 10, 10))
+    pentagon.width  = 30.0
     pentagon.height = 30.0
 
   }

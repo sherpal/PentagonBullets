@@ -14,12 +14,12 @@ import sharednodejsapis.IPCRenderer
 import ui.UI
 
 import scala.scalajs.js
-import scala.scalajs.js.timers.{SetTimeoutHandle, clearTimeout, setTimeout}
+import scala.scalajs.js.timers.{clearTimeout, setTimeout, SetTimeoutHandle}
 
 /**
- * A PlayerSocket is either the computer that hosts the game (the one who manages game settings) or a player joining a
- * game.
- */
+  * A PlayerSocket is either the computer that hosts the game (the one who manages game settings) or a player joining a
+  * game.
+  */
 trait PlayerSocket extends Client {
   val name: String
 
@@ -31,8 +31,7 @@ trait PlayerSocket extends Client {
 
   val gameMode: GameMode
 
-
-  protected def playerReady(playerName: String, status: Boolean): Unit = {
+  protected def playerReady(playerName: String, status: Boolean): Unit =
     playersConnected.find(_.playerName == playerName) match {
       case Some(player) =>
         player.ready = status
@@ -45,24 +44,21 @@ trait PlayerSocket extends Client {
       case None =>
         dom.console.warn(s"Player `$playerName` changed their ready status, but I don't know him.")
     }
-  }
 
-  protected def sendReadyStatus(event: dom.Event): Unit = {
-    if (abilityOptions.exists(_.selected)) {//(abilityButtons.exists(_.checked)) {
-      sendReliable(PlayerReady(gameName, name, page.ready.checked))//panel.ready.checked))
+  protected def sendReadyStatus(event: dom.Event): Unit =
+    if (abilityOptions.exists(_.selected)) { //(abilityButtons.exists(_.checked)) {
+      sendReliable(PlayerReady(gameName, name, page.ready.checked)) //panel.ready.checked))
       //sendReliable(PlayerReady(gameName, name, readyCheckBox.checked))
     } else {
       event.preventDefault()
       //dom.window.alert("You have to chose an ability before being ready!")
       UI.showAlertBox("Chose ability", "You have to chose an ability before being ready!")
     }
-  }
 
   protected val abilitySelect: html.Select
 
   protected def resetAbilityOptions(): Unit = {
-    (for (j <- page.ability.children.length - 1 to 0 by -1) yield { page.ability.children(j) })
-      .toList
+    (for (j <- page.ability.children.length - 1 to 0 by -1) yield { page.ability.children(j) }).toList
       .filter(_.isInstanceOf[html.Option])
       .map(_.asInstanceOf[html.Option])
       .filter(_.value != "")
@@ -87,8 +83,7 @@ trait PlayerSocket extends Client {
 
   protected val abilityOptions: List[html.Option]
 
-
-  protected def changeAbility(playerName: String, abilityId: Int, added: Boolean): Unit = {
+  protected def changeAbility(playerName: String, abilityId: Int, added: Boolean): Unit =
     playersConnected.find(_.playerName == playerName) match {
       case Some(player) =>
         if (added) {
@@ -99,7 +94,6 @@ trait PlayerSocket extends Client {
       case None =>
         dom.console.warn(s"$playerName wants to change an ability ($abilityId), but I don't know this guy...")
     }
-  }
 
   private def sendTeamNumber(): Unit = {
     val team = try {
@@ -134,7 +128,7 @@ trait PlayerSocket extends Client {
 
   private def thisPlayer: PlayerGameSettingsInfo = playersConnected.find(_.playerName == name).get
 
-  protected def changeTeamNumber(playerName: String, team: Int): Unit = {
+  protected def changeTeamNumber(playerName: String, team: Int): Unit =
     playersConnected.find(_.playerName == playerName) match {
       case Some(player) =>
         player.team = team
@@ -142,7 +136,6 @@ trait PlayerSocket extends Client {
       case None =>
         dom.console.warn(s"$playerName wants to chose a team ($team), but I don't know this guy...")
     }
-  }
 
   private var leaveGameHandle: Option[SetTimeoutHandle] = None
 
@@ -185,42 +178,50 @@ trait PlayerSocket extends Client {
 
     storeValue("password", password)
 
-    DataStorage.storeValue("playerGameSettings", PlayerDataList(info.map(infoPiece =>
-      PlayerData(
-        infoPiece.gameName, infoPiece.playerName, infoPiece.id, infoPiece.team, infoPiece.ready, infoPiece.abilities,
-        infoPiece.color
+    DataStorage.storeValue(
+      "playerGameSettings",
+      PlayerDataList(
+        info
+          .map(
+            infoPiece =>
+              PlayerData(
+                infoPiece.gameName,
+                infoPiece.playerName,
+                infoPiece.id,
+                infoPiece.team,
+                infoPiece.ready,
+                infoPiece.abilities,
+                infoPiece.color
+              )
+          )
+          .toList
       )
-    ).toList))
+    )
 
     if (!scala.scalajs.LinkingInfo.developmentMode) {
       IPCRenderer.send("flash-window")
     }
 
-
     dom.window.location.href = "../../gameplaying/gameplaying/gameplayinginterface.html"
   }
 
-  private def unStoreInfo(): Unit = {
+  private def unStoreInfo(): Unit =
     DataStorage.unStoreValue("gameData")
-  }
-
 
   private var playersConnected: List[PlayerGameSettingsInfo] = List()
 
-  def teams: Map[Int, PlayerTeam] = playersConnected.groupBy(_.team).map(elem =>
-    elem._1 -> new PlayerTeam(elem._2.head.team, elem._2.map(_.id))
-  )
+  def teams: Map[Int, PlayerTeam] =
+    playersConnected.groupBy(_.team).map(elem => elem._1 -> new PlayerTeam(elem._2.head.team, elem._2.map(_.id)))
 
-  def updatePlayersConnected(playersInfo: Iterable[SendPlayerInfo]): Unit = {
+  def updatePlayersConnected(playersInfo: Iterable[SendPlayerInfo]): Unit =
     playersConnected = playersInfo.toList.map(info => {
       val player = new PlayerGameSettingsInfo(info.playerName)
-      player.id = info.id
-      player.team = info.team
+      player.id    = info.id
+      player.team  = info.team
       player.ready = info.ready
       info.abilities.foreach(player.abilities :+= _)
       player
     })
-  }
 
   private def playersConnectedTableBody: html.Table =
     page.tablePlayers.getElementsByTagName("tbody").apply(0).asInstanceOf[html.Table]
@@ -241,19 +242,17 @@ trait PlayerSocket extends Client {
     playersConnectedTableBody.appendChild(tr)
   }
 
-
   private def tableBodyRows: IndexedSeq[html.TableRow] = {
     val children = playersConnectedTableBody.children
     (0 until children.length).map(children(_).asInstanceOf[html.TableRow])
   }
-  private def playerRow(playerName: String): Option[html.TableRow] = tableBodyRows.find((tr: html.TableRow) => {
-    tr.children(0).textContent == playerName
-  })
+  private def playerRow(playerName: String): Option[html.TableRow] =
+    tableBodyRows.find((tr: html.TableRow) => {
+      tr.children(0).textContent == playerName
+    })
 
-
-  protected def nbrOfPlayers: Int = playersConnected.length
+  protected def nbrOfPlayers: Int             = playersConnected.length
   protected def notReadyPlayers: List[String] = playersConnected.filterNot(_.ready).map(_.playerName)
-
 
   protected def updatePlayerList(): Unit = {
     playersConnectedTableBody.innerHTML = ""
@@ -286,8 +285,6 @@ trait PlayerSocket extends Client {
   }
 }
 
-
-
 object PlayerSocket {
 
   private var _currentSocket: Option[PlayerSocket] = None
@@ -305,20 +302,23 @@ object PlayerSocket {
     _currentSocket = Some(socket)
   }
 
-
   private val teamOnChange: js.Function1[dom.Event, Unit] = (_: dom.Event) => currentSocket.sendTeamNumber()
 
   private val readyOnClick: js.Function1[dom.MouseEvent, Unit] = (e) => currentSocket.sendReadyStatus(e)
 
   private val quitButtonClick: js.Function1[dom.MouseEvent, Unit] = (_: dom.MouseEvent) => {
 
-    UI.showConfirmBox("Quit Game", "Are you sure you want to leave the game?", if (_) {
-      currentSocket.sendReliable(LeaveGame(currentSocket.gameName, currentSocket.name))
+    UI.showConfirmBox(
+      "Quit Game",
+      "Are you sure you want to leave the game?",
+      if (_) {
+        currentSocket.sendReliable(LeaveGame(currentSocket.gameName, currentSocket.name))
 
-      currentSocket.leaveGameHandle = Some(setTimeout(2000) {
-        currentSocket.leaveGameCallback()
-      })
-    })
+        currentSocket.leaveGameHandle = Some(setTimeout(2000) {
+          currentSocket.leaveGameCallback()
+        })
+      }
+    )
 
   }
 
@@ -328,8 +328,5 @@ object PlayerSocket {
     )
     println(s"Choose ability ${currentSocket.page.ability.value.toInt}")
   }
-
-
-
 
 }

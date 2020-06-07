@@ -5,8 +5,8 @@ import org.scalajs.dom
 import org.scalajs.dom.html
 
 /**
- * Here we put all the codes that is common to all the menu pages.
- */
+  * Here we put all the codes that is common to all the menu pages.
+  */
 object Common {
 
   if (VariableStorage.retrieveValue("isThereServer").asInstanceOf[String] != null) {

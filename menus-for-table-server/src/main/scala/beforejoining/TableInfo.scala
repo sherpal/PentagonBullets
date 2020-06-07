@@ -11,12 +11,11 @@ import popups.Alert
 import scala.collection.mutable
 
 final class TableInfo(
-                       val tableName: String,
-                       val password: Option[String],
-                       val gameMode: GameMode,
-                       private var _playerNumber: Int
-                     ) {
-
+    val tableName: String,
+    val password: Option[String],
+    val gameMode: GameMode,
+    private var _playerNumber: Int
+) {
 
   def playerNumber: Int = _playerNumber
 
@@ -28,11 +27,11 @@ final class TableInfo(
 
   private val tableNameLabel: html.Label = dom.document.createElement("label").asInstanceOf[html.Label]
   tableNameLabel.style.marginRight = "20px"
-  tableNameLabel.textContent = tableName
+  tableNameLabel.textContent       = tableName
 
   private val gameModeLabel: html.Label = dom.document.createElement("label").asInstanceOf[html.Label]
   tableNameLabel.style.marginRight = "20px"
-  gameModeLabel.textContent = gameMode.toString
+  gameModeLabel.textContent        = gameMode.toString
 
   private val nbrPlayersLabel: html.Label = dom.document.createElement("label").asInstanceOf[html.Label]
 
@@ -40,9 +39,8 @@ final class TableInfo(
   div.appendChild(gameModeLabel)
   div.appendChild(nbrPlayersLabel)
 
-  private def setTextContent(): Unit = {
+  private def setTextContent(): Unit =
     nbrPlayersLabel.textContent = playerNumber.toString
-  }
 
   def changePlayerNumber(nbr: Int): Unit = {
     _playerNumber = nbr
@@ -51,15 +49,12 @@ final class TableInfo(
 
   TableInfo.addTable(this)
 
-
-
 }
-
 
 object TableInfo {
 
   private val playerNameInput: html.Input = dom.document.getElementById("playerNameInput").asInstanceOf[html.Input]
-  private def playerName: String = playerNameInput.value
+  private def playerName: String          = playerNameInput.value
 
   private val joinTableButton: html.Button = dom.document.getElementById("joinTable").asInstanceOf[html.Button]
 
@@ -78,22 +73,25 @@ object TableInfo {
     joinTableButton.disabled = false
   }
 
-  joinTableButton.addEventListener[dom.MouseEvent]("click", (_: dom.MouseEvent) => {
+  joinTableButton.addEventListener[dom.MouseEvent](
+    "click",
+    (_: dom.MouseEvent) => {
 
-    List(
-      selectedTable.isEmpty -> (() => "You need to select a table."),
-      (playerName == "") -> (() => "You need to chose a player name.")
-    ).find(_._1) match {
-      case Some((_, errorMessage)) =>
-        Alert.showAlert("Failed to joint table", errorMessage())
-      case None =>
-        TableClient.sendOrderedReliable(
-          JoinTable(playerNameInput.value, selectedTable.get.tableName, "")
-        )
+      List(
+        selectedTable.isEmpty -> (() => "You need to select a table."),
+        (playerName == "") -> (() => "You need to chose a player name.")
+      ).find(_._1) match {
+        case Some((_, errorMessage)) =>
+          Alert.showAlert("Failed to joint table", errorMessage())
+        case None =>
+          TableClient.sendOrderedReliable(
+            JoinTable(playerNameInput.value, selectedTable.get.tableName, "")
+          )
+      }
     }
-  })
+  )
 
-  def receivedTableJoined(msg: TableJoined): Unit = {
+  def receivedTableJoined(msg: TableJoined): Unit =
     if (msg.success) {
       GameSettings.joinTable(
         msg.tableName,
@@ -103,8 +101,6 @@ object TableInfo {
     } else {
       Alert.showAlert("Failed to join table", msg.error)
     }
-  }
-
 
   private val tables: mutable.Set[TableInfo] = mutable.Set()
 
@@ -122,26 +118,29 @@ object TableInfo {
 
   def updateTables(list: List[networkcom.tablemessages.Table]): Unit = {
 
-    tables.toSet.filter(tableInfo => {
-      list.find(_.name == tableInfo.tableName) match {
-        case Some(t) => GameMode.fromString(t.gameMode) != tableInfo.gameMode // same name but different game mode
-        case None => true // does not exist anymore
-      }
-    }).foreach(tables -= _)
+    tables.toSet
+      .filter(tableInfo => {
+        list.find(_.name == tableInfo.tableName) match {
+          case Some(t) => GameMode.fromString(t.gameMode) != tableInfo.gameMode // same name but different game mode
+          case None    => true // does not exist anymore
+        }
+      })
+      .foreach(tables -= _)
 
-    list.map(table =>
-      tables.find(_.tableName == table.name) match {
-        case Some(t) =>
-          t.changePlayerNumber(table.playerNames.length)
-          t
-        case None =>
-          new TableInfo(
-            table.name,
-            if (table.password == "") None else Some(table.password),
-            table.gameMode,
-            table.playerNames.length
-          )
-      }
+    list.map(
+      table =>
+        tables.find(_.tableName == table.name) match {
+          case Some(t) =>
+            t.changePlayerNumber(table.playerNames.length)
+            t
+          case None =>
+            new TableInfo(
+              table.name,
+              if (table.password == "") None else Some(table.password),
+              table.gameMode,
+              table.playerNames.length
+            )
+        }
     )
 
     showTables()
@@ -149,11 +148,10 @@ object TableInfo {
 
   def doesTableExist(tableName: String): Boolean = tables.exists(_.tableName == tableName)
 
-  private def numberOfPlayersIn(tableName: String): Int = {
+  private def numberOfPlayersIn(tableName: String): Int =
     tables.find(_.tableName == tableName) match {
       case Some(table) => table.playerNumber
-      case None => 0
+      case None        => 0
     }
-  }
 
 }

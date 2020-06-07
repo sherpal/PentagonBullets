@@ -23,10 +23,11 @@ import time.Time
 
 import scala.scalajs.js.timers.setInterval
 
-
-class CaptureTheFlagGameHandler(protected val playerName: String,
-                                protected val playersInfo: List[PlayerGameSettingsInfo],
-                                protected val client: PlayerClient) extends GameHandler {
+class CaptureTheFlagGameHandler(
+    protected val playerName: String,
+    protected val playersInfo: List[PlayerGameSettingsInfo],
+    protected val client: PlayerClient
+) extends GameHandler {
 
   val gameMode: GameMode = CaptureTheFlagMode
 
@@ -34,7 +35,6 @@ class CaptureTheFlagGameHandler(protected val playerName: String,
     DataStorage.storeValue("endOfGameData", CaptureTheFlagModeEOGData(scores))
     dom.window.location.href = "./" + GameMode.scoreboards(gameMode)
   }
-
 
   TeamFlagTextureMaker
 
@@ -55,7 +55,7 @@ class CaptureTheFlagGameHandler(protected val playerName: String,
 
     def draw(): Unit = {
       val gameState = currentGameState
-      val gameTime = Time.getTime
+      val gameTime  = Time.getTime
 
       val cameraPos = gameState.players.get(playerId) match {
         case Some(player) =>
@@ -81,13 +81,9 @@ class CaptureTheFlagGameHandler(protected val playerName: String,
       }
     })
 
-
-
     def keyPressed(key: String, keyCode: Int, isRepeat: Boolean): Unit = {
       //useAbility(key, gameState)
       //println(key, keyCode)
-
-
 
 //      bindings.abilities.indexOf((KeyboardType(), keyCode)) match {
 //        case -1 =>
@@ -102,10 +98,8 @@ class CaptureTheFlagGameHandler(protected val playerName: String,
       Frame.keyPressed(key, keyCode, isRepeat)
     }
 
-    def keyReleased(key: String, keyCode: Int): Unit = {
-
+    def keyReleased(key: String, keyCode: Int): Unit =
       Frame.keyReleased(key, keyCode)
-    }
 
     def mousePressed(x: Double, y: Double, button: Int): Unit = {
       Frame.clickHandler(x, y, button)
@@ -146,20 +140,16 @@ class CaptureTheFlagGameHandler(protected val playerName: String,
 //      }
     }
 
-    def mouseMoved(x: Double, y: Double, dx: Double, dy: Double, button: Int): Unit = {
+    def mouseMoved(x: Double, y: Double, dx: Double, dy: Double, button: Int): Unit =
       Frame.mouseMoved(x, y, dx, dy, button)
-    }
 
-    def mouseReleased(x: Double, y: Double, button: Int): Unit = {
+    def mouseReleased(x: Double, y: Double, button: Int): Unit =
       Frame.mouseReleased(x, y, button)
-    }
 
-    def mouseWheel(dx: Int, dy: Int, dz: Int): Unit = {
+    def mouseWheel(dx: Int, dy: Int, dz: Int): Unit =
       Frame.wheelMoved(dx, dy)
-    }
 
     def update(dt: Double): Unit = {
-
 
       actionCollector.addActions(triggeredActions)
 
@@ -171,30 +161,40 @@ class CaptureTheFlagGameHandler(protected val playerName: String,
 
       val time = Time.getTime
 
-      otherPlayersPredictions = gameState.players.values.filter(_.id != playerId).filter(_.moving).map(
-        player => {
-          val pos = player.currentPosition(time - player.time)
+      otherPlayersPredictions = gameState.players.values
+        .filter(_.id != playerId)
+        .filter(_.moving)
+        .map(
+          player => {
+            val pos = player.currentPosition(time - player.time)
 
-          UpdatePlayerPos(
-            0, time, player.id, pos.re, pos.im, player.direction, player.moving, player.rotation,
-            PlayerSource
-          )
-        }
-      )
+            UpdatePlayerPos(
+              0,
+              time,
+              player.id,
+              pos.re,
+              pos.im,
+              player.direction,
+              player.moving,
+              player.rotation,
+              PlayerSource
+            )
+          }
+        )
 
       ScoreBoard.update(gameState)
 
       if (gameState.isPlayerAlive(playerId) && gameState.state == PlayingState) {
         val (mouseX, mouseY) = Engine.mousePosition
-        val mousePos = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
-        val playerOpt = playerById(playerId, gameState)
+        val mousePos         = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
+        val playerOpt        = playerById(playerId, gameState)
         if (playerOpt.isDefined) {
           val player = playerOpt.get
           val action = movePlayer(gameState, time, dt, mousePos, player)
 
           unConfirmedActions :+= action
           if (time - lastUpdatePosAction.time > 100 || action.dir != lastUpdatePosAction.dir ||
-            action.moving != lastUpdatePosAction.moving) {
+              action.moving != lastUpdatePosAction.moving) {
             buffer :+= action
             lastUpdatePosAction = action
           }
@@ -206,69 +206,67 @@ class CaptureTheFlagGameHandler(protected val playerName: String,
         EntityDrawer.camera.worldCenter = captureTheFlagInto.popPositionsByPlayerId(playerId)
       }
 
-
       Frame.updateHandler(dt)
     }
 
   }
-
 
   override def addAction(action: GameAction, needUpdate: Boolean = true): Unit = {
     triggeredActions :+= action
 
     if (isPredictableAction(action)) {
       unConfirmedActions = unConfirmedActions.dropWhile(_.time < action.time)
-    } else action match {
-      case UseAbilityAction(_, _, ability, _, _)
-        if ability.isInstanceOf[Teleportation] && ability.casterId == playerId =>
-        unConfirmedActions = Nil
-      case a: PlayerDead =>
-        if (a.playerId == playerId) {
+    } else
+      action match {
+        case UseAbilityAction(_, _, ability, _, _)
+            if ability.isInstanceOf[Teleportation] && ability.casterId == playerId =>
           unConfirmedActions = Nil
-          buffer = Nil
-        }
-        otherPlayersPredictions = otherPlayersPredictions.filter(_.playerId != a.playerId)
-      case _: GameEndedAction =>
-        super.addAction(action)
-
-
-      case _: GameBegins =>
-        playerHealthBars.values.foreach(HealthBar.addBar)
-        currentGameState.players.values.foreach(player => playerNamesById += (player.id -> player.name))
-
-        CaptureTheFlagScoreBoard.colorMap = teamColors
-        CaptureTheFlagScoreBoard.setScores(TeamFlag.scores(currentGameState))
-
-        ScoreBoard.clearAllPoints()
-        ScoreBoard.setPoint(BottomLeft)
-
-        gameClock.startClock()
-
-        PlayerNameFS.hideFontStrings()
-
-        pendingActionHandler = Some(setInterval(1000 / 15) {
-          sendPendingActions()
-        })
-      case a: NewPlayer if currentGameState.state == PreBegin =>
-        if (a.player.id == playerId) {
-          lastUpdatePosAction =
-            UpdatePlayerPos(0, a.time, playerId, a.player.xPos, a.player.yPos, 0, moving = false, 0, PlayerSource)
-          EntityDrawer.camera.worldCenter = a.player.pos
-          PlayerNameFS.placeFontStrings()
-          if (a.player.allowedAbilities.nonEmpty) {
-            abilityButtons = a.player.allowedAbilities.tail.foldLeft(
-              List(new AbilityButton(a.player.allowedAbilities.head, playerId))
-            )({ case (buts, id) =>
-              new AbilityButton(id, playerId, Some(buts.head)) +: buts
-            })
-            changeFocusedBtn(0)
+        case a: PlayerDead =>
+          if (a.playerId == playerId) {
+            unConfirmedActions = Nil
+            buffer             = Nil
           }
-        }
-        PlayerNameFS.newName(a.player.name, a.player.pos + Complex(0, Player.radius + 2))
-      case _ =>
-    }
+          otherPlayersPredictions = otherPlayersPredictions.filter(_.playerId != a.playerId)
+        case _: GameEndedAction =>
+          super.addAction(action)
+
+        case _: GameBegins =>
+          playerHealthBars.values.foreach(HealthBar.addBar)
+          currentGameState.players.values.foreach(player => playerNamesById += (player.id -> player.name))
+
+          CaptureTheFlagScoreBoard.colorMap = teamColors
+          CaptureTheFlagScoreBoard.setScores(TeamFlag.scores(currentGameState))
+
+          ScoreBoard.clearAllPoints()
+          ScoreBoard.setPoint(BottomLeft)
+
+          gameClock.startClock()
+
+          PlayerNameFS.hideFontStrings()
+
+          pendingActionHandler = Some(setInterval(1000 / 15) {
+            sendPendingActions()
+          })
+        case a: NewPlayer if currentGameState.state == PreBegin =>
+          if (a.player.id == playerId) {
+            lastUpdatePosAction =
+              UpdatePlayerPos(0, a.time, playerId, a.player.xPos, a.player.yPos, 0, moving = false, 0, PlayerSource)
+            EntityDrawer.camera.worldCenter = a.player.pos
+            PlayerNameFS.placeFontStrings()
+            if (a.player.allowedAbilities.nonEmpty) {
+              abilityButtons = a.player.allowedAbilities.tail.foldLeft(
+                List(new AbilityButton(a.player.allowedAbilities.head, playerId))
+              )({
+                case (buts, id) =>
+                  new AbilityButton(id, playerId, Some(buts.head)) +: buts
+              })
+              changeFocusedBtn(0)
+            }
+          }
+          PlayerNameFS.newName(a.player.name, a.player.pos + Complex(0, Player.radius + 2))
+        case _ =>
+      }
 
   }
-
 
 }

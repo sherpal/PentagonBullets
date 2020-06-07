@@ -6,7 +6,6 @@ import scala.language.implicitConversions
 
 sealed trait GameMode
 
-
 case object StandardMode extends GameMode {
   override def toString: String = "Standard"
 }
@@ -14,7 +13,6 @@ case object StandardMode extends GameMode {
 case object CaptureTheFlagMode extends GameMode {
   override def toString: String = "Capture the Flag"
 }
-
 
 object GameMode {
 
@@ -30,8 +28,7 @@ object GameMode {
 
   implicit def fromString(mode: String): GameMode = gameModes.find(_.toString == mode) match {
     case Some(gameMode) => gameMode
-    case None => throw new NoSuchModeException(s"Game mode `$mode` does not exist.")
+    case None           => throw new NoSuchModeException(s"Game mode `$mode` does not exist.")
   }
-
 
 }

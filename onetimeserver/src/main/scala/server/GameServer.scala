@@ -8,18 +8,17 @@ import networkcom.{Message, Peer, PlayerGameSettingsInfo, Server}
 import org.scalajs.dom
 
 final class GameServer(
-                        gameName: String,
-                        val port: Int,
-                        enterPassword: Int,
-                        playersInfo: List[PlayerGameSettingsInfo],
-                        gameMode: GameMode
-                      ) extends GameLogicServer {
+    gameName: String,
+    val port: Int,
+    enterPassword: Int,
+    playersInfo: List[PlayerGameSettingsInfo],
+    gameMode: GameMode
+) extends GameLogicServer {
 
-  def closePlayingGame(gameName: String): Unit = {
+  def closePlayingGame(gameName: String): Unit =
     renderermainprocesscom.Message.sendMessageToMainProcess(
       renderermainprocesscom.CloseMe()
     )
-  }
 
   private val gamePlaying: GamePlaying = gameMode match {
     case StandardMode =>
@@ -40,7 +39,7 @@ final class GameServer(
 
   val address: String = "*"
 
-  def messageCallback(server: Server, peer: Peer, msg: Message): Unit = {
+  def messageCallback(server: Server, peer: Peer, msg: Message): Unit =
     msg match {
       case msg: InGameMessage =>
         gamePlaying.messageCallback(msg, peer)
@@ -53,12 +52,10 @@ final class GameServer(
       case _ =>
         dom.console.warn(s"received weird message: $msg")
     }
-  }
 
-  def clientConnectedCallback(server: Server, peer: Peer, connected: Boolean): Unit = {
+  def clientConnectedCallback(server: Server, peer: Peer, connected: Boolean): Unit =
     if (connected) {
       println(s"a new connection from $peer")
     }
-  }
 
 }

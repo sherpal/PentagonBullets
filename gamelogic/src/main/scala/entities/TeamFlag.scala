@@ -4,8 +4,14 @@ import custommath.Complex
 import gamestate.GameState
 import physics.Circle
 
-class TeamFlag(val id: Long, val xPos: Double, val yPos: Double,
-               val teamNbr: Int, val bearerId: Option[Long], val takenBy: List[Int]) extends Body {
+class TeamFlag(
+    val id: Long,
+    val xPos: Double,
+    val yPos: Double,
+    val teamNbr: Int,
+    val bearerId: Option[Long],
+    val takenBy: List[Int]
+) extends Body {
 
   val shape: Circle = TeamFlag.flagShape
 
@@ -22,7 +28,6 @@ class TeamFlag(val id: Long, val xPos: Double, val yPos: Double,
 
 }
 
-
 object TeamFlag {
 
   val radius: Int = 20
@@ -30,8 +35,7 @@ object TeamFlag {
   val flagShape: Circle = new Circle(radius)
 
   def scores(gameState: GameState): Map[Int, Int] = {
-    val teamsThatTookFlag = gameState
-      .flags.values
+    val teamsThatTookFlag = gameState.flags.values
       .flatMap(flag => flag.takenBy)
 
     gameState.flags.values.map(_.teamNbr).map(n => n -> teamsThatTookFlag.count(_ == n)).toMap

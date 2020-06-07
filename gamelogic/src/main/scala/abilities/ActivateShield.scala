@@ -5,7 +5,6 @@ import gamestate.ActionSource.AbilitySource
 import gamestate.{GameAction, GameState}
 import gamestate.actions.NewActionChanger
 
-
 class ActivateShield(val time: Long, val useId: Long, val playerId: Long) extends Ability {
 
   val id: Int = Ability.activateShieldId
@@ -23,4 +22,3 @@ class ActivateShield(val time: Long, val useId: Long, val playerId: Long) extend
   def isLegal(gameState: GameState): Boolean = gameState.isLivingUnitAlive(playerId)
 
 }
-

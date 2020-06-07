@@ -3,11 +3,11 @@ package gamestate.actions
 import gamestate.{ActionSource, GameAction, GameState}
 
 final case class DestroyLaserLauncher(
-                                       actionId: Long,
-                                       time: Long,
-                                       laserLauncherId: Long,
-                                       actionSource: ActionSource
-                                     ) extends GameAction {
+    actionId: Long,
+    time: Long,
+    laserLauncherId: Long,
+    actionSource: ActionSource
+) extends GameAction {
 
   def setId(newId: Long): GameAction = copy(actionId = newId)
 

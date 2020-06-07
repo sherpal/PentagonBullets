@@ -29,8 +29,7 @@ trait GameCreation {
   private val players: mutable.Map[String, Peer] = mutable.Map()
 
   private val _playersInfo: mutable.Map[String, PlayerGameSettingsInfo] = mutable.Map()
-  private def playersInfo: Map[String, PlayerGameSettingsInfo] = _playersInfo.toMap
-
+  private def playersInfo: Map[String, PlayerGameSettingsInfo]          = _playersInfo.toMap
 
   def containsPlayer(player: String): Boolean = players.keys.toList.contains(player)
 
@@ -40,17 +39,16 @@ trait GameCreation {
 
   def currentPlayersWithPeers: Map[String, Peer] = players.toMap
 
-  def addNewPlayer(playerName: String, peer: Peer, id: Int): Boolean = {
+  def addNewPlayer(playerName: String, peer: Peer, id: Int): Boolean =
     if (gameStarted) throw GameAlreadyStarted()
     else if (bookedPlayerNames.isDefinedAt(id) && bookedPlayerNames(id) == playerName) {
       players += (playerName -> peer)
 
-      def findFreeTeam(from: Int = 1): Int = {
+      def findFreeTeam(from: Int = 1): Int =
         _playersInfo.values.find(_.team == from) match {
           case Some(_) => findFreeTeam(from + 1)
-          case None => from
+          case None    => from
         }
-      }
 
       val team = findFreeTeam()
 
@@ -59,9 +57,8 @@ trait GameCreation {
       true
     } else
       false
-  }
 
-  def removePlayer(player: String): Boolean = {
+  def removePlayer(player: String): Boolean =
     if (gameStarted) throw GameAlreadyStarted()
     else {
       playersInfo.get(player) match {
@@ -77,57 +74,51 @@ trait GameCreation {
       }
       player == hostName
     }
-  }
 
-  def setPlayerReadyStatus(playerName: String, status: Boolean): Unit = {
+  def setPlayerReadyStatus(playerName: String, status: Boolean): Unit =
     _playersInfo.get(playerName) match {
       case Some(player) =>
         player.ready = status
       case None =>
     }
-  }
 
-  def setPlayerTeam(playerName: String, team: Int): Unit = {
+  def setPlayerTeam(playerName: String, team: Int): Unit =
     _playersInfo.get(playerName) match {
       case Some(player) =>
         player.team = team
       case None =>
     }
-  }
 
-  def addPlayerAbility(playerName: String, abilityId: Int): Unit = {
+  def addPlayerAbility(playerName: String, abilityId: Int): Unit =
     _playersInfo.get(playerName) match {
       case Some(player) =>
         player.abilities = player.abilities.filterNot(Ability.playerChoices.contains) :+ abilityId
       case None =>
     }
-  }
 
-  def removePlayerAbility(playerName: String, abilityId: Int): Unit = {
+  def removePlayerAbility(playerName: String, abilityId: Int): Unit =
     _playersInfo.get(playerName) match {
       case Some(player) =>
         player.abilities = player.abilities.filter(_ != abilityId)
       case None =>
     }
-  }
 
   private val bookedPlayerNames: mutable.Map[Int, String] = mutable.Map(0 -> hostName)
-  def getBookedPlayerNames: Set[(Int, String)] = bookedPlayerNames.toSet
+  def getBookedPlayerNames: Set[(Int, String)]            = bookedPlayerNames.toSet
 
-  def bookName(name: String, id: Int): Option[String] = {
+  def bookName(name: String, id: Int): Option[String] =
     if (bookedPlayerNames.values.toList.contains(name)) Some("Name already used.")
     else if (hasStarted) Some("Game has already started.")
     else {
       bookedPlayerNames += (id -> name)
       None
     }
-  }
 
   def unBookName(id: Int): Unit =
     bookedPlayerNames -= id
 
   private var gameStarted: Boolean = false
-  def hasStarted: Boolean = gameStarted
+  def hasStarted: Boolean          = gameStarted
 
   def launchGame(password: Int, sendPlayerInfo: Array[SendPlayerInfo]): GamePlaying = {
     gameStarted = true
@@ -140,7 +131,7 @@ trait GameCreation {
       info.abilities.foreach(player.abilities :+= _)
 
       player.ready = true
-      player.id = info.id
+      player.id    = info.id
 
       player
     })
@@ -150,23 +141,25 @@ trait GameCreation {
   def makeGamePlaying(password: Int, playerInfo: Vector[PlayerGameSettingsInfo]): GamePlaying
 
   /**
-   * Sending information that already defines the players.
-   */
-  def sendPlayerInfoArray: Array[SendPlayerInfo] = playersInfo.values.toList
-    .sortBy(_.playerName)
-    .zip(GameCreation.definedColors)
-    .map({ case (info, color) =>
-      SendPlayerInfo(
-        name,
-        info.playerName,
-        Entity.newId(),
-        info.team,
-        info.ready,
-        info.abilities,
-        Vector(color.red, color.green, color.blue)
-      )
-    }
-  ).toArray
+    * Sending information that already defines the players.
+    */
+  def sendPlayerInfoArray: Array[SendPlayerInfo] =
+    playersInfo.values.toList
+      .sortBy(_.playerName)
+      .zip(GameCreation.definedColors)
+      .map({
+        case (info, color) =>
+          SendPlayerInfo(
+            name,
+            info.playerName,
+            Entity.newId(),
+            info.team,
+            info.ready,
+            info.abilities,
+            Vector(color.red, color.green, color.blue)
+          )
+      })
+      .toArray
 }
 
 object GameCreation {
@@ -174,12 +167,13 @@ object GameCreation {
 
   private var lastId: Long = 0
 
-  private def getId: Long = if (idQueue.isEmpty) {
-    lastId += 1
-    lastId
-  } else {
-    idQueue.dequeue()
-  }
+  private def getId: Long =
+    if (idQueue.isEmpty) {
+      lastId += 1
+      lastId
+    } else {
+      idQueue.dequeue()
+    }
 
   def freeId(id: Long): Unit =
     idQueue.enqueue(id)
@@ -193,6 +187,5 @@ object GameCreation {
     Color(102, 205, 170),
     Color(255, 165, 0)
   )
-
 
 }

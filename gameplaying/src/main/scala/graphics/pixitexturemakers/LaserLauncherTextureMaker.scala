@@ -10,8 +10,8 @@ object LaserLauncherTextureMaker extends TextureMaker {
     case Some(tex) =>
       tex
     case None =>
-      val radius = LaserLauncher.laserLauncherShapeRadius
-      val (x, y) = (2 * radius, 2 * radius)
+      val radius   = LaserLauncher.laserLauncherShapeRadius
+      val (x, y)   = (2 * radius, 2 * radius)
       val intColor = Vec3(color._1, color._2, color._3).toInt
       val graphics = new PIXIGraphics()
         .beginFill(0x999999, 0.5)

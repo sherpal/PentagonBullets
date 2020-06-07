@@ -1,5 +1,3 @@
 package sharednodejsapis.tls
 
-trait TLSServerOptions extends CreateSecureContextOptions {
-
-}
+trait TLSServerOptions extends CreateSecureContextOptions {}

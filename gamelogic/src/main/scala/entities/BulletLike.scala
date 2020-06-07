@@ -3,14 +3,14 @@ package entities
 import physics.Circle
 
 /**
- * The trait BulletLike gathers common feature of Entities that act like Bullets.
- *
- * The current two concrete classes are
- * - Bullet
- * - SmashBullet
- *
- * For a game called Pentagon Bullets, it seems natural to have a special trait for bullets!
- */
+  * The trait BulletLike gathers common feature of Entities that act like Bullets.
+  *
+  * The current two concrete classes are
+  * - Bullet
+  * - SmashBullet
+  *
+  * For a game called Pentagon Bullets, it seems natural to have a special trait for bullets!
+  */
 trait BulletLike extends MovingBody {
 
   val time: Long

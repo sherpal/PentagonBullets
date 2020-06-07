@@ -16,12 +16,12 @@ trait HealthBar {
 
   var maxLife: Double = Player.maxLife // TODO: change this when this piece of info is available from the Unit
 
-  val worldWidth: Double = 2 * Player.radius - 5
+  val worldWidth: Double  = 2 * Player.radius - 5
   val worldHeight: Double = 5
 
   val boundingBox: BoundingBox = new BoundingBox(-worldWidth / 2, -worldHeight / 2, worldWidth / 2, worldHeight / 2)
 
-  var offset: Complex = Complex(0, - Player.radius - 8)
+  var offset: Complex = Complex(0, -Player.radius - 8)
 
   private val container: PIXIContainer = new PIXIContainer()
 
@@ -31,16 +31,15 @@ trait HealthBar {
   private val lifeSprite: Sprite = new Sprite(HealthBar.lifeTexture)
   container.addChild(lifeSprite)
 
-  private val dangerLifeColor: Int = Vec3(1,0,0).toInt
+  private val dangerLifeColor: Int  = Vec3(1, 0, 0).toInt
   private val warningLifeColor: Int = Vec3(1, 163 / 255.0, 0).toInt
-  private val safeLifeColor: Int = Vec3(0, 1, 0).toInt
+  private val safeLifeColor: Int    = Vec3(0, 1, 0).toInt
 
   def addToWorld(): Unit = HealthBar.lifeBarContainer.addChild(container)
 
   def removeFromWorld(): Unit = HealthBar.lifeBarContainer.removeChild(container)
 
-  def update(): Unit = {
-
+  def update(): Unit =
     unit match {
       case Some(u) =>
         val worldPos = u.pos + offset
@@ -50,8 +49,12 @@ trait HealthBar {
         lifeSprite.width = 100 * coef
 
         EntityDrawer.camera.viewportManagerSized(
-          container, worldPos + Complex(-worldWidth / 2, worldHeight / 2),
-          worldWidth, worldHeight, worldPos, boundingBox
+          container,
+          worldPos + Complex(-worldWidth / 2, worldHeight / 2),
+          worldWidth,
+          worldHeight,
+          worldPos,
+          boundingBox
         )
 
         lifeSprite.tint = if (coef <= 0.2) dangerLifeColor else if (coef <= 0.5) warningLifeColor else safeLifeColor
@@ -59,10 +62,7 @@ trait HealthBar {
         container.visible = false
     }
 
-  }
-
 }
-
 
 object HealthBar {
 

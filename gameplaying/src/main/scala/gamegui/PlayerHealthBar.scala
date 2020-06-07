@@ -2,7 +2,6 @@ package gamegui
 
 import entities.Player
 
-
 class PlayerHealthBar(playerId: Long, getPlayer: () => Option[Player]) extends HealthBar {
 
   def unit: Option[Player] = getPlayer()
@@ -10,4 +9,3 @@ class PlayerHealthBar(playerId: Long, getPlayer: () => Option[Player]) extends H
   HealthBar.addBar(this)
 
 }
-

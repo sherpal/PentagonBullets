@@ -15,15 +15,16 @@ class Laser(vertices: Vector[Complex], color: Int, stage: PIXIContainer) extends
 
   val duration: Option[Long] = Some(600)
 
-  def stopRunningCallback(): Unit = {
+  def stopRunningCallback(): Unit =
     stage.removeChild(graphics)
-  }
 
   private val cycleVertices: Vector[Complex] = vertices.last +: vertices
 
   protected def animate(gameState: GameState, now: Long, camera: Camera): Unit = {
     val localCoords = cycleVertices
-      .map(camera.worldToLocal).flatMap(elem => Vector(elem._1, elem._2)).toJSArray
+      .map(camera.worldToLocal)
+      .flatMap(elem => Vector(elem._1, elem._2))
+      .toJSArray
 
     graphics
       .clear()

@@ -3,8 +3,6 @@ package sharednodejsapis
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 import scala.scalajs.js.|
-
-
 @js.native
 @JSImport("fs", JSImport.Namespace)
 object FileSystem extends js.Object {

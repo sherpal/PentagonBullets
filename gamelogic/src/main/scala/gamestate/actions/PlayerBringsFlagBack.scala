@@ -4,21 +4,22 @@ import entities.TeamFlag
 import gamestate.{ActionSource, GameAction, GameState}
 
 /**
- * Happens when a Player manages to bring an enemy flag back to his or her side, scoring one point.
- */
+  * Happens when a Player manages to bring an enemy flag back to his or her side, scoring one point.
+  */
 final case class PlayerBringsFlagBack(
-                                       actionId: Long,
-                                       time: Long,
-                                       flagId: Long,
-                                       playerId: Long,
-                                       actionSource: ActionSource
-                                     ) extends GameAction {
+    actionId: Long,
+    time: Long,
+    flagId: Long,
+    playerId: Long,
+    actionSource: ActionSource
+) extends GameAction {
 
   def applyDefault(gameState: GameState): GameState = {
-    val flag = gameState.flags.values.find(_.id == flagId).get
+    val flag        = gameState.flags.values.find(_.id == flagId).get
     val takenByTeam = gameState.players(playerId).team
     gameState.withFlag(
-      time, new TeamFlag(flagId, flag.xPos, flag.yPos, flag.teamNbr, None, takenByTeam +: flag.takenBy)
+      time,
+      new TeamFlag(flagId, flag.xPos, flag.yPos, flag.teamNbr, None, takenByTeam +: flag.takenBy)
     )
   }
 

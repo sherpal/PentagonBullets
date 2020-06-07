@@ -7,7 +7,6 @@ import gui._
 
 import scala.collection.mutable
 
-
 class GunTurretHealthBar private (val turretId: Long, gameHandler: GameHandler) extends HealthBar {
 
   def unit: Option[GunTurret] = gameHandler.currentGameState.gunTurrets.get(turretId)
@@ -15,7 +14,6 @@ class GunTurretHealthBar private (val turretId: Long, gameHandler: GameHandler) 
   HealthBar.addBar(this)
 
 }
-
 
 object GunTurretHealthBar {
 

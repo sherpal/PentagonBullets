@@ -1,6 +1,5 @@
 package gamegui
 
-
 import entities.TeamFlag
 import gameinfo.GameEvents
 import gamestate.GameState
@@ -22,20 +21,29 @@ object CaptureTheFlagScoreBoard extends Tooltip {
     setHeight(scores.size * 25)
     clearLines()
 
-    scores.toList.sortBy(_._2).reverse.foreach({
-      case (team, points) =>
-        val (r, g, b) = colorMap.getOrElse(team, (24 / 255.0, 77 / 255.0, 30 / 255.0))
-        addDoubleLine(
-          s"Team $team", points.toString, r, g, b, 20, r, g, b, 20
-        )
-    })
+    scores.toList
+      .sortBy(_._2)
+      .reverse
+      .foreach({
+        case (team, points) =>
+          val (r, g, b) = colorMap.getOrElse(team, (24 / 255.0, 77 / 255.0, 30 / 255.0))
+          addDoubleLine(
+            s"Team $team",
+            points.toString,
+            r,
+            g,
+            b,
+            20,
+            r,
+            g,
+            b,
+            20
+          )
+      })
   }
 
   registerEvent(GameEvents.OnPlayerBringsBackFlag)((_: PlayerBringsFlagBack, state: GameState) => {
     setScores(TeamFlag.scores(state))
   })
-
-
-
 
 }

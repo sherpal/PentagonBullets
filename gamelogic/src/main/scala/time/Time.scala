@@ -1,8 +1,8 @@
 package time
 
 /**
- * Used to have some time related facility functions.
- */
+  * Used to have some time related facility functions.
+  */
 object Time {
 
   def getTime: Long = new java.util.Date().getTime + deltaTime

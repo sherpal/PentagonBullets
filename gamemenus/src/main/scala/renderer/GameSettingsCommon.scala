@@ -5,8 +5,8 @@ import org.scalajs.dom
 import org.scalajs.dom.html
 
 /**
- * Manage what is common in join and host game settings html files.
- */
+  * Manage what is common in join and host game settings html files.
+  */
 object GameSettingsCommon {
 //  val playerName: String = VariableStorage.retrieveValue("playerName").asInstanceOf[String]
 //  val gameName: String = VariableStorage.retrieveValue("gameName").asInstanceOf[String]

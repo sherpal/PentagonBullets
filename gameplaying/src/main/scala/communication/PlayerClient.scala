@@ -20,45 +20,42 @@ import time.Time
 
 import scala.scalajs.js
 
-
 /**
- * The PlayerClient communicates with the server, and creates the GameHandler that will manage the game.
- *
- * This class is a priori good as it is, and won't change in the future, except for adding all the different game modes
- * that will arrive.
- */
-class PlayerClient(playerName: String,
-                   val gameName: String,
-                   val address: String,
-                   val port: Int,
-                   val password: Int,
-                   playersInfo: List[PlayerGameSettingsInfo],
-                   val gameMode: GameMode) extends Client {
-
+  * The PlayerClient communicates with the server, and creates the GameHandler that will manage the game.
+  *
+  * This class is a priori good as it is, and won't change in the future, except for adding all the different game modes
+  * that will arrive.
+  */
+class PlayerClient(
+    playerName: String,
+    val gameName: String,
+    val address: String,
+    val port: Int,
+    val password: Int,
+    playersInfo: List[PlayerGameSettingsInfo],
+    val gameMode: GameMode
+) extends Client {
 
   // red spinning pentagon
   Engine.changeGameState(PreGameRunner)
   Engine.startGameLoop()
 
-
   PlayerClient._playerClient = this
 
   lazy val gameHandler: GameHandler = gameMode match {
-    case StandardMode => new StandardModeGameHandler(playerName, playersInfo, this)
+    case StandardMode       => new StandardModeGameHandler(playerName, playersInfo, this)
     case CaptureTheFlagMode => new CaptureTheFlagGameHandler(playerName, playersInfo, this)
-    case _ => throw new NotImplementedError(s"$gameMode is not yet implemented.")
+    case _                  => throw new NotImplementedError(s"$gameMode is not yet implemented.")
   }
 
   connect()
 
   def serverTime: Long = Time.getTime
 
-  def guessClock(): Unit = {
+  def guessClock(): Unit =
     sendReliable(GuessClockTime(gameName, serverTime + meanLatency))
-  }
 
-
-  def messageCallback(client: Client, msg: Message): Unit = {
+  def messageCallback(client: Client, msg: Message): Unit =
     msg match {
       case ActionsMessage(_, actions) =>
         gameHandler.addActions(actions.map(MessageMaker.messageToAction))
@@ -91,7 +88,6 @@ class PlayerClient(playerName: String,
         )
 
       case ClosingGame(_, message) =>
-
         if (message == "gameEndedNormally") {
           disconnect()
           dom.window.location.href = "../../gamemenus/mainscreen/index.html" // TODO: change this
@@ -110,22 +106,18 @@ class PlayerClient(playerName: String,
       case _ =>
         println(s"Unknown message: $msg")
     }
-  }
 
   def synchronize(): Unit =
     computeLinkTime(sampleNumber = 50, endCallback = (delta: Long) => {
       Time.setDeltaTime(delta)
     })
 
-
-  private var deltaTimeReady: Boolean = false
+  private var deltaTimeReady: Boolean      = false
   private var resourceLoaderReady: Boolean = false
-  def readyToConnect(): Unit = {
+  def readyToConnect(): Unit =
     if (deltaTimeReady && resourceLoaderReady) {
       sendReliable(PlayerConnecting(gameName, playerName, password))
     }
-
-  }
 
   private val loader: PIXILoader = new PIXILoader
 
@@ -143,40 +135,40 @@ class PlayerClient(playerName: String,
     readyToConnect()
   })
 
-
-
-  override def connectedCallback(client: Client, peer: Peer, connected: Boolean): Unit = {
+  override def connectedCallback(client: Client, peer: Peer, connected: Boolean): Unit =
     if (connected) {
       // we first try to have the server time by computing it.
-      computeLinkTime(sampleNumber = 50, endCallback = (delta: Long) => {
-        Time.setDeltaTime(delta)
-        activatePing()
-        deltaTimeReady = true
+      computeLinkTime(
+        sampleNumber = 50,
+        endCallback = (delta: Long) => {
+          Time.setDeltaTime(delta)
+          activatePing()
+          deltaTimeReady = true
 
-        gameHandler
+          gameHandler
 
-        renderermainprocesscom.Message.sendMessageToMainProcess(
-          renderermainprocesscom.StoreGameInfo.NewGame(gameName, gameHandler.currentGameState.time)
-        )
+          renderermainprocesscom.Message.sendMessageToMainProcess(
+            renderermainprocesscom.StoreGameInfo.NewGame(gameName, gameHandler.currentGameState.time)
+          )
 
-        readyToConnect()
-      })
+          readyToConnect()
+        }
+      )
     } else if (gameHandler.currentGameState.state != GameEnded) {
       dom.window.alert("You have been disconnected from the server.")
       dom.window.location.href = "../../gamemenus/mainscreen/index.html"
     }
-  }
 
   def setMaxCanvasDimensions(): Unit = {
     val gameInterface: html.Div = dom.document.getElementById("gameInterface").asInstanceOf[html.Div]
-    gameInterface.style.width = dom.window.innerWidth.toInt.toString + "px"
+    gameInterface.style.width  = dom.window.innerWidth.toInt.toString + "px"
     gameInterface.style.height = dom.window.innerHeight.toInt.toString + "px"
 
-    val windowWidth: Int = dom.window.innerWidth.toInt - 7
+    val windowWidth: Int  = dom.window.innerWidth.toInt - 7
     val windowHeight: Int = dom.window.innerHeight.toInt - 7
 
     val canvasHeight = math.min(windowHeight, windowWidth * EntityDrawer.cameraWidthToHeightRatio).toInt
-    val canvasWidth = (canvasHeight / EntityDrawer.cameraWidthToHeightRatio).toInt
+    val canvasWidth  = (canvasHeight / EntityDrawer.cameraWidthToHeightRatio).toInt
 
     Engine.graphics.resize(canvasWidth, canvasHeight)
   }
@@ -186,7 +178,6 @@ class PlayerClient(playerName: String,
   })
 
   setMaxCanvasDimensions()
-
 
   private def gameStart(): Unit = {
 
@@ -202,25 +193,19 @@ class PlayerClient(playerName: String,
 
   }
 
-
-  def sendAction(action: GameAction): Unit = {
+  def sendAction(action: GameAction): Unit =
     sendNormal(MessageMaker.toMessage(gameName, action))
-  }
 
-  def sendActions(actions: List[GameAction]): Unit = {
+  def sendActions(actions: List[GameAction]): Unit =
     sendNormal(ActionsMessage(gameName, actions.map(MessageMaker.toMessage(gameName, _))))
-  }
-
-
 
 }
-
 
 object PlayerClient {
 
   /**
-   * Keeping a global reference of the player client created for the game
-   */
+    * Keeping a global reference of the player client created for the game
+    */
   private var _playerClient: PlayerClient = _
 
   def playerClient: PlayerClient = _playerClient

@@ -4,17 +4,18 @@ import entities.TeamFlag
 import gamestate.{ActionSource, GameAction, GameState}
 
 final case class PlayerTakesFlag(
-                                  actionId: Long,
-                                  time: Long,
-                                  flagId: Long,
-                                  playerId: Long,
-                                  actionSource: ActionSource
-                                ) extends GameAction {
+    actionId: Long,
+    time: Long,
+    flagId: Long,
+    playerId: Long,
+    actionSource: ActionSource
+) extends GameAction {
 
   def applyDefault(gameState: GameState): GameState = {
     val flag = gameState.flags.values.find(_.id == flagId).get
     gameState.withFlag(
-      time, new TeamFlag(flagId, flag.xPos, flag.yPos, flag.teamNbr, Some(playerId), flag.takenBy)
+      time,
+      new TeamFlag(flagId, flag.xPos, flag.yPos, flag.teamNbr, Some(playerId), flag.takenBy)
     )
   }
 

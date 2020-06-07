@@ -18,28 +18,31 @@ object OpenTableForm {
 
   openTableButton.addEventListener[dom.MouseEvent]("click", (_: dom.MouseEvent) => div.style.display = "block")
 
-  form.addEventListener("submit", (event: dom.Event) => {
-    event.preventDefault()
+  form.addEventListener(
+    "submit",
+    (event: dom.Event) => {
+      event.preventDefault()
 
-    println(s"Table name: $chosenTableName")
-    println(s"Game mode: $selectedGameMode")
+      println(s"Table name: $chosenTableName")
+      println(s"Game mode: $selectedGameMode")
 
-    println("open table form submitted")
+      println("open table form submitted")
 
-    List(
-      (chosenPlayerName == "") -> (() => s"Chose a player name."),
-      TableInfo.doesTableExist(chosenTableName) -> (() => s"Table $chosenTableName already exists.")
-    ).find(_._1) match {
-      case Some((_, errorMessage)) =>
-        Alert.showAlert("Failed to open table", errorMessage())
-      case None =>
-        TableClient.sendOrderedReliable(
-          OpenTable(chosenPlayerName, chosenTableName, selectedGameMode, "")
-        )
+      List(
+        (chosenPlayerName == "") -> (() => s"Chose a player name."),
+        TableInfo.doesTableExist(chosenTableName) -> (() => s"Table $chosenTableName already exists.")
+      ).find(_._1) match {
+        case Some((_, errorMessage)) =>
+          Alert.showAlert("Failed to open table", errorMessage())
+        case None =>
+          TableClient.sendOrderedReliable(
+            OpenTable(chosenPlayerName, chosenTableName, selectedGameMode, "")
+          )
+      }
+
+      false
     }
-
-    false
-  })
+  )
 
   private val playerNameInput: html.Input = dom.document.getElementById("playerNameInput").asInstanceOf[html.Input]
 
@@ -49,7 +52,7 @@ object OpenTableForm {
 
   GameMode.gameModes.foreach(mode => {
     val option = dom.document.createElement("option").asInstanceOf[html.Option]
-    option.value = mode.toString
+    option.value       = mode.toString
     option.textContent = mode.toString
     gameModeSelect.appendChild(option)
   })
@@ -61,18 +64,16 @@ object OpenTableForm {
     div.style.display = "none"
   })
 
-
   /**
-   * Retrieving open table info.
-   */
+    * Retrieving open table info.
+    */
   private def selectedGameMode: String = gameModeSelect.value
 
   private def chosenTableName: String = tableNameInput.value
 
   private def chosenPlayerName: String = playerNameInput.value.trim
 
-
-  def openTableMessage(message: TableOpened): Unit = {
+  def openTableMessage(message: TableOpened): Unit =
     if (message.success) {
       div.style.display = "none"
 
@@ -86,7 +87,5 @@ object OpenTableForm {
         message.errorMessage
       )
     }
-  }
-
 
 }

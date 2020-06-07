@@ -5,7 +5,6 @@ import boopickle.CompositePickler
 
 sealed abstract class FileContent
 
-
 object FileContent {
   implicit val fileContentPickler: CompositePickler[FileContent] = {
     compositePickler[FileContent]
@@ -17,11 +16,7 @@ object FileContent {
 
 }
 
-
-final case class ConnectionToGameInfo(pseudo: String,
-                                      gameName: String,
-                                      address: String,
-                                      port: Int) extends FileContent
+final case class ConnectionToGameInfo(pseudo: String, gameName: String, address: String, port: Int) extends FileContent
 
 sealed trait ControlType extends FileContent
 object ControlType {
@@ -30,12 +25,16 @@ object ControlType {
   // TODO: controller types? (XBox, PS, Switch?)
 }
 
-final case class ControlBindings(up: (ControlType, Int), down: (ControlType, Int),
-                                 left: (ControlType, Int), right: (ControlType, Int),
-                                 bulletShoot: (ControlType, Int),
-                                 selectedAbility: (ControlType, Int),
-                                 abilities: List[(ControlType, Int)],
-                                 keyCodeToKey: Map[Int, String]) extends FileContent {
+final case class ControlBindings(
+    up: (ControlType, Int),
+    down: (ControlType, Int),
+    left: (ControlType, Int),
+    right: (ControlType, Int),
+    bulletShoot: (ControlType, Int),
+    selectedAbility: (ControlType, Int),
+    abilities: List[(ControlType, Int)],
+    keyCodeToKey: Map[Int, String]
+) extends FileContent {
 
   def isUpPressed(controlType: ControlType, code: Int): Boolean = up._2 == code && up._1 == controlType
 
@@ -55,18 +54,18 @@ final case class ControlBindings(up: (ControlType, Int), down: (ControlType, Int
 
   def isUsed(controlType: ControlType, code: Int): Boolean =
     up == (controlType, code) ||
-    down == (controlType, code) ||
-    left == (controlType, code) ||
-    right == (controlType, code) ||
-    bulletShoot == (controlType, code) ||
-    selectedAbility == (controlType, code) ||
-    abilities.contains((controlType, code))
+      down == (controlType, code) ||
+      left == (controlType, code) ||
+      right == (controlType, code) ||
+      bulletShoot == (controlType, code) ||
+      selectedAbility == (controlType, code) ||
+      abilities.contains((controlType, code))
 
   override def equals(that: Any): Boolean = that match {
     case ControlBindings(thatUp, thatDown, thatLeft, thatRight, thatBulletShoot, thatSA, thatAbilities, _) =>
       thatUp == up && thatDown == down && thatLeft == left && thatRight == right &&
-      thatBulletShoot == bulletShoot && thatSA == selectedAbility && thatAbilities.forall(abilities contains _) &&
-      abilities.forall(thatAbilities contains _)
+        thatBulletShoot == bulletShoot && thatSA == selectedAbility && thatAbilities.forall(abilities contains _) &&
+        abilities.forall(thatAbilities contains _)
     case _ => false
   }
 

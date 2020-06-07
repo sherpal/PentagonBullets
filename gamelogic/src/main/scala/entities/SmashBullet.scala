@@ -1,13 +1,17 @@
 package entities
 
-
 class SmashBullet(
-                 val id: Long, val time: Long, val ownerId: Long, val xPos: Double, val yPos: Double,
-                 val radius: Int, val direction: Double, val speed: Double, val travelledDistance: Double,
-                 val lastGrow: Long
-                 ) extends BulletLike {
-
-}
+    val id: Long,
+    val time: Long,
+    val ownerId: Long,
+    val xPos: Double,
+    val yPos: Double,
+    val radius: Int,
+    val direction: Double,
+    val speed: Double,
+    val travelledDistance: Double,
+    val lastGrow: Long
+) extends BulletLike {}
 
 object SmashBullet {
 
@@ -24,6 +28,5 @@ object SmashBullet {
   val growRate: Long = lifeTime / 4
 
   val growValue: Int = (endRadius - defaultRadius) / 4
-
 
 }

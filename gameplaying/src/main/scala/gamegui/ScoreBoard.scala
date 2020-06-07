@@ -8,8 +8,8 @@ import gui._
 import pixigraphics.PIXITexture
 
 /**
- * ScoreBoard lists players from first to last in terms of points.
- */
+  * ScoreBoard lists players from first to last in terms of points.
+  */
 object ScoreBoard extends Tooltip() {
 
   setPoint(TopRight)
@@ -25,11 +25,13 @@ object ScoreBoard extends Tooltip() {
 
   def update(gameState: GameState): Unit = {
     //if (gameState.time - lastUpdate > 1000) {
-      lastUpdate = gameState.time
-      topLife match {
-        case Some(bar) =>
-          bar.foreach(life => {
-            life.asInstanceOf[PlayerLife].setLife(
+    lastUpdate = gameState.time
+    topLife match {
+      case Some(bar) =>
+        bar.foreach(life => {
+          life
+            .asInstanceOf[PlayerLife]
+            .setLife(
               gameState.players.get(life.asInstanceOf[PlayerLife].playerId) match {
                 case Some(player) =>
                   player.lifeTotal
@@ -37,9 +39,9 @@ object ScoreBoard extends Tooltip() {
                   0.0
               }
             )
-          })
-        case None =>
-      }
+        })
+      case None =>
+    }
     //}
   }
 
@@ -62,14 +64,12 @@ object ScoreBoard extends Tooltip() {
     }
   })
 
-
   /**
-   * Attempts to use the StackedFrame
-   */
-
-  private class PlayerLife(val playerName: String, val playerId: Long,
-                           color: (Double, Double, Double)) extends Frame with StackedFrame
-  {
+    * Attempts to use the StackedFrame
+    */
+  private class PlayerLife(val playerName: String, val playerId: Long, color: (Double, Double, Double))
+      extends Frame
+      with StackedFrame {
     setSize(200, 25)
 
     private lazy val bar: StatusBar = {
@@ -122,7 +122,5 @@ object ScoreBoard extends Tooltip() {
 
     ScoreBoard.setHeight(topLife.get.length * topLife.get.height)
   }
-
-
 
 }

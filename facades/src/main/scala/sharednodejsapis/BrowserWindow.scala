@@ -3,14 +3,12 @@ package sharednodejsapis
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 
-
 /**
- * https://github.com/electron/electron/blob/master/docs/api/browser-window.md
- */
+  * https://github.com/electron/electron/blob/master/docs/api/browser-window.md
+  */
 @js.native
 @JSImport("electron", "remote.BrowserWindow")
 class BrowserWindow(options: BrowserWindowOptions) extends EventEmitter {
-
 
   val webContents: WebContents = js.native
 
@@ -45,11 +43,10 @@ class BrowserWindow(options: BrowserWindowOptions) extends EventEmitter {
   def isVisible(): Boolean = js.native
 
 }
-
-
 @js.native
 @JSImport("electron", "remote.BrowserWindow")
 object BrowserWindow extends EventEmitter {
+
   /** Returns Array of [[BrowserWindow]] - An array of all opened browser windows. */
   def getAllWindows(): js.Array[BrowserWindow] = js.native
 
@@ -69,15 +66,17 @@ object BrowserWindow extends EventEmitter {
 }
 
 trait BrowserWindowOptions extends js.Object {
+
   /** Width. Default value: 800. */
   val width: js.UndefOr[Int] = js.undefined
+
   /** Height. Default value: 600. */
   val height: js.UndefOr[Int] = js.undefined
 
   /**
-   * Boolean (optional) - The width and height would be used as web page's size, which means the actual window's size
-   * will include window frame's size and be slightly larger. Default is false.
-   */
+    * Boolean (optional) - The width and height would be used as web page's size, which means the actual window's size
+    * will include window frame's size and be slightly larger. Default is false.
+    */
   val useContentSize: js.UndefOr[Boolean] = js.undefined
 
   /** Integer (optional) - Window's minimum width. Default is 0. */
@@ -87,8 +86,8 @@ trait BrowserWindowOptions extends js.Object {
   val minHeight: js.UndefOr[Int] = js.undefined
 
   /**  (NativeImage | String) (optional) - The window icon. On Windows it is recommended to use ICO icons to get best
-   * visual effects, you can also leave it undefined so the executable's icon will be used.
-   */
+    * visual effects, you can also leave it undefined so the executable's icon will be used.
+    */
   val icon: js.UndefOr[String] = js.undefined
 
   /** Whether BrowserWindow will be visible. Default value: true. */
@@ -110,21 +109,18 @@ trait BrowserWindowOptions extends js.Object {
   val webPreferences: js.UndefOr[WebPreferences] = js.undefined
 
   /**
-   * Window's background color as Hexadecimal value, like #66CD00 or #FFF or #80FFFFFF (alpha is supported).
-   * Default is "#FFF" (white).
-   */
+    * Window's background color as Hexadecimal value, like #66CD00 or #FFF or #80FFFFFF (alpha is supported).
+    * Default is "#FFF" (white).
+    */
   val backgroundColor: js.UndefOr[String] = js.undefined
 
   val alwaysOnTop: js.UndefOr[Boolean] = js.undefined
 
   /**
-   * Whether the window can be focused. Default is true.
-   */
+    * Whether the window can be focused. Default is true.
+    */
   val focusable: js.UndefOr[Boolean] = js.undefined
 }
-
-
-
 
 trait WebPreferences extends js.Object {
 

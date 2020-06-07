@@ -12,7 +12,7 @@ object PlayerNameFS {
     val fs = UIParent.createFontString()
 
     fs.setSize(200, 30)
-    fs.setTextColor(1,1,1)
+    fs.setTextColor(1, 1, 1)
     fs.setText(playerName)
 
     val Complex(x, y) = EntityDrawer.camera.worldToMousePos(pos)
@@ -36,15 +36,17 @@ object PlayerNameFS {
     fontStrings.values.map(_._1).foreach(_.hide())
   }
 
-  def placeFontStrings(): Unit = fontStrings.values.foreach({ case (fs, pos) =>
-    fs.getPointCoords(Bottom) match {
-      case Some(_) =>
-        fs.clearAllPoints()
+  def placeFontStrings(): Unit =
+    fontStrings.values.foreach({
+      case (fs, pos) =>
+        fs.getPointCoords(Bottom) match {
+          case Some(_) =>
+            fs.clearAllPoints()
 
-        val Complex(newX, newY) = EntityDrawer.camera.worldToMousePos(pos)
+            val Complex(newX, newY) = EntityDrawer.camera.worldToMousePos(pos)
 
-        fs.setPoint(Bottom, UIParent, Center, newX, newY)
-      case None =>
-    }
-  })
+            fs.setPoint(Bottom, UIParent, Center, newX, newY)
+          case None =>
+        }
+    })
 }

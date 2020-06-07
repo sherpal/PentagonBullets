@@ -4,11 +4,11 @@ import gamestate.{ActionSource, GameAction, GameState}
 import physics.Polygon
 
 final case class GameBegins(
-                             actionId: Long,
-                             time: Long,
-                             gameBounds: Polygon,
-                             actionSource: ActionSource
-                           ) extends GameAction {
+    actionId: Long,
+    time: Long,
+    gameBounds: Polygon,
+    actionSource: ActionSource
+) extends GameAction {
 
   def applyDefault(gameState: GameState): GameState = gameState.start(time, gameBounds)
 

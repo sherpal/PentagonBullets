@@ -3,8 +3,6 @@ package renderer
 import gameserver.GameServer
 import globalvariables.VariableStorage
 
-
-
 object ServerRenderer {
   def main(args: Array[String]): Unit = {
 

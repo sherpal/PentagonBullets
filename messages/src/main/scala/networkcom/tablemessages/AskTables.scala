@@ -1,5 +1,3 @@
 package networkcom.tablemessages
 
-final case class AskTables() extends TableServerMessages {
-
-}
+final case class AskTables() extends TableServerMessages {}

@@ -4,22 +4,30 @@ import entities.BulletAmplifier
 import gamestate.{ActionSource, GameAction, GameState}
 
 /**
- * Adds a Bullet id to the list of amplified bullets.
- */
+  * Adds a Bullet id to the list of amplified bullets.
+  */
 final case class BulletAmplifierAmplified(
-                                           actionId: Long,
-                                           time: Long,
-                                           bulletId: Long,
-                                           amplifierId: Long,
-                                           actionSource: ActionSource
-                                         ) extends GameAction {
+    actionId: Long,
+    time: Long,
+    bulletId: Long,
+    amplifierId: Long,
+    actionSource: ActionSource
+) extends GameAction {
 
   def applyDefault(gameState: GameState): GameState = {
     val amplifier = gameState.bulletAmplifiers(amplifierId)
     gameState.withBulletAmplifier(
-      amplifier.id, time, new BulletAmplifier(
-        amplifier.id, amplifier.creationTime, amplifier.ownerId, amplifier.xPos, amplifier.yPos,
-        amplifier.shape, amplifier.rotation, amplifier.addBulletAmplified(bulletId)
+      amplifier.id,
+      time,
+      new BulletAmplifier(
+        amplifier.id,
+        amplifier.creationTime,
+        amplifier.ownerId,
+        amplifier.xPos,
+        amplifier.yPos,
+        amplifier.shape,
+        amplifier.rotation,
+        amplifier.addBulletAmplified(bulletId)
       )
     )
   }

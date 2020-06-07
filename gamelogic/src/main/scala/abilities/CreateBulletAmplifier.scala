@@ -7,17 +7,26 @@ import gamestate.{GameAction, GameState}
 import gamestate.actions.NewBulletAmplifier
 
 /**
- * Create a [[entities.BulletAmplifier]] for the caster's team.
- */
-class CreateBulletAmplifier(val time: Long, val useId: Long,
-                            val casterId: Long, val targetPos: Complex, val rotation: Double) extends Ability {
+  * Create a [[entities.BulletAmplifier]] for the caster's team.
+  */
+class CreateBulletAmplifier(
+    val time: Long,
+    val useId: Long,
+    val casterId: Long,
+    val targetPos: Complex,
+    val rotation: Double
+) extends Ability {
 
   val id: Int = Ability.createBulletAmplifierId
 
   val cooldown: Long = 15000
 
   def copyWithUseId(newUseId: Long, newTime: Long): CreateBulletAmplifier = new CreateBulletAmplifier(
-    newTime, newUseId, casterId, targetPos, rotation
+    newTime,
+    newUseId,
+    casterId,
+    targetPos,
+    rotation
   )
 
   def createActions(gameState: GameState): List[GameAction] = List(

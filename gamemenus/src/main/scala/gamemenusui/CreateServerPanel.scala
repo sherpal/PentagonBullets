@@ -4,8 +4,6 @@ import org.scalajs.dom.html
 import ui.UIMenuPanel
 
 import scala.scalajs.js
-
-
 @js.native
 trait CreateServerPanel extends UIMenuPanel {
 

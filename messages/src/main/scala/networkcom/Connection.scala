@@ -8,7 +8,6 @@ import boopickle.Default._
 
 import scala.collection.mutable
 
-
 class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
   import Connection._
 
@@ -18,21 +17,20 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
   private var pingIntervalHandle: PlatformDependent.IntervalHandle = _
 
   private var connectedCheck: Boolean = false
-  private var connected: Boolean = true
+  private var connected: Boolean      = true
 
-  private var nextOrderedId: Int = 0
+  private var nextOrderedId: Int         = 0
   private var lastReceivedOrderedId: Int = -1
 
-  private var nextReliableId: Int = 0
-  private val sentReliableIds: mutable.Set[Int] = mutable.Set()
+  private var nextReliableId: Int                = 0
+  private val sentReliableIds: mutable.Set[Int]  = mutable.Set()
   private val receivedReliableIds: ReceivedIdSet = new ReceivedIdSet
 
-  private var nextOrderedReliableId: Int = 0
-  private val sentOrderedReliableIds: mutable.Set[Int] = mutable.Set()
+  private var nextOrderedReliableId: Int                = 0
+  private val sentOrderedReliableIds: mutable.Set[Int]  = mutable.Set()
   private val receivedOrderedReliableIds: ReceivedIdSet = new ReceivedIdSet
-  private var queuedMessages: List[(Int, Message)] = List[(Int, Message)]()
-  private var lastDeliveredOrderedReliable: Int = -1
-
+  private var queuedMessages: List[(Int, Message)]      = List[(Int, Message)]()
+  private var lastDeliveredOrderedReliable: Int         = -1
 
   private val connectionCheckIntervalHandle: PlatformDependent.IntervalHandle = PlatformDependent.setInterval(10000) {
     if (connectedCheck) connectedCheck = false
@@ -42,7 +40,6 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
     }
   }
 
-
   def activatePing(delay: Int = 1000): Unit = {
     deactivatePing()
 
@@ -51,12 +48,11 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
     }
   }
 
-  def deactivatePing(): Unit = {
+  def deactivatePing(): Unit =
     if (pingIntervalHandle != null) {
       PlatformDependent.clearInterval(pingIntervalHandle)
       pingIntervalHandle = null
     }
-  }
 
   def onMessage(array: Array[Byte]): Unit = {
     connectedCheck = true
@@ -64,22 +60,20 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
     val msg = Unpickle[InternalMessage](InternalMessage.internalMessagePickler)
       .fromBytes(ByteBuffer.wrap(array))
 
-
     msg match {
-      case Normal(actualMsg) => receivedNormalMessage(actualMsg)
-      case Ordered(actualMsg, id) => receivedOrderedMessage(actualMsg, id)
-      case Reliable(actualMsg, id) => receivedReliableMessage(actualMsg, id)
+      case Normal(actualMsg)              => receivedNormalMessage(actualMsg)
+      case Ordered(actualMsg, id)         => receivedOrderedMessage(actualMsg, id)
+      case Reliable(actualMsg, id)        => receivedReliableMessage(actualMsg, id)
       case OrderedReliable(actualMsg, id) => receivedOrderedReliableMessage(actualMsg, id)
-      case ReliableAck(id) => receivedReliableAck(id)
-      case OrderedReliableAck(id) => receivedOrderedReliableAck(id)
-      case Ping(time) => pong(time)
+      case ReliableAck(id)                => receivedReliableAck(id)
+      case OrderedReliableAck(id)         => receivedOrderedReliableAck(id)
+      case Ping(time)                     => pong(time)
       case Pong(time, newTime) =>
         receivedPong(time, newTime)
         sendInternal(PongPong(newTime, new Date().getTime))
       case PongPong(time, newTime) => receivedPong(time, newTime)
     }
   }
-
 
   def isConnected: Boolean = connected
 
@@ -100,11 +94,11 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
 
   def linkTime: Long = new Date().getTime + _deltaTime
 
-  private var computingLinkTime: Boolean = false
-  private var computeLinkTimeTrialsDone: Int = 0
-  private var computeLinkTimeTrials: Int = 0
-  private var deltaTimeRecords: List[Long] = List[Long]()
-  private var delayForComputingLinkTime: Int = 100
+  private var computingLinkTime: Boolean          = false
+  private var computeLinkTimeTrialsDone: Int      = 0
+  private var computeLinkTimeTrials: Int          = 0
+  private var deltaTimeRecords: List[Long]        = List[Long]()
+  private var delayForComputingLinkTime: Int      = 100
   private var endComputingCallback: (Long) => Any = (_) => {}
 
   def computeLinkTime(sampleTime: Int = 100, sampleNumber: Int = 20, endCallback: (Long) => Any): Unit = {
@@ -112,17 +106,17 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
 
     delayForComputingLinkTime = sampleTime
     computeLinkTimeTrialsDone = 0
-    computeLinkTimeTrials = sampleNumber
-    endComputingCallback = endCallback
-    deltaTimeRecords = Nil
+    computeLinkTimeTrials     = sampleNumber
+    endComputingCallback      = endCallback
+    deltaTimeRecords          = Nil
 
     ping()
   }
 
   private def receivedPongWhileComputingLinkTime(sendingTime: Long, midwayTime: Long): Unit = {
     val currentTime = new Date().getTime
-    val latency = (currentTime - sendingTime) / 2
-    val linkTime = midwayTime + latency
+    val latency     = (currentTime - sendingTime) / 2
+    val linkTime    = midwayTime + latency
     deltaTimeRecords = (linkTime - currentTime) +: deltaTimeRecords
 
     computeLinkTimeTrialsDone += 1
@@ -134,21 +128,24 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
       val nbrRecords = deltaTimeRecords.length
       //val median = deltaTimeRecords(nbrRecords / 2)
       val mean = deltaTimeRecords.sum / nbrRecords
-      val std = deltaTimeRecords.map(t => (t - mean) * (t - mean)).sum / nbrRecords
-      val relevantData = if (std < 0.0001) deltaTimeRecords else deltaTimeRecords.filter(t => {
-        // simple anomaly detection
-        // we assume latency is normal distributed, which is probably wrong (chi-squared should fit better)
-        // we take only data in [-x_0,x_0] where x_0 is such that P(X < x_0) < 1/20.
-        val normalized = (t - mean) / std
-        normalized > -1.6449 && normalized < 1.6449
-      })
+      val std  = deltaTimeRecords.map(t => (t - mean) * (t - mean)).sum / nbrRecords
+      val relevantData =
+        if (std < 0.0001) deltaTimeRecords
+        else
+          deltaTimeRecords.filter(t => {
+            // simple anomaly detection
+            // we assume latency is normal distributed, which is probably wrong (chi-squared should fit better)
+            // we take only data in [-x_0,x_0] where x_0 is such that P(X < x_0) < 1/20.
+            val normalized = (t - mean) / std
+            normalized > -1.6449 && normalized < 1.6449
+          })
       if (relevantData.isEmpty) {
         computeLinkTime(
           delayForComputingLinkTime,
           computeLinkTimeTrials,
           endComputingCallback
         )
-       } else {
+      } else {
         _deltaTime = relevantData.sum / relevantData.length
 
         endComputingCallback(_deltaTime)
@@ -161,31 +158,28 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
     }
   }
 
-
   def latency: Int = latencyHistory.max
 
   def meanLatency: Int = latencyHistory.sum / latencyHistory.size
 
-  private def sendInternal(msg: InternalMessage): Unit = {
+  private def sendInternal(msg: InternalMessage): Unit =
 //    implicit val pickler: CompositePickler[InternalMessage] = InternalMessage.internalMessagePickler
 //    val bb = Pickle.intoBytes(msg)
 //    val array = new Array[Byte](bb.remaining())
 //    bb.get(array)
 //    socket.send(array, peer.port, peer.address)
     sendInternal(msg, peer)
-  }
 
   private def sendInternal(msg: InternalMessage, specialPeer: Peer): Unit = {
     implicit val pickler: CompositePickler[InternalMessage] = InternalMessage.internalMessagePickler
-    val bb = Pickle.intoBytes(msg)
-    val array = new Array[Byte](bb.remaining())
+    val bb                                                  = Pickle.intoBytes(msg)
+    val array                                               = new Array[Byte](bb.remaining())
     bb.get(array)
     socket.send(array, specialPeer.port, specialPeer.address)
   }
 
   def sendNormal(msg: Message): Unit =
     sendInternal(Normal(msg))
-
 
   def sendReliable(msg: Message): Unit = {
     val id = nextReliableId
@@ -195,7 +189,6 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
 
     def loop(): Unit = {
       sendInternal(Reliable(msg, id))
-
 
       PlatformDependent.setTimeout(4 * latency) {
         if (sentReliableIds.contains(id) && connected) loop()
@@ -213,7 +206,6 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
 
     def loop(): Unit = {
       sendInternal(Reliable(msg, id), specialPeer)
-
 
       PlatformDependent.setTimeout(4 * latency) {
         if (sentReliableIds.contains(id) && connected) loop()
@@ -240,14 +232,11 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
     loop()
   }
 
-
-  private def receivedReliableAck(id: Int): Unit = {
+  private def receivedReliableAck(id: Int): Unit =
     sentReliableIds -= id
-  }
 
   private def receivedOrderedReliableAck(id: Int): Unit =
     sentOrderedReliableIds -= id
-
 
   def sendOrdered(msg: Message): Unit = {
     val id = nextOrderedId
@@ -255,15 +244,13 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
     sendInternal(Ordered(msg, id))
   }
 
-
   private def receivedNormalMessage(msg: Message): Unit = callback(msg)
 
-  private def receivedOrderedMessage(msg: Message, id: Int): Unit = {
+  private def receivedOrderedMessage(msg: Message, id: Int): Unit =
     if (id > lastReceivedOrderedId) {
       lastReceivedOrderedId = id
       callback(msg)
     }
-  }
 
   private def receivedReliableMessage(msg: Message, id: Int): Unit = {
     sendInternal(ReliableAck(id))
@@ -287,33 +274,30 @@ class Connection(peer: Peer, socket: UDPSocket, callback: Message => Unit) {
         lastDeliveredOrderedReliable += 1
         service()
       } else {
-        def insertMessage(id: Int, msg: Message, messageList: List[(Int, Message)]): List[(Int, Message)] = {
+        def insertMessage(id: Int, msg: Message, messageList: List[(Int, Message)]): List[(Int, Message)] =
           if (messageList.isEmpty) List((id, msg))
           else if (messageList.head._1 > id) (id, msg) :: messageList
           else messageList.head :: insertMessage(id, msg, messageList.tail)
-        }
 
         queuedMessages = insertMessage(id, msg, queuedMessages)
       }
     }
   }
 
-  private def service(): Unit = {
+  private def service(): Unit =
     while (queuedMessages.nonEmpty && queuedMessages.head._1 == lastDeliveredOrderedReliable + 1) {
       lastDeliveredOrderedReliable += 1
       callback(queuedMessages.head._2)
       queuedMessages = queuedMessages.tail
     }
-  }
 }
-
 
 object Connection {
   private class ReceivedIdSet {
-    private var upToValue: Int = -1
+    private var upToValue: Int               = -1
     private val outOfOrder: mutable.Set[Int] = mutable.Set()
 
-    def +=(id: Int): Unit = {
+    def +=(id: Int): Unit =
       if (id > upToValue) {
         if (id != upToValue + 1) {
           outOfOrder += id
@@ -324,7 +308,6 @@ object Connection {
           }
         }
       }
-    }
 
     def contains(id: Int): Boolean = id <= upToValue || outOfOrder.contains(id)
   }

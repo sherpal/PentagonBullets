@@ -3,11 +3,11 @@ package gamestate.actions
 import gamestate.{ActionSource, GameAction, GameState}
 
 final case class DestroyGunTurret(
-                                   actionId: Long,
-                                   time: Long,
-                                   turretId: Long,
-                                   actionSource: ActionSource
-                                 ) extends GameAction {
+    actionId: Long,
+    time: Long,
+    turretId: Long,
+    actionSource: ActionSource
+) extends GameAction {
 
   def applyDefault(gameState: GameState): GameState = gameState.removeGunTurret(turretId, time)
 

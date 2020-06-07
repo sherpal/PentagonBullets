@@ -5,17 +5,17 @@ import plots.{Plot, PlotElement}
 import webglgraphics.Vec4
 
 class Segment(
-               z1: Complex, z2: Complex,
-               color: Vec4 = Vec4(0,0,0,1),
-               dashed: Option[Seq[Double]] = None
-             ) extends PlotElement {
+    z1: Complex,
+    z2: Complex,
+    color: Vec4                 = Vec4(0, 0, 0, 1),
+    dashed: Option[Seq[Double]] = None
+) extends PlotElement {
 
   def draw(plot: Plot): PlotElement = {
     plot.drawLine(Vector(z1.re, z2.re), Vector(z1.im, z2.im), color.toVec3, dashed)
 
     this
   }
-
 
   def closestPointTo(z: Complex): Complex = PlotElement.closestPointToInterval(z, z1, z2)
 
@@ -27,4 +27,3 @@ class Segment(
   }
 
 }
-

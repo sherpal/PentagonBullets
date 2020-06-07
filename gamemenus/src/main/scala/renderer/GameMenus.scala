@@ -10,10 +10,9 @@ import sharednodejsapis.{BrowserWindow, IPCRenderer}
 import ui.UI
 import uielements.ControlSettings
 
-
 /**
- * GameMenus will manage all the menus.
- */
+  * GameMenus will manage all the menus.
+  */
 object GameMenus {
   def main(args: Array[String]): Unit = {
 
@@ -21,34 +20,56 @@ object GameMenus {
 
     Plot
 
-    UIPages.mainMenu.quitButton.addEventListener[dom.MouseEvent]("click", (_: dom.MouseEvent) => {
-      UI.showConfirmBox(
-        "Quit Game",
-        "Are you sure you want to quit the wonderful Pentagon Bullets?",
-        (answer: Boolean) => {
-          if (answer) {
-            BrowserWindow.getFocusedWindow().close()
+    UIPages.mainMenu.quitButton.addEventListener[dom.MouseEvent](
+      "click",
+      (_: dom.MouseEvent) => {
+        UI.showConfirmBox(
+          "Quit Game",
+          "Are you sure you want to quit the wonderful Pentagon Bullets?",
+          (answer: Boolean) => {
+            if (answer) {
+              BrowserWindow.getFocusedWindow().close()
+            }
           }
-        }
-      )
-    })
+        )
+      }
+    )
 
-    UIMenuPanels.join.actionButton.addEventListener("mousemove", (event: dom.MouseEvent) => {
-      IPCRenderer.send("main-renderer-message", renderermainprocesscom.Message.encode(MoveTooltip(
-        event.screenX.toInt, event.screenY.toInt
-      )))
-    })
+    UIMenuPanels.join.actionButton.addEventListener(
+      "mousemove",
+      (event: dom.MouseEvent) => {
+        IPCRenderer.send(
+          "main-renderer-message",
+          renderermainprocesscom.Message.encode(
+            MoveTooltip(
+              event.screenX.toInt,
+              event.screenY.toInt
+            )
+          )
+        )
+      }
+    )
 
     UIMenuPanels.join.actionButton.addEventListener("mouseout", (_: dom.MouseEvent) => {
       IPCRenderer.send("main-renderer-message", renderermainprocesscom.Message.encode(CloseTooltip()))
     })
 
     if (scala.scalajs.LinkingInfo.developmentMode) {
-      UIMenuPanels.join.actionButton.addEventListener("mouseenter", (event: dom.MouseEvent) => {
-        IPCRenderer.send("main-renderer-message", renderermainprocesscom.Message.encode(OpenTooltip(
-          "ceci est un test de tooltip", event.screenX.toInt, event.screenY.toInt
-        )))
-      })
+      UIMenuPanels.join.actionButton.addEventListener(
+        "mouseenter",
+        (event: dom.MouseEvent) => {
+          IPCRenderer.send(
+            "main-renderer-message",
+            renderermainprocesscom.Message.encode(
+              OpenTooltip(
+                "ceci est un test de tooltip",
+                event.screenX.toInt,
+                event.screenY.toInt
+              )
+            )
+          )
+        }
+      )
     }
 
     GameMode.gameModes.foreach(mode => {
@@ -62,12 +83,9 @@ object GameMenus {
       option.appendChild(modeName)
     })
 
-
     HostGame
     JoinGame
     CreateServer
-
-
     // testing BitmapText
 //    val canvas: html.Canvas = dom.document.getElementById("canvas").asInstanceOf[html.Canvas]
 //    canvas.width = 300
@@ -103,8 +121,6 @@ object GameMenus {
 ////      webGLRenderer.render(stage)
 //
 //    })
-
-
 
   }
 }

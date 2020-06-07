@@ -1,9 +1,7 @@
 package sharednodejsapis
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSImport, JSGlobal}
-
-
+import scala.scalajs.js.annotation.{JSGlobal, JSImport}
 @js.native
 @JSGlobal
 class EventEmitter extends js.Object {
@@ -12,8 +10,6 @@ class EventEmitter extends js.Object {
   def once(eventName: String, listener: js.Function): Unit = js.native
 
 }
-
-
 @js.native
 @JSImport("events", JSImport.Namespace)
 object EventModule extends js.Object {

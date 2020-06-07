@@ -13,8 +13,6 @@ import tooltip.Tooltip
 import scala.collection.mutable
 import scala.scalajs.js
 
-
-
 object MainProcess {
   private var mainWindow: BrowserWindowMainProcess = _
 
@@ -25,15 +23,13 @@ object MainProcess {
     // Need to create the Storage object in order to use it.
     Storage
 
-
-
     def createWindow(): Unit = {
 
       val win = new BrowserWindowMainProcess(new BrowserWindowOptions {
-        override val width: UndefOr[Int] = 1400
+        override val width: UndefOr[Int]  = 1400
         override val height: UndefOr[Int] = 800
 
-        override val minWidth: UndefOr[Int] = 1000
+        override val minWidth: UndefOr[Int]  = 1000
         override val minHeight: UndefOr[Int] = 700
 
         override val show: UndefOr[Boolean] = false
@@ -48,7 +44,8 @@ object MainProcess {
 
       win.loadURL(
         "file://" + Path.join(
-          Path.dirname(MainProcessGlobals.__dirname), "/gamemenus/mainscreen/index.html"
+          Path.dirname(MainProcessGlobals.__dirname),
+          "/gamemenus/mainscreen/index.html"
         )
       )
 
@@ -73,24 +70,30 @@ object MainProcess {
 
     App.on("window-all-closed", () => App.quit())
 
-    App.on("browser-window-created", (_: Event, window: BrowserWindowMainProcess) => {
-      windows += window
-      window.once("closed", () => {
-        windows -= window
-        if (window == mainWindow) {
-          Tooltip.close()
-        }
-      })
-    })
-
-    IPCMain.on("testing", (_: IPCMainEvent, a: Any) => {println(a)})
-
-    IPCMain.on("flash-window", (event: IPCMainEvent) => {
-      val senderWindow = BrowserWindowMainProcess.fromWebContents(event.sender)
-      if (senderWindow != BrowserWindowMainProcess.getFocusedWindow()) {
-        BrowserWindowMainProcess.fromWebContents(event.sender).flashFrame(true)
+    App.on(
+      "browser-window-created",
+      (_: Event, window: BrowserWindowMainProcess) => {
+        windows += window
+        window.once("closed", () => {
+          windows -= window
+          if (window == mainWindow) {
+            Tooltip.close()
+          }
+        })
       }
-    })
+    )
+
+    IPCMain.on("testing", (_: IPCMainEvent, a: Any) => { println(a) })
+
+    IPCMain.on(
+      "flash-window",
+      (event: IPCMainEvent) => {
+        val senderWindow = BrowserWindowMainProcess.fromWebContents(event.sender)
+        if (senderWindow != BrowserWindowMainProcess.getFocusedWindow()) {
+          BrowserWindowMainProcess.fromWebContents(event.sender).flashFrame(true)
+        }
+      }
+    )
 
     val mainRendererMessageCallback: js.Function2[IPCMainEvent, Any, Unit] = (event: IPCMainEvent, msg: Any) => {
       renderermainprocesscom.Message.decode(msg.asInstanceOf[scala.scalajs.js.Array[Byte]]) match {
@@ -109,21 +112,25 @@ object MainProcess {
           Tooltip.hideTooltip()
         case OpenOneTimeServer() =>
           val window = new BrowserWindowMainProcess(new BrowserWindowOptions {
-            override val width: UndefOr[Int] = 600
+            override val width: UndefOr[Int]  = 600
             override val height: UndefOr[Int] = 600
 
             override val show: UndefOr[Boolean] = scala.scalajs.LinkingInfo.developmentMode
           })
-          window.loadURL("file://" +
-            Path.join(js.Dynamic.global.selectDynamic("__dirname").asInstanceOf[String],
-              "../one-time-server/html/server.html")
+          window.loadURL(
+            "file://" +
+              Path.join(
+                js.Dynamic.global.selectDynamic("__dirname").asInstanceOf[String],
+                "../one-time-server/html/server.html"
+              )
           )
           window.webContents.openDevTools()
         case ReadyToShow(_) =>
           val window = BrowserWindowMainProcess.fromWebContents(event.sender)
           // messaging the main window that a new window is ready to be shown
           renderermainprocesscom.Message.sendMessageToWebContents(
-            mainWindow.webContents, ReadyToShow(window.id)
+            mainWindow.webContents,
+            ReadyToShow(window.id)
           )
           window.show()
         case OpenDevTools() =>

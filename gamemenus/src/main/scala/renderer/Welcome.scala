@@ -7,10 +7,9 @@ import org.scalajs.dom.raw.Event
 import sharednodejsapis.ElectronShell
 
 /**
- * Manages what happens in the main screen html file.
- */
+  * Manages what happens in the main screen html file.
+  */
 object Welcome {
-
 
   if (VariableStorage.retrieveValue("gameCanceled") != null) {
     dom.window.alert(VariableStorage.retrieveValue("gameCanceled").asInstanceOf[String])
@@ -20,6 +19,5 @@ object Welcome {
   dom.document.getElementById("githubTextProjectLink").asInstanceOf[html.Anchor].onclick = (_: Event) => {
     ElectronShell.openExternal("https://github.com/sherpal/oh-hell-card-game")
   }
-
 
 }

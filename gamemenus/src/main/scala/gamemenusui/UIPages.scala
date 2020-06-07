@@ -4,8 +4,6 @@ import ui.UIPage
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
-
-
 @js.native
 @JSGlobal("UI.pages")
 object UIPages extends js.Object {

@@ -4,8 +4,8 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 
 /**
- * OS module of Node.js.
- */
+  * OS module of Node.js.
+  */
 @js.native
 @JSImport("os", JSImport.Namespace)
 object OSModule extends js.Object {
@@ -13,8 +13,6 @@ object OSModule extends js.Object {
   def networkInterfaces(): NetworkInterfaces = js.native
 
 }
-
-
 
 trait NetworkInterface extends js.Object {
   val address: String

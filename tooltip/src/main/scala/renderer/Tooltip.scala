@@ -15,17 +15,20 @@ object Tooltip {
 
     println("hello")
 
-    IPCRenderer.on("tooltip-text", (_: Event, text: Any) => {
-      println(text)
-      try {
-        contentParagraph.textContent = text.asInstanceOf[String]
-        IPCRenderer.send("tooltip-height", containerDiv.offsetHeight.toInt)
+    IPCRenderer.on(
+      "tooltip-text",
+      (_: Event, text: Any) => {
+        println(text)
+        try {
+          contentParagraph.textContent = text.asInstanceOf[String]
+          IPCRenderer.send("tooltip-height", containerDiv.offsetHeight.toInt)
 
-      } catch {
-        case e: Throwable =>
-          IPCRenderer.send("tooltip-error", e.getStackTrace.mkString("\n").toString)
+        } catch {
+          case e: Throwable =>
+            IPCRenderer.send("tooltip-error", e.getStackTrace.mkString("\n").toString)
+        }
       }
-    })
+    )
 
     IPCRenderer.on("test", (_: Event, counter: Any) => {
       contentParagraph.textContent = counter.toString

@@ -46,6 +46,4 @@ class Countdown(point: Point, width: Int, height: Int) extends Frame {
     })
   }
 
-
-
 }

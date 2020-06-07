@@ -4,10 +4,10 @@ import entities.WithAbilities
 import gamestate.{GameAction, GameState}
 
 /**
- * An Ability is a power that some entities can have (humans or AI) that have an effect on the game.
- *
- * An Ability creates one or several [[gamestate.GameAction]](s).
- */
+  * An Ability is a power that some entities can have (humans or AI) that have an effect on the game.
+  *
+  * An Ability creates one or several [[gamestate.GameAction]](s).
+  */
 trait Ability {
 
   // id created for each ability that is used
@@ -37,14 +37,13 @@ trait Ability {
   def copyWithUseId(newUseId: Long, newTime: Long): Ability
 
   /**
-   * Returns whether the action is legal with that gameState.
-   * This should not check if the ability is still on cooldown.
-   * We should check, however, if the player is still alive. Maybe in the Future we will allow actions for dead players.
-   */
+    * Returns whether the action is legal with that gameState.
+    * This should not check if the ability is still on cooldown.
+    * We should check, however, if the player is still alive. Maybe in the Future we will allow actions for dead players.
+    */
   def isLegal(gameState: GameState): Boolean
 
 }
-
 
 object Ability {
 
@@ -54,29 +53,43 @@ object Ability {
     lastId
   }
 
-  val activateShieldId: Int = 1
-  val bigBulletId: Int = 2
-  val tripleBulletId: Int = 3
-  val teleportationId: Int = 4
-  val createHealingZoneId: Int = 5
+  val activateShieldId: Int        = 1
+  val bigBulletId: Int             = 2
+  val tripleBulletId: Int          = 3
+  val teleportationId: Int         = 4
+  val createHealingZoneId: Int     = 5
   val createBulletAmplifierId: Int = 6
-  val launchSmashBulletId: Int = 7
-  val craftGunTurretId: Int = 8
-  val createBarrierId: Int = 9
-  val putBulletGlue: Int = 10
-  val laserId: Int = 11
+  val launchSmashBulletId: Int     = 7
+  val craftGunTurretId: Int        = 8
+  val createBarrierId: Int         = 9
+  val putBulletGlue: Int           = 10
+  val laserId: Int                 = 11
 
   val abilityNames: Map[Int, String] = Map(
-    activateShieldId -> "Shield", bigBulletId -> "Big Bullet",
-    tripleBulletId -> "Penta Shot", teleportationId -> "Teleportation",
-    createHealingZoneId -> "Healing Zone", createBulletAmplifierId -> "Bullet Amplifier",
-    launchSmashBulletId -> "Smash Bullet", craftGunTurretId -> "Gun Turret",
-    createBarrierId -> "Barrier", putBulletGlue -> "Bullet Glue", laserId -> "Laser"
+    activateShieldId -> "Shield",
+    bigBulletId -> "Big Bullet",
+    tripleBulletId -> "Penta Shot",
+    teleportationId -> "Teleportation",
+    createHealingZoneId -> "Healing Zone",
+    createBulletAmplifierId -> "Bullet Amplifier",
+    launchSmashBulletId -> "Smash Bullet",
+    craftGunTurretId -> "Gun Turret",
+    createBarrierId -> "Barrier",
+    putBulletGlue -> "Bullet Glue",
+    laserId -> "Laser"
   )
 
   val playerChoices: List[Int] = List(
-    bigBulletId, tripleBulletId, teleportationId, createHealingZoneId, createBulletAmplifierId,
-    launchSmashBulletId, craftGunTurretId, createBarrierId, putBulletGlue, laserId
+    bigBulletId,
+    tripleBulletId,
+    teleportationId,
+    createHealingZoneId,
+    createBulletAmplifierId,
+    launchSmashBulletId,
+    craftGunTurretId,
+    createBarrierId,
+    putBulletGlue,
+    laserId
   )
 
 }

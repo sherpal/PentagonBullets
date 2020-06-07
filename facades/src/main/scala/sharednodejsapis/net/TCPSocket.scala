@@ -1,6 +1,5 @@
 package sharednodejsapis.net
 
-
 import sharednodejsapis.EventEmitter
 
 import scala.scalajs.js

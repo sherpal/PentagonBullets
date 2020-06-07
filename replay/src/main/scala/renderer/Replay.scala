@@ -23,14 +23,14 @@ object Replay {
 
     new DebugPackage("../gameplaying/replay.html")
 
-    var _toReceive = 0
-    var _received = 0
+    var _toReceive                               = 0
+    var _received                                = 0
     var _receivedActionBytes: List[Vector[Byte]] = List()
 
     var actionCollector: ActionCollector = null
-    var playersInfo: Vector[PlayerInfo] = null
-    var teamLeaders: Vector[Long] = null
-    var gameName: String = null
+    var playersInfo: Vector[PlayerInfo]  = null
+    var teamLeaders: Vector[Long]        = null
+    var gameName: String                 = null
 
     def allMessageReceived(): Unit = {
       println("end of receiving actions")
@@ -48,22 +48,24 @@ object Replay {
       loader.load((_: PIXILoader, _: js.Dictionary[PIXIResource]) => {
         try {
           val t = new java.util.Date().getTime
-          actionCollector.addActions(_receivedActionBytes
-            .map(_.toArray)
-            .map(ActionMessageObject.decode)
-            .map({
-              case action: ActionMessage => action
-              case message => throw new NotAnActionMessage(s"Message was of class ${message.getClass}")
-            })
-            .map(MessageMaker.messageToAction)
-            .sortBy(_.time))
+          actionCollector.addActions(
+            _receivedActionBytes
+              .map(_.toArray)
+              .map(ActionMessageObject.decode)
+              .map({
+                case action: ActionMessage => action
+                case message               => throw new NotAnActionMessage(s"Message was of class ${message.getClass}")
+              })
+              .map(MessageMaker.messageToAction)
+              .sortBy(_.time)
+          )
 
           println(s"It took ${(new java.util.Date().getTime - t) / 1000.0}s to reconstruct the GameStates.")
 
           replayGameMode = new ReplayGameMode(gameName, actionCollector, playersInfo, teamLeaders)
         } catch {
           case e: NotAnActionMessage => dom.console.error(e.msg)
-          case e: Throwable => e.printStackTrace()
+          case e: Throwable          => e.printStackTrace()
         }
 
         Message.sendMessageToMainProcess(ReadyToShow(0))
@@ -73,18 +75,18 @@ object Replay {
 
     val onMessage: js.Function2[IPCMainEvent, Any, Unit] = (_: IPCMainEvent, msg: Any) => {
       Message.decode(msg.asInstanceOf[scala.scalajs.js.Array[Byte]]) match {
-        case GiveGameInfoBack.GeneralGameInfo(
-        gName, startingGameTime, pInfo, numberOfActions) =>
+        case GiveGameInfoBack.GeneralGameInfo(gName, startingGameTime, pInfo, numberOfActions) =>
           _toReceive = numberOfActions
 
           actionCollector = new ActionCollector(
             GameState.originalState.timeUpdate(startingGameTime),
-            1000, Long.MaxValue
+            1000,
+            Long.MaxValue
           )
 
           playersInfo = pInfo.info
           teamLeaders = pInfo.teamLeaders
-          gameName = gName
+          gameName    = gName
 
         case GiveGameInfoBack.SendActionGroup(actions) =>
           _received += actions.length
@@ -101,7 +103,6 @@ object Replay {
     IPCRenderer.on("main-renderer-message", onMessage)
 
     Message.sendMessageToMainProcess(StoreGameInfo.GiveMeGameInfo())
-
 
   }
 

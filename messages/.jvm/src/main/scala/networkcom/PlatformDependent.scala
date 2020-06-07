@@ -7,18 +7,18 @@ private[networkcom] object PlatformDependent {
 
     override def equals(that: Any): Boolean = that match {
       case that: IntervalHandle => that.handle == this.handle
-      case _ => false
+      case _                    => false
     }
 
     override def hashCode(): Int = handle.hashCode()
   }
 
-  sealed trait TimeoutHandle{
+  sealed trait TimeoutHandle {
     val handle: Any
 
     override def equals(that: Any): Boolean = that match {
       case that: TimeoutHandle => that.handle == this.handle
-      case _ => false
+      case _                   => false
     }
 
     override def hashCode(): Int = handle.hashCode()

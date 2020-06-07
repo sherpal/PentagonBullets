@@ -130,9 +130,14 @@ object Renderer {
 
           case SendPlayerInfo(gameName, playerName, _, team, ready, abilities, _) =>
             try {
-              Table.table(gameName).receivedPlayerInfo(
-                playerName, ready, abilities, team
-              )
+              Table
+                .table(gameName)
+                .receivedPlayerInfo(
+                  playerName,
+                  ready,
+                  abilities,
+                  team
+                )
             } catch {
               case _: Throwable =>
                 println(s"Trying to add info to table $gameName that does not exist. Weird.")
@@ -144,12 +149,9 @@ object Renderer {
             println(msg)
         }
 
-
-
       }
 
-      override def clientConnectedCallback(server: Server, peer: Peer, connected: Boolean): Unit = {
-
+      override def clientConnectedCallback(server: Server, peer: Peer, connected: Boolean): Unit =
         if (connected) {
           println(s"a client connected (peer $peer)")
         } else {
@@ -157,7 +159,6 @@ object Renderer {
           Table.removePeerFromExistence(peer)
         }
 
-      }
     }
 
     server.activate()

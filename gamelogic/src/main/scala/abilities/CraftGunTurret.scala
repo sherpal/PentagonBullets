@@ -7,14 +7,21 @@ import gamestate.{GameAction, GameState}
 import gamestate.actions.NewGunTurret
 
 class CraftGunTurret(val time: Long, val useId: Long, val casterId: Long, val teamId: Int, val pos: Complex)
-  extends Ability {
+    extends Ability {
 
   def copyWithUseId(newUseId: Long, newTime: Long): CraftGunTurret =
     new CraftGunTurret(newTime, newUseId, casterId, teamId, pos)
 
   def createActions(gameState: GameState): List[GameAction] = List(
     NewGunTurret(
-      GameAction.newId(), time, Entity.newId(), casterId, teamId, pos, GunTurret.defaultRadius, AbilitySource
+      GameAction.newId(),
+      time,
+      Entity.newId(),
+      casterId,
+      teamId,
+      pos,
+      GunTurret.defaultRadius,
+      AbilitySource
     )
   )
 

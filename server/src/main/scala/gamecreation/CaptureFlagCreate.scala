@@ -5,8 +5,12 @@ import gamemode.{CaptureTheFlagMode, GameMode}
 import gameserver.GameServer
 import networkcom.{Peer, PlayerGameSettingsInfo}
 
-class CaptureFlagCreate(val name: String, protected val server: GameServer, val hostName: String,
-                        protected val hostPeer: Peer) extends GameCreation {
+class CaptureFlagCreate(
+    val name: String,
+    protected val server: GameServer,
+    val hostName: String,
+    protected val hostPeer: Peer
+) extends GameCreation {
 
   val gameMode: GameMode = CaptureTheFlagMode
 

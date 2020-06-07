@@ -3,9 +3,5 @@ package sharednodejsapis.tls
 import sharednodejsapis.EventEmitter
 
 import scala.scalajs.js
-
-
 @js.native
-trait TLSServer extends EventEmitter {
-
-}
+trait TLSServer extends EventEmitter {}

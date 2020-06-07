@@ -4,7 +4,6 @@ import scala.language.implicitConversions
 import math._
 import scala.util.Try
 
-
 case class Complex(re: Double, im: Double) {
   def +(other: Complex) = Complex(re + other.re, im + other.im)
 
@@ -18,10 +17,10 @@ case class Complex(re: Double, im: Double) {
   }
 
   def ^(other: Int): Complex = other match {
-    case 0 => Complex(1,0)
-    case 1 => this
-    case n if n > 1 => this * this^(n - 1)
-    case n => 1 / this^(-n)
+    case 0          => Complex(1, 0)
+    case 1          => this
+    case n if n > 1 => this * this ^ (n - 1)
+    case n          => 1 / this ^ (-n)
   }
 
   def ^(other: Double): Complex = Complex.exp(other * Complex.log(this))
@@ -50,17 +49,17 @@ case class Complex(re: Double, im: Double) {
 
   override def equals(that: Any): Boolean = that match {
     case that: Complex => math.max(math.abs(that.re - re), math.abs(that.im - im)) < 1e-6
-    case _ => false
+    case _             => false
   }
 
   override def hashCode(): Int = re.## ^ im.##
 
   override def toString: String = this match {
-    case Complex.i => "1 im"
-    case Complex(r, 0) => r.toString
-    case Complex(0, i) => i.toString + " im"
+    case Complex.i               => "1 im"
+    case Complex(r, 0)           => r.toString
+    case Complex(0, i)           => i.toString + " im"
     case Complex(r, i) if i >= 0 => r.toString + " + " + i.toString + " im"
-    case Complex(r, i) => r.toString + " - " + math.abs(i).toString + " im"
+    case Complex(r, i)           => r.toString + " - " + math.abs(i).toString + " im"
   }
 }
 
@@ -74,8 +73,8 @@ object Complex {
 
   def rndComplex(): Complex = Complex(rnd.nextDouble(), rnd.nextDouble())
 
-  implicit def fromDouble(d: Double): Complex = Complex(d, 0)
-  implicit def fromInt(n: Int): Complex = Complex(n, 0)
+  implicit def fromDouble(d: Double): Complex          = Complex(d, 0)
+  implicit def fromInt(n: Int): Complex                = Complex(n, 0)
   implicit def fromTuple(z: (Double, Double)): Complex = Complex(z._1, z._2)
 
   def exp(z: Complex): Complex = math.exp(z.re) * Complex(math.cos(z.im), math.sin(z.im))
@@ -124,5 +123,3 @@ object Complex {
     }
   }
 }
-
-

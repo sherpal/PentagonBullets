@@ -2,10 +2,9 @@ package renderer
 
 import communication.Host
 
-
 /**
- * Manages what happens in the host game settings html file.
- */
+  * Manages what happens in the host game settings html file.
+  */
 object HostGameSettings {
 
 //  val playerName: String = GameSettingsCommon.playerName

@@ -5,17 +5,16 @@ import org.scalajs.dom.html
 
 import scala.collection.mutable
 
-
 /**
- * Represents a player line in the table of players.
- */
+  * Represents a player line in the table of players.
+  */
 final class PlayerLine(val playerName: String) {
 
   private val div: html.Div = dom.document.createElement("div").asInstanceOf[html.Div]
   div.style.width = "100%"
 
   private val nameLabel: html.Label = dom.document.createElement("label").asInstanceOf[html.Label]
-  nameLabel.textContent = playerName
+  nameLabel.textContent       = playerName
   nameLabel.style.marginRight = "20px"
   div.appendChild(nameLabel)
 
@@ -30,9 +29,8 @@ final class PlayerLine(val playerName: String) {
     div.className = if (ready) "ready" else ""
   }
 
-  def setTeam(team: Int): Unit = {
+  def setTeam(team: Int): Unit =
     teamLabel.textContent = team.toString
-  }
 
   PlayerLine.playerLines += playerName -> this
 
@@ -58,12 +56,9 @@ object PlayerLine {
     showPlayerLines()
   }
 
-  def removePlayerLinesNotIn(playerNames: List[String]): Unit = {
-    playerLines
-      .toMap
-      .keys
+  def removePlayerLinesNotIn(playerNames: List[String]): Unit =
+    playerLines.toMap.keys
       .filterNot(playerNames.contains)
       .foreach(playerLines -= _)
-  }
 
 }

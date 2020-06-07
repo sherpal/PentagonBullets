@@ -6,16 +6,28 @@ import gamestate.ActionSource.AbilitySource
 import gamestate.{GameAction, GameState}
 import gamestate.actions.NewSmashBullet
 
-class LaunchSmashBullet(val time: Long, val useId: Long, val casterId: Long, val startingPos: Complex,
-                        val rotation: Double) extends Ability {
+class LaunchSmashBullet(
+    val time: Long,
+    val useId: Long,
+    val casterId: Long,
+    val startingPos: Complex,
+    val rotation: Double
+) extends Ability {
 
   def copyWithUseId(newUseId: Long, newTime: Long): Ability =
     new LaunchSmashBullet(newTime, newUseId, casterId, startingPos, rotation)
 
   def createActions(gameState: GameState): List[GameAction] = List(
     NewSmashBullet(
-      GameAction.newId(), time, Entity.newId(), casterId, startingPos, rotation, SmashBullet.defaultRadius,
-      SmashBullet.speed, AbilitySource
+      GameAction.newId(),
+      time,
+      Entity.newId(),
+      casterId,
+      startingPos,
+      rotation,
+      SmashBullet.defaultRadius,
+      SmashBullet.speed,
+      AbilitySource
     )
   )
 
@@ -26,4 +38,3 @@ class LaunchSmashBullet(val time: Long, val useId: Long, val casterId: Long, val
   val id: Int = Ability.launchSmashBulletId
 
 }
-

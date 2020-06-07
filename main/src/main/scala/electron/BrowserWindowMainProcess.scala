@@ -4,16 +4,13 @@ import sharednodejsapis.{BrowserWindow, BrowserWindowOptions, EventEmitter, WebC
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
-
-
 @js.native
 @JSImport("electron", "BrowserWindow")
 class BrowserWindowMainProcess(options: BrowserWindowOptions) extends BrowserWindow(options)
-
-
 @js.native
 @JSImport("electron", "BrowserWindow")
 object BrowserWindowMainProcess extends EventEmitter {
+
   /** Returns Array of [[BrowserWindow]] - An array of all opened browser windows. */
   def getAllWindows(): js.Array[BrowserWindowMainProcess] = js.native
 

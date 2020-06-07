@@ -16,12 +16,13 @@ import networkcom.PlayerGameSettingsInfo
 import org.scalajs.dom
 import time.Time
 
-class StandardModeGameHandler(protected val playerName: String,
-                              protected val playersInfo: List[PlayerGameSettingsInfo],
-                              protected val client: PlayerClient) extends GameHandler {
+class StandardModeGameHandler(
+    protected val playerName: String,
+    protected val playersInfo: List[PlayerGameSettingsInfo],
+    protected val client: PlayerClient
+) extends GameHandler {
 
   val gameMode: GameMode = StandardMode
-
 
   def saveGameDataAndLoadScoreBoard(startTime: Long, deadPlayers: List[String]): Unit = {
     DataStorage.storeValue("endOfGameData", StandardModeEOGData(deadPlayers))
@@ -30,21 +31,21 @@ class StandardModeGameHandler(protected val playerName: String,
   }
 
   /**
-   * This state is set up when the player is alive. It manages the game update.
-   */
+    * This state is set up when the player is alive. It manages the game update.
+    */
   object Runner extends GameRunner {
 
     val run: Option[() => Unit] = None
 
     def draw(): Unit = {
       val gameState = currentGameState
-      val gameTime = Time.getTime
+      val gameTime  = Time.getTime
 
       val cameraPos = gameState.players.get(playerId) match {
         case Some(player) =>
           player.pos
         case None =>
-          Complex(0,0)
+          Complex(0, 0)
       }
 
       val timeToUpdate = new java.util.Date().getTime
@@ -59,10 +60,8 @@ class StandardModeGameHandler(protected val playerName: String,
       Frame.keyPressed(key, keyCode, isRepeat)
     }
 
-    def keyReleased(key: String, keyCode: Int): Unit = {
+    def keyReleased(key: String, keyCode: Int): Unit =
       Frame.keyReleased(key, keyCode)
-    }
-
 
     def mousePressed(x: Double, y: Double, button: Int): Unit = {
       Frame.clickHandler(x, y, button)
@@ -70,13 +69,11 @@ class StandardModeGameHandler(protected val playerName: String,
       pressButton(MouseType(), button)
     }
 
-    def mouseMoved(x: Double, y: Double, dx: Double, dy: Double, button: Int): Unit = {
+    def mouseMoved(x: Double, y: Double, dx: Double, dy: Double, button: Int): Unit =
       Frame.mouseMoved(x, y, dx, dy, button)
-    }
 
-    def mouseReleased(x: Double, y: Double, button: Int): Unit = {
+    def mouseReleased(x: Double, y: Double, button: Int): Unit =
       Frame.mouseReleased(x, y, button)
-    }
 
     def mouseWheel(dx: Int, dy: Int, dz: Int): Unit = {
 
@@ -106,25 +103,33 @@ class StandardModeGameHandler(protected val playerName: String,
       val inUpdate = new java.util.Date().getTime
 
       val time = Time.getTime
-      otherPlayersPredictions = gameState.players.values.filter(_.id != playerId).filter(_.moving).map(
-        player => {
-          val pos = player.currentPosition(time - player.time)
+      otherPlayersPredictions = gameState.players.values
+        .filter(_.id != playerId)
+        .filter(_.moving)
+        .map(
+          player => {
+            val pos = player.currentPosition(time - player.time)
 
-          UpdatePlayerPos(
-            0, time, player.id, pos.re, pos.im, player.direction, player.moving, player.rotation,
-            PlayerSource
-          )
-        }
-      )
-
+            UpdatePlayerPos(
+              0,
+              time,
+              player.id,
+              pos.re,
+              pos.im,
+              player.direction,
+              player.moving,
+              player.rotation,
+              PlayerSource
+            )
+          }
+        )
 
       ScoreBoard.update(gameState)
 
-
       if (gameState.isPlayerAlive(playerId) && gameState.state == PlayingState) {
         val (mouseX, mouseY) = Engine.mousePosition
-        val mousePos = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
-        val playerOpt = playerById(playerId, gameState)
+        val mousePos         = EntityDrawer.camera.mousePosToWorld(Complex(mouseX, mouseY))
+        val playerOpt        = playerById(playerId, gameState)
         if (playerOpt.isDefined) {
           val player = playerOpt.get
 
@@ -132,7 +137,7 @@ class StandardModeGameHandler(protected val playerName: String,
 
           unConfirmedActions :+= action
           if (time - lastUpdatePosAction.time > 100 || action.dir != lastUpdatePosAction.dir ||
-            action.moving != lastUpdatePosAction.moving) {
+              action.moving != lastUpdatePosAction.moving) {
             buffer :+= action
             lastUpdatePosAction = action
           }
@@ -182,8 +187,14 @@ class StandardModeGameHandler(protected val playerName: String,
         if (debugTime.lengthCompare(20) > 0) debugTime.dequeue()
 
         val info = List(
-          lastComputationTime, updateDrawTime, renderTime, processActionTime, inUpdate, inUpdateHandler,
-          dT, dtTime
+          lastComputationTime,
+          updateDrawTime,
+          renderTime,
+          processActionTime,
+          inUpdate,
+          inUpdateHandler,
+          dT,
+          dtTime
         ).mkString(" ms; ")
 
         if (info != computationTimeFS.text) {

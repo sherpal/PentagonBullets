@@ -5,24 +5,24 @@ import networkcom.tablemessages.{Hello, HolePunching}
 import scala.collection.mutable
 
 /**
- * A Server is a more evolved Node.js Socket that has [[Client]]s connected to it.
- *
- * There are four types of messages that can be sent to the Clients:
- * - disordered, unreliable messages (no guarantee that message arrives, and don't watch the order in which they are
- *   sent
- * - disordered, reliable messages (guarantee to arrive)
- * - ordered, unreliable messages (no guarantee that the message arrives, and if a message emitted earlier arrives after
- *   a message emitted later, it is discarded)
- * - ordered, reliable (guarantee to arrive in the order they are emitted)
- *
- * address         the address to bind the server to (if address = "*", receives from all addresses)
- * port            the port to listen to
- * t               see Node.js Socket docs
- * messageCallback callback function called when a [[Message]] is received. Two arguments are the server instance
- *                        and the Message received. We use boopickle to manage message encoding
- * clientConnectedCallback callback function called when a [[Client]] connects or disconnects.
- * debug           the server is a little bit more verbose if debug is true
- */
+  * A Server is a more evolved Node.js Socket that has [[Client]]s connected to it.
+  *
+  * There are four types of messages that can be sent to the Clients:
+  * - disordered, unreliable messages (no guarantee that message arrives, and don't watch the order in which they are
+  *   sent
+  * - disordered, reliable messages (guarantee to arrive)
+  * - ordered, unreliable messages (no guarantee that the message arrives, and if a message emitted earlier arrives after
+  *   a message emitted later, it is discarded)
+  * - ordered, reliable (guarantee to arrive in the order they are emitted)
+  *
+  * address         the address to bind the server to (if address = "*", receives from all addresses)
+  * port            the port to listen to
+  * t               see Node.js Socket docs
+  * messageCallback callback function called when a [[Message]] is received. Two arguments are the server instance
+  *                        and the Message received. We use boopickle to manage message encoding
+  * clientConnectedCallback callback function called when a [[Client]] connects or disconnects.
+  * debug           the server is a little bit more verbose if debug is true
+  */
 abstract class Server extends UDPNode {
 
   val address: String
@@ -59,11 +59,11 @@ abstract class Server extends UDPNode {
   })
 
   /**
-   * Manually creates a Connection with the peer.
-   * This is used when a new socket sent a message, and when making a UDP hole punching.
-   *
-   * The ability to make UDP hole punching is the reason why this method is public (I guess).
-   */
+    * Manually creates a Connection with the peer.
+    * This is used when a new socket sent a message, and when making a UDP hole punching.
+    *
+    * The ability to make UDP hole punching is the reason why this method is public (I guess).
+    */
   def makeConnection(peer: Peer): Connection = {
     val connection = clientConnections.getOrElse(peer, new Connection(peer, socket, msg => onMessage(peer, msg)))
     clientConnections += peer -> connection
@@ -71,14 +71,13 @@ abstract class Server extends UDPNode {
     connection
   }
 
-  def removeConnection(peer: Peer): Unit = {
+  def removeConnection(peer: Peer): Unit =
     clientConnections -= peer
-  }
 
   def pushConnection(peer: Peer): Unit = {
     var counter = 0
 
-    def loop(): Unit = {
+    def loop(): Unit =
       if (counter < 20) {
         makeConnection(peer)
 
@@ -88,7 +87,6 @@ abstract class Server extends UDPNode {
 
         PlatformDependent.setTimeout(1000)(loop())
       }
-    }
     loop()
   }
 
@@ -117,19 +115,17 @@ abstract class Server extends UDPNode {
   def sendOrdered(msg: Message, peer: Peer): Unit =
     clientConnections(peer).sendOrdered(msg)
 
-  def sendReliable(msg: Message, peer: Peer): Unit = {
+  def sendReliable(msg: Message, peer: Peer): Unit =
     clientConnections.get(peer) match {
       case Some(connection) => connection.sendReliable(msg)
-      case _ =>
+      case _                =>
     }
-  }
 
   def sendOrderedReliable(msg: Message, peer: Peer): Unit =
     clientConnections(peer).sendOrderedReliable(msg)
 
-
   private def checkingClientStatus(): Unit = {
-    if (debug){
+    if (debug) {
       println("checking live clients status...")
       println(s"${clientConnections.size} were connected last time")
     }
@@ -140,13 +136,12 @@ abstract class Server extends UDPNode {
     if (debug) println(s"${clientConnections.size} are still connected")
   }
 
-  private def onMessage(peer: Peer, msg: Message): Unit = {
+  private def onMessage(peer: Peer, msg: Message): Unit =
     msg match {
-      case Connect() => clientConnect(peer)
+      case Connect()    => clientConnect(peer)
       case Disconnect() => clientDisconnect(peer)
-      case _ => messageCallback(this, peer, msg)
+      case _            => messageCallback(this, peer, msg)
     }
-  }
 
   private def clientConnect(peer: Peer): Unit = {
     clientConnections(peer).sendReliable(Connected())

@@ -11,25 +11,24 @@ class LaserGunSight(playerId: Long, stage: PIXIContainer, color: (Double, Double
 
   private val graphics: PIXIGraphics = new PIXIGraphics()
     .beginFill(intColor)
-    .drawCircle(100,100,50)
+    .drawCircle(100, 100, 50)
     .endFill()
 
   stage.addChild(graphics)
 
   val duration: Option[Long] = None
 
-  def stopRunningCallback(): Unit = {
+  def stopRunningCallback(): Unit =
     stage.removeChild(graphics)
-  }
 
-  protected def animate(gameState: GameState, now: Long, camera: Camera): Unit = {
+  protected def animate(gameState: GameState, now: Long, camera: Camera): Unit =
     (gameState.players.get(playerId), gameState.laserLaunchers.values.find(_.ownerId == playerId)) match {
       case (Some(player), Some(launcher)) =>
         graphics.visible = true
-        val playerPos = player.currentPosition(now - player.time)
+        val playerPos   = player.currentPosition(now - player.time)
         val launcherPos = launcher.pos
 
-        val localPlayerPos = camera.worldToLocal(playerPos)
+        val localPlayerPos   = camera.worldToLocal(playerPos)
         val localLauncherPos = camera.worldToLocal(launcherPos)
 
         graphics
@@ -43,9 +42,7 @@ class LaserGunSight(playerId: Long, stage: PIXIContainer, color: (Double, Double
         if (graphics.visible)
           graphics.visible = false
     }
-  }
 
   run()
 
 }
-

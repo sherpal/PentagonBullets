@@ -8,11 +8,11 @@ import gui._
 import pixigraphics.PIXITexture
 
 /**
- * Small square at the bottom of the screen that allows to track cooldown of player abilities.
- */
+  * Small square at the bottom of the screen that allows to track cooldown of player abilities.
+  */
 class AbilityButton(val abilityId: Int, val playerId: Long, nextTo: Option[Frame] = None) extends Frame() {
 
-  setSize(40,40)
+  setSize(40, 40)
 
   setScript(ScriptKind.OnUIParentResize)(() => {
     clearAllPoints()
@@ -29,7 +29,6 @@ class AbilityButton(val abilityId: Int, val playerId: Long, nextTo: Option[Frame
     case None =>
       setPoint(Bottom)
   }
-
 
   private val bg: GUISprite = createSprite()
   bg.setAllPoints()
@@ -51,10 +50,8 @@ class AbilityButton(val abilityId: Int, val playerId: Long, nextTo: Option[Frame
   statusBar.setAllPoints()
   statusBar.setStatusBarTexture()
   statusBar.setOrientation(VerticalBar)
-  statusBar.setStatusBarColor(0,0,0,0.5)
+  statusBar.setStatusBarColor(0, 0, 0, 0.5)
   statusBar.setValue(0)
-
-
 
   statusBar.setScript(ScriptKind.OnUpdate)((dt: Double) => {
     if (statusBar.value > 0)
@@ -86,9 +83,7 @@ class AbilityButton(val abilityId: Int, val playerId: Long, nextTo: Option[Frame
     }
   })
 
-
 }
-
 
 object AbilityButton {
 

@@ -34,7 +34,6 @@ object PointOfViewSelector {
 
   val pointOfViewDiv: html.Div = dom.document.getElementById("pointOfViewDiv").asInstanceOf[html.Div]
 
-
   def apply(name: String, replayGameMode: ReplayGameMode): PointOfViewSelector = {
     val selector = new PointOfViewSelector(name, replayGameMode)
 

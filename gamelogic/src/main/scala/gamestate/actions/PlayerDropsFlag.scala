@@ -4,19 +4,20 @@ import entities.TeamFlag
 import gamestate.{ActionSource, GameAction, GameState}
 
 /**
- * Happens when the flag bearer is killed. The Flag goes back to its original position.
- */
+  * Happens when the flag bearer is killed. The Flag goes back to its original position.
+  */
 final case class PlayerDropsFlag(
-                                  actionId: Long,
-                                  time: Long,
-                                  flagId: Long,
-                                  actionSource: ActionSource
-                                ) extends GameAction {
+    actionId: Long,
+    time: Long,
+    flagId: Long,
+    actionSource: ActionSource
+) extends GameAction {
 
   def applyDefault(gameState: GameState): GameState = {
     val flag = gameState.flags.values.find(_.id == flagId).get
     gameState.withFlag(
-      time, new TeamFlag(flagId, flag.xPos, flag.yPos, flag.teamNbr, None, flag.takenBy)
+      time,
+      new TeamFlag(flagId, flag.xPos, flag.yPos, flag.teamNbr, None, flag.takenBy)
     )
   }
 

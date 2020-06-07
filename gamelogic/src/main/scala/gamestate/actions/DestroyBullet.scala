@@ -3,14 +3,14 @@ package gamestate.actions
 import gamestate.{ActionSource, GameAction, GameState}
 
 /**
- * This action happens when a Bullet is destroyed because it ran on more than Bullet.reach pixels.
- */
+  * This action happens when a Bullet is destroyed because it ran on more than Bullet.reach pixels.
+  */
 final case class DestroyBullet(
-                                actionId: Long,
-                                bulletId: Long,
-                                time: Long,
-                                actionSource: ActionSource
-                              ) extends GameAction {
+    actionId: Long,
+    bulletId: Long,
+    time: Long,
+    actionSource: ActionSource
+) extends GameAction {
 
   def applyDefault(gameState: GameState): GameState = gameState.removeBullet(bulletId, time)
 

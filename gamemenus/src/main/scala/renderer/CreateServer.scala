@@ -9,34 +9,35 @@ import sharednodejsapis.{BrowserWindow, BrowserWindowOptions, Path}
 import scala.scalajs.js
 
 /**
- * Manage what happens in the create server html file.
- */
+  * Manage what happens in the create server html file.
+  */
 object CreateServer {
 
+  UIMenuPanels.createServer.formElement.addEventListener[dom.Event](
+    "submit",
+    (event: dom.Event) => {
+      event.preventDefault()
 
-  UIMenuPanels.createServer.formElement.addEventListener[dom.Event]("submit", (event: dom.Event) => {
-    event.preventDefault()
+      val portContent = RetrieveInfo.retrievePortNumber(UIMenuPanels.createServer.port)
 
-    val portContent = RetrieveInfo.retrievePortNumber(UIMenuPanels.createServer.port)
+      if (portContent != 0) {
+        createServer(portContent)
+      }
 
-    if (portContent != 0) {
-      createServer(portContent)
+      false
     }
-
-    false
-  })
-
+  )
 
   def createServer(port: Int): Unit = {
     VariableStorage.storeGlobalValue("serverPort", port.toString)
 
     val win = new BrowserWindow(new BrowserWindowOptions {
-      override val width: js.UndefOr[Int] = 600
+      override val width: js.UndefOr[Int]  = 600
       override val height: js.UndefOr[Int] = 600
     })
-    win.loadURL("file://" +
-      Path.join(js.Dynamic.global.selectDynamic("__dirname").asInstanceOf[String],
-        "../../server/server/server.html")
+    win.loadURL(
+      "file://" +
+        Path.join(js.Dynamic.global.selectDynamic("__dirname").asInstanceOf[String], "../../server/server/server.html")
     )
     win.webContents.openDevTools()
 

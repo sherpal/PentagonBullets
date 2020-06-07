@@ -4,8 +4,6 @@ import org.scalajs.dom.html
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
-
-
 @js.native
 @JSGlobal("UI")
 object UI extends js.Object {

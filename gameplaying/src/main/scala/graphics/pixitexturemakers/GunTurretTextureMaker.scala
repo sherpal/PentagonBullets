@@ -5,7 +5,6 @@ import gameengine.Engine
 import pixigraphics.{PIXIGraphics, PIXITexture}
 import webglgraphics.Vec3
 
-
 object GunTurretTextureMaker extends TextureMaker {
 
   def apply(color: (Double, Double, Double)): PIXITexture = apply(color, GunTurret.defaultRadius)

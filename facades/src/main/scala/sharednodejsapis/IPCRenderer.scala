@@ -2,8 +2,6 @@ package sharednodejsapis
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
-
-
 @js.native
 @JSImport("electron", "ipcRenderer")
 object IPCRenderer extends EventEmitter {

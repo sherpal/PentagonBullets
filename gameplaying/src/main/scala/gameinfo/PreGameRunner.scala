@@ -5,8 +5,8 @@ import graphics.{Animation, EntityDrawer, SpinningPentagon}
 import time.Time
 
 /**
- * The PreGameRunner displays a spinning pentagon at the center of the screen, and is used as a loading screen.
- */
+  * The PreGameRunner displays a spinning pentagon at the center of the screen, and is used as a loading screen.
+  */
 object PreGameRunner extends gameengine.GameState {
 
   private val spinningPentagon: SpinningPentagon = new SpinningPentagon
@@ -18,11 +18,8 @@ object PreGameRunner extends gameengine.GameState {
 
   val run: Option[() => Unit] = None
 
-  def draw(): Unit = {
-
+  def draw(): Unit =
     Animation.animate(Time.getTime, EntityDrawer.camera)
-
-  }
 
   def keyPressed(key: String, keyCode: Int, isRepeat: Boolean): Unit = {}
 

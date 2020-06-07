@@ -6,8 +6,8 @@ import time.Time
 import scala.collection.mutable
 
 /**
- * A GameAnimation is like an Animation, but the animate method depends on the GameState.
- */
+  * A GameAnimation is like an Animation, but the animate method depends on the GameState.
+  */
 trait GameAnimation {
 
   private var running: Boolean = false
@@ -17,8 +17,8 @@ trait GameAnimation {
   def startTime: Long = _startTime
 
   /**
-   * If set to null, it is a never ending animation.
-   */
+    * If set to null, it is a never ending animation.
+    */
   val duration: Option[Long]
 
   protected def animate(gameState: GameState, now: Long, camera: Camera): Unit
@@ -37,21 +37,19 @@ trait GameAnimation {
     running = true
   }
 
-
 }
 
 object GameAnimation {
 
-
   private val runningAnimations: mutable.Set[GameAnimation] = mutable.Set()
 
   def animate(gameState: GameState, now: Long, camera: Camera): Unit = {
-    runningAnimations.filter(animation =>
-      animation.duration.isDefined && animation.duration.get < now - animation.startTime
-    ).toSeq.foreach(_.stopRunning())
+    runningAnimations
+      .filter(animation => animation.duration.isDefined && animation.duration.get < now - animation.startTime)
+      .toSeq
+      .foreach(_.stopRunning())
 
     runningAnimations.foreach(_.animate(gameState, now, camera))
   }
-
 
 }
