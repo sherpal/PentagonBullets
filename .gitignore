@@ -6,3 +6,13 @@ project/metals.sbt
 */target/*
 
 target
+
+electron/gamemenus
+electron/gameplaying/gameplaying
+electron/gameplaying/js-files
+electron/mainprocess
+electron/one-time-server
+electron/server
+electron/table-menus
+electron/package.json
+electron/tooltip
