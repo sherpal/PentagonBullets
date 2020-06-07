@@ -40,6 +40,10 @@ object MainProcess {
 
         override val resizable: UndefOr[Boolean] = true
 
+        override val webPreferences: scala.scalajs.js.UndefOr[WebPreferences] = new WebPreferences {
+          override val nodeIntegration: scala.scalajs.js.UndefOr[Boolean] = true
+        }
+
       })
 
       win.loadURL(

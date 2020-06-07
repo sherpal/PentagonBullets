@@ -43,9 +43,12 @@ object DataStorage {
     IPCRenderer.sendSync("store-value", key, encode(data))
 
   def retrieveValue(key: String): Data =
-//    val buffer = IPCRenderer.sendSync("retrieve-value", key).asInstanceOf[js.Array[Int]].map(_.toByte)
-//    Unpickle[Data](dataStoragePickler).fromBytes(ByteBuffer.wrap(buffer.toArray))
-    decode(IPCRenderer.sendSync("retrieve-value", key).asInstanceOf[js.Array[Byte]])
+    {
+      println("retrieve")
+      println(IPCRenderer.sendSync("retrieve-value", key))
+      println(key)
+      decode(IPCRenderer.sendSync("retrieve-value", key).asInstanceOf[js.Array[Byte]])
+      }
 
   def unStoreValue(key: String): Unit =
     IPCRenderer.sendSync("unStore-value", key)
@@ -57,7 +60,7 @@ object DataStorage {
     IPCRenderer.sendSync("store-global-value", key, encode(data))
 
   def decode(buffer: scala.scalajs.js.Array[Byte]): Data =
-    Unpickle[Data](dataStoragePickler).fromBytes(ByteBuffer.wrap(buffer.toArray))
+      Unpickle[Data](dataStoragePickler).fromBytes(ByteBuffer.wrap(buffer.toArray))
 
   def encode(data: Data): scala.scalajs.js.Array[Byte] =
     Buffer.from(Pickle.intoBytes(data).arrayBuffer()).toJSArray.map(_.toByte)

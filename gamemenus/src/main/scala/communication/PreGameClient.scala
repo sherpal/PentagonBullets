@@ -59,6 +59,7 @@ class PreGameClient(val address: String, val port: Int, playerName: String, game
         sendOrdered(ReservePlayerName(gameName, playerName))
       }
     } else if (waitingForAnswer) {
+      println("ending connection")
       endConnection()
     }
 

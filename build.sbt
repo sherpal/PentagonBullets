@@ -173,6 +173,12 @@ fastOptCompileCopy := {
     "require(\"../js-files/onetimeserver-fastopt.js\")"
   )
 
+  makeHtmlFile(
+    "source-html/server.html",
+    "electron/server/server/server.html",
+    "require(\"../js-files/server-fastopt.js\")"
+  )
+
   println("[info] Files copied to relevant directories")
 }
 
@@ -307,6 +313,12 @@ fullOptCompileCopy := {
     "source-html/server.html",
     "electron/one-time-server/html/server.html",
     "require(\"../js-files/onetimeserver-opt.js\")"
+  )
+
+  makeHtmlFile(
+    "source-html/server.html",
+    "electron/server/server/server.html",
+    "require(\"../js-files/server-opt.js\")"
   )
 
   println("[info] Files copied to relevant directories")

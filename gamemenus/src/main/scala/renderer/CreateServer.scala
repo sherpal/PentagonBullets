@@ -7,6 +7,7 @@ import parsinginputs.RetrieveInfo
 import sharednodejsapis.{BrowserWindow, BrowserWindowOptions, Path}
 
 import scala.scalajs.js
+import sharednodejsapis.WebPreferences
 
 /**
   * Manage what happens in the create server html file.
@@ -34,6 +35,10 @@ object CreateServer {
     val win = new BrowserWindow(new BrowserWindowOptions {
       override val width: js.UndefOr[Int]  = 600
       override val height: js.UndefOr[Int] = 600
+
+      override val webPreferences: scala.scalajs.js.UndefOr[WebPreferences] = new WebPreferences {
+        override val nodeIntegration: scala.scalajs.js.UndefOr[Boolean] = true
+      }
     })
     win.loadURL(
       "file://" +

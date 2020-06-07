@@ -157,29 +157,29 @@ class StandardModeGameHandler(
         val debug = new java.util.Date().getTime
 
         computationTimes.enqueue(Engine.computationTime.toInt)
-        lastComputationTime = computationTimes.sum / computationTimes.size
+        lastComputationTime = computationTimes.sum / (computationTimes.size max 1)
 
         if (computationTimes.lengthCompare(20) > 0) computationTimes.dequeue()
 
         renderTimes.enqueue(Engine.renderTime.toInt)
-        val renderTime = renderTimes.sum / renderTimes.size
+        val renderTime = renderTimes.sum / (renderTimes.size max 1)
 
         if (renderTimes.lengthCompare(20) > 0) renderTimes.dequeue()
 
-        val processActionTime = processActions.sum / processActions.size
+        val processActionTime = processActions.sum / (processActions.size max 1)
         if (processActions.lengthCompare(20) > 0) processActions.dequeue()
 
-        val updateDrawTime = computationTimesUpdateDraw.sum / computationTimesUpdateDraw.size
+        val updateDrawTime = computationTimesUpdateDraw.sum / (computationTimesUpdateDraw.size max 1)
         if (computationTimesUpdateDraw.lengthCompare(20) > 0)
           computationTimesUpdateDraw.dequeue()
 
         val dtTime = dts.sum / dts.size
         if (dts.lengthCompare(20) > 0) dts.dequeue()
 
-        val inUpdate = inUpdateFunction.sum / inUpdateFunction.size
+        val inUpdate = inUpdateFunction.sum / (inUpdateFunction.size max 1)
         if (inUpdateFunction.lengthCompare(20) > 0) inUpdateFunction.dequeue()
 
-        val inUpdateHandler = inUpdateHandlers.sum / inUpdateHandlers.size
+        val inUpdateHandler = inUpdateHandlers.sum / (inUpdateHandlers.size max 1)
         if (inUpdateHandlers.lengthCompare(20) > 0) inUpdateHandlers.dequeue()
 
         debugTime.enqueue((new java.util.Date().getTime - debug).toInt)

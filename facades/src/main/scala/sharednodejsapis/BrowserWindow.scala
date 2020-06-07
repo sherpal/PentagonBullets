@@ -127,4 +127,6 @@ trait WebPreferences extends js.Object {
   /** Number (optional) - The default zoom factor of the page, 3.0 represents 300%. Default is 1.0. */
   val zoomFactor: js.UndefOr[Double] = js.undefined
 
+  val nodeIntegration: js.UndefOr[Boolean] = js.undefined
+
 }

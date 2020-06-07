@@ -306,7 +306,9 @@ class GameServer(val address: String, val port: Int) extends GameLogicServer {
     m match {
       case m: InGameMessage       => inGameCallback(m, peer)
       case m: GameCreationMessage => gameCreationCallback(m, peer)
-      case m: PreGameMessage      => preGameCallback(m, peer)
+      case m: PreGameMessage      => 
+        println(s"received a $m")
+        preGameCallback(m, peer)
       case TestMessage(msg: String) =>
         println("TestMessage received: " + msg)
       case _ =>

@@ -66,12 +66,16 @@ abstract class Client extends UDPNode {
       case _ if connected => messageCallback(this, msg)
     }
 
+  private var connectedCallbackCalled: Boolean = false
   private def changeConnectedStatus(connectedStatus: Boolean): Unit =
     if (connected != connectedStatus) {
       if (connectedStatus) {
         connected = true
-        connectedCallback(this, Peer(address, port), connected = true)
-        connection.activatePing()
+        if (!connectedCallbackCalled) {
+          connectedCallbackCalled = true
+          connectedCallback(this, Peer(address, port), connected = true)
+          connection.activatePing()
+        }
       } else {
         connection.deactivatePing()
         connected = false

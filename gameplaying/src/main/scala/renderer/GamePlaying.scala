@@ -66,9 +66,10 @@ object GamePlaying {
 
             val playerClient = new PlayerClient(playerName, gameName, address, port, password, playersData, gameMode)
 
-            DataStorage.retrieveValue("tableServerPeer") match {
-              case null =>
-              case PeerData(a, p) =>
+            scala.util.Try(DataStorage.retrieveValue("tableServerPeer")) match {
+              case scala.util.Failure(e) =>
+                e.printStackTrace()
+              case scala.util.Success(PeerData(a, p)) =>
                 playerClient.sendReliableTo(Hello(gameName), Peer(a, p))
                 setTimeout(5000) {
                   playerClient.sendReliableTo(Disconnect(), Peer(a, p))
