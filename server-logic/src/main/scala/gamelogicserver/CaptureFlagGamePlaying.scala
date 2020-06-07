@@ -52,7 +52,7 @@ class CaptureFlagGamePlaying(val gameName: String,
   private var setTimeoutHandles: List[SetTimeoutHandle] = Nil
 
 
-  private var scores: Map[Int, Int] = teams.mapValues(_ => 0)
+  private var scores: Map[Int, Int] = teams.map { case (k, v) => k -> 0 }
 
   def isGameOver: Boolean = if (scala.scalajs.LinkingInfo.developmentMode) {
     scores.values.exists(_ == 1)

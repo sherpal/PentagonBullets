@@ -18,6 +18,7 @@ import time.Time
 
 import scala.scalajs.js.timers._
 import scala.collection.mutable
+import scala.Ordering.Double.TotalOrdering
 
 
 /**

@@ -8,6 +8,7 @@ import webglgraphics.{Vec3, Vec4}
 
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
+import scala.Ordering.Double.TotalOrdering
 
 class Plot protected {
 

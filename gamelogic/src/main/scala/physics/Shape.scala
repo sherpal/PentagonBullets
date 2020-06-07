@@ -28,6 +28,7 @@
 package physics
 
 import custommath.Complex
+import scala.Ordering.Double.TotalOrdering
 
 
 abstract sealed class Shape {

@@ -31,7 +31,7 @@ object EntityDrawer {
   private var playerColors: Map[Long, Int] = Map()
 
   def setPlayerColors(colors: Map[Long, (Double, Double, Double)]): Unit = {
-    playerColors = colors.mapValues(elem => Vec3(elem._1, elem._2, elem._3).toInt)
+    playerColors = colors.map { case (key, elem) => key -> Vec3(elem._1, elem._2, elem._3).toInt }
   }
 
   val abilityImagesTextures: Map[Int, PIXITexture] = AbilityButton.images.map({

@@ -31,7 +31,7 @@ class ReplayGameMode(
   val pauseButton: html.Button = dom.document.getElementById("pauseButton").asInstanceOf[html.Button]
 
   val timeSlider: html.Input = dom.document.getElementById("timeSlider").asInstanceOf[html.Input]
-  timeSlider.style.width = canvas.width + "px"
+  timeSlider.style.width = canvas.width.toString + "px"
 
 
   ("spectator" +: playersInfo.map(_.name)).map(PointOfViewSelector(_, this))

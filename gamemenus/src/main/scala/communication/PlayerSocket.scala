@@ -211,7 +211,7 @@ trait PlayerSocket extends Client {
     elem._1 -> new PlayerTeam(elem._2.head.team, elem._2.map(_.id))
   )
 
-  def updatePlayersConnected(playersInfo: Traversable[SendPlayerInfo]): Unit = {
+  def updatePlayersConnected(playersInfo: Iterable[SendPlayerInfo]): Unit = {
     playersConnected = playersInfo.toList.map(info => {
       val player = new PlayerGameSettingsInfo(info.playerName)
       player.id = info.id
@@ -222,8 +222,8 @@ trait PlayerSocket extends Client {
     })
   }
 
-  private def playersConnectedTableBody: html.TableDataCell =
-    page.tablePlayers.getElementsByTagName("tbody").apply(0).asInstanceOf[html.TableDataCell]
+  private def playersConnectedTableBody: html.Table =
+    page.tablePlayers.getElementsByTagName("tbody").apply(0).asInstanceOf[html.Table]
 
   private def addPlayerInfo(playerInfo: PlayerGameSettingsInfo): Unit = {
     val tr = dom.document.createElement("tr").asInstanceOf[html.TableRow]
@@ -263,7 +263,7 @@ trait PlayerSocket extends Client {
     updateTeamSelect()
   }
 
-  protected def updatePlayerList(playersInfo: Traversable[SendPlayerInfo]): Unit = {
+  protected def updatePlayerList(playersInfo: Iterable[SendPlayerInfo]): Unit = {
     updatePlayersConnected(playersInfo)
     updatePlayerList()
   }

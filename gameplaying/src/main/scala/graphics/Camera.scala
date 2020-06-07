@@ -155,7 +155,7 @@ class Camera(canvas: html.Canvas) {
    * Takes a traversable of Sprites with their corresponding position and Shape, and give them visibility, position and
    * scales.
    */
-  def viewportManager(spritesWithShapes: Traversable[(Sprite, Complex, BoundingBox)]): Unit = {
+  def viewportManager(spritesWithShapes: Iterable[(Sprite, Complex, BoundingBox)]): Unit = {
 
     spritesWithShapes.foreach({
       case (sprite, worldPos, boundingBox) => viewportManager(sprite, worldPos, boundingBox)

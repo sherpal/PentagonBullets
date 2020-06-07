@@ -3,6 +3,7 @@ package plots.plotelements
 import custommath.Complex
 import plots.{Plot, PlotElement}
 import webglgraphics.Vec4
+import scala.Ordering.Double.TotalOrdering
 
 class Line(xs: Vector[Double], ys: Vector[Double], color: Vec4 = Vec4(0,0,0,1)) extends PlotElement {
 

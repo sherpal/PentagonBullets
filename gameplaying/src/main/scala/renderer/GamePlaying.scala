@@ -22,7 +22,7 @@ import webglgraphics.{Vec3, Vec4}
 
 import scala.scalajs.js
 import scala.scalajs.js.timers.setTimeout
-
+import scala.Ordering.Double.TotalOrdering
 
 
 
@@ -318,7 +318,7 @@ object GamePlaying {
               }
 
             case CaptureTheFlagModeEOGData(scores) =>
-              val tBody = dom.document.getElementById("scoreBoard").asInstanceOf[html.TableDataCell]
+              val tBody = dom.document.getElementById("scoreBoard").asInstanceOf[html.Table]
               val rows = scores.toList.sortBy(_._2).reverse.map({case (teamNbr, points) =>
                 val tr = dom.document.createElement("tr").asInstanceOf[html.TableRow]
                 val positionTd = dom.document.createElement("td").asInstanceOf[html.TableCol]

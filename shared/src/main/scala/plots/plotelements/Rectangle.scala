@@ -3,6 +3,7 @@ package plots.plotelements
 import custommath.Complex
 import plots.{Plot, PlotElement}
 import webglgraphics.Vec4
+import scala.Ordering.Double.TotalOrdering
 
 class Rectangle(x: Double, y: Double, width: Double, height: Double, color: Vec4) extends Region {
 

@@ -32,7 +32,7 @@ class ActionCollector(val originalGameState: GameState, val timeBetweenGameState
   def printStates(): Unit = actionsAndStates.foreach({ case (gs, actions) => println(gs.time, actions.length) })
 
   // TODO: add all actions that share the same time all together.
-  def addActions(actions: Traversable[GameAction]): Unit = {
+  def addActions(actions: Iterable[GameAction]): Unit = {
     actions.foreach(addAction(_, needUpdate = false))
     updateGameState()
   }

@@ -169,8 +169,8 @@ class PlayerClient(playerName: String,
 
   def setMaxCanvasDimensions(): Unit = {
     val gameInterface: html.Div = dom.document.getElementById("gameInterface").asInstanceOf[html.Div]
-    gameInterface.style.width = dom.window.innerWidth.toInt + "px"
-    gameInterface.style.height = dom.window.innerHeight.toInt + "px"
+    gameInterface.style.width = dom.window.innerWidth.toInt.toString + "px"
+    gameInterface.style.height = dom.window.innerHeight.toInt.toString + "px"
 
     val windowWidth: Int = dom.window.innerWidth.toInt - 7
     val windowHeight: Int = dom.window.innerHeight.toInt - 7

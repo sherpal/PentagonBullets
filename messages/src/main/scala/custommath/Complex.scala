@@ -2,6 +2,7 @@ package custommath
 
 import scala.language.implicitConversions
 import math._
+import scala.util.Try
 
 
 case class Complex(re: Double, im: Double) {
@@ -113,6 +114,14 @@ object Complex {
     override def toDouble(x: Complex): Double = x.re
 
     override def compare(x: Complex, y: Complex): Int = java.lang.Double.compare(!x, !y)
+
+    def parseString(str: String): Option[Complex] = {
+      val values = str.drop(8).dropRight(1).split(",").map(s => Try(s.toDouble).toOption)
+      for {
+        real <- values(0)
+        imag <- values(1)
+      } yield Complex(real, imag)
+    }
   }
 }
 
