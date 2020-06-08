@@ -120,6 +120,10 @@ object MainProcess {
             override val height: UndefOr[Int] = 600
 
             override val show: UndefOr[Boolean] = scala.scalajs.LinkingInfo.developmentMode
+
+            override val webPreferences: scala.scalajs.js.UndefOr[WebPreferences] = new WebPreferences {
+              override val nodeIntegration: scala.scalajs.js.UndefOr[Boolean] = true
+            }
           })
           window.loadURL(
             "file://" +

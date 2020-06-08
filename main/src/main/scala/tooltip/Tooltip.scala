@@ -24,6 +24,10 @@ object Tooltip {
 
     override val focusable: UndefOr[Boolean] = false
 
+    override val webPreferences: scala.scalajs.js.UndefOr[WebPreferences] = new WebPreferences {
+      override val nodeIntegration: scala.scalajs.js.UndefOr[Boolean] = true
+    }
+
   })
 
   tooltipWindow.loadURL(

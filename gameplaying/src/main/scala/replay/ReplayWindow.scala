@@ -19,6 +19,10 @@ class ReplayWindow {
       override val resizable: UndefOr[Boolean] = true
 
       override val show: UndefOr[Boolean] = false
+
+      override val webPreferences: scala.scalajs.js.UndefOr[WebPreferences] = new WebPreferences {
+        override val nodeIntegration: scala.scalajs.js.UndefOr[Boolean] = true
+      }
     }
   )
 

@@ -11,11 +11,13 @@ object Renderer {
 
   var server: GameServer = _
 
-  def main(args: Array[String]): Unit =
+  def main(args: Array[String]): Unit = {
     /**
       * First finding an available port.
       */
-    PortFinder.getPort((_, port) => {
+    //PortFinder.getPort((_, port) => {
+      val port = 22223
+
       println(s"Port: $port")
 
       DataStorage.retrieveGlobalValue("gameData") match {
@@ -61,6 +63,6 @@ object Renderer {
         case _ =>
           println("Game data were not saved correctly.")
       }
-    })
-
+    //})
+  }
 }
